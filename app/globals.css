@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f5f7f2;
+  --foreground: #182126;
+  --surface: #fffdf7;
+  --muted: #65717b;
+  --line: rgba(24, 33, 38, 0.12);
+  --brand: #1965d2;
+  --brand-strong: #104a9e;
+  --brand-soft: #dce8fb;
+  --accent: #f3b562;
+  --danger: #b7442a;
+  --success: #1d7d53;
+  --shadow: 0 24px 80px rgba(17, 30, 41, 0.12);
+}
+
+@theme inline {
+  --font-sans: var(--font-public-sans);
+  --font-display: var(--font-space-grotesk);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(25, 101, 210, 0.16), transparent 32%),
+    linear-gradient(180deg, #fbfcf8 0%, #f1f4ec 100%);
+  color: var(--foreground);
+  font-family: var(--font-public-sans), sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(25, 101, 210, 0.18);
+}
+
+.container-shell {
+  width: min(1120px, calc(100% - 1.5rem));
+  margin-inline: auto;
+}
+
+.panel {
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow);
+}
