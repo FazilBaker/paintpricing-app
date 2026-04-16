@@ -88,7 +88,7 @@ export default async function BillingPage() {
               <PayPalSubscribeButton
                 cycle="monthly"
                 clientId={process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!}
-                planId={process.env.NEXT_PUBLIC_PAYPAL_MONTHLY_PLAN_ID!}
+                planId={process.env.NEXT_PUBLIC_PAYPAL_PLAN_MONTHLY!}
                 userId={viewer.user!.id}
               />
             ) : (
@@ -120,7 +120,7 @@ export default async function BillingPage() {
               <PayPalSubscribeButton
                 cycle="yearly"
                 clientId={process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!}
-                planId={process.env.NEXT_PUBLIC_PAYPAL_YEARLY_PLAN_ID!}
+                planId={process.env.NEXT_PUBLIC_PAYPAL_PLAN_YEARLY!}
                 userId={viewer.user!.id}
               />
             ) : (

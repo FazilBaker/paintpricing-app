@@ -8,8 +8,8 @@ export function isSupabaseConfigured() {
 export function isPaypalConfigured() {
   return Boolean(
     process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID &&
-      process.env.NEXT_PUBLIC_PAYPAL_MONTHLY_PLAN_ID &&
-      process.env.NEXT_PUBLIC_PAYPAL_YEARLY_PLAN_ID,
+      process.env.NEXT_PUBLIC_PAYPAL_PLAN_MONTHLY &&
+      process.env.NEXT_PUBLIC_PAYPAL_PLAN_YEARLY,
   );
 }
 

@@ -222,8 +222,8 @@ export const QUOTE_TERMS = [
 
 export const BILLING_COPY = {
   monthlyPrice: 29,
-  yearlyPrice: 299,
-  yearlySavings: 49,
+  yearlyPrice: 279,
+  yearlySavings: 69,
   lifetimePrice: LIFETIME_DEAL_PRICE,
   lifetimeSeats: LIFETIME_DEAL_LIMIT,
 };
