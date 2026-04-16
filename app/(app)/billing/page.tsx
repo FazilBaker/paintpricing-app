@@ -1,15 +1,24 @@
 import { redirect } from "next/navigation";
+import { Check, ShieldCheck } from "lucide-react";
 
-import { activateLifetimeDealAction } from "@/app/actions";
 import { BILLING_COPY, FREE_QUOTES_LIMIT, LIFETIME_DEAL_LIMIT } from "@/lib/constants";
 import { getViewer, hasConfiguredRates, quotesRemaining } from "@/lib/auth";
 import { isPaypalConfigured } from "@/lib/env";
 import { formatCurrency } from "@/lib/utils";
+import { LtdCounter } from "@/components/billing/ltd-counter";
 import { PayPalSubscribeButton } from "@/components/billing/paypal-subscribe-button";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+
+const features = [
+  "Unlimited quotes",
+  "Branded PDF exports",
+  "Interior + exterior templates",
+  "Quote versioning",
+  "Shareable quote links",
+  "Priority support",
+];
 
 export default async function BillingPage() {
   const viewer = await getViewer();
@@ -24,158 +33,147 @@ export default async function BillingPage() {
 
   const paypalReady = isPaypalConfigured();
   const supabase = await createSupabaseServerClient();
-  const { count: lifetimeSold = 0 } = supabase
+  const lifetimeSoldResult = supabase
     ? await supabase
         .from("profiles")
         .select("id", { count: "exact", head: true })
         .eq("billing_cycle", "lifetime")
         .eq("billing_status", "active")
     : { count: 0 };
+  const lifetimeSold = lifetimeSoldResult.count ?? 0;
   const lifetimeRemaining = Math.max(LIFETIME_DEAL_LIMIT - lifetimeSold, 0);
 
   return (
-    <main className="container-shell pb-20">
-      <Card className="bg-[linear-gradient(180deg,#183452,#0e2237)] text-white">
-        <CardContent className="grid gap-8 p-8 lg:grid-cols-[0.92fr_1.08fr]">
-          <div className="space-y-5">
-            <Badge className="bg-white/12 text-white">Upgrade</Badge>
-            <h1 className="font-display text-4xl font-bold">
-              Start free, then upgrade when you want unlimited quotes.
-            </h1>
-            <p className="max-w-2xl text-white/72">
-              Every account gets {FREE_QUOTES_LIMIT} free quotes. You have{" "}
-              {quotesRemaining(viewer.profile)} free quote
-              {quotesRemaining(viewer.profile) === 1 ? "" : "s"} left.
-            </p>
-            <div className="grid gap-4">
-              <div className="rounded-[24px] border border-white/12 bg-white/8 p-5">
-                <p className="text-sm uppercase tracking-[0.18em] text-white/64">
-                  Free
-                </p>
-                <p className="mt-2 font-display text-4xl font-bold">$0</p>
-                <p className="mt-1 text-sm text-white/72">
-                  {FREE_QUOTES_LIMIT} quotes included.
-                </p>
-              </div>
-              <div className="rounded-[24px] border border-white/12 bg-white/8 p-5">
-                <p className="text-sm uppercase tracking-[0.18em] text-white/64">
-                  Monthly
-                </p>
-                <p className="mt-2 font-display text-4xl font-bold">
-                  {formatCurrency(BILLING_COPY.monthlyPrice)}
-                </p>
-                <p className="mt-1 text-sm text-white/72">Billed every month.</p>
-              </div>
-              <div className="rounded-[24px] border border-[rgba(243,181,98,0.4)] bg-white/10 p-5">
-                <p className="text-sm uppercase tracking-[0.18em] text-[var(--accent)]">
-                  Yearly
-                </p>
-                <p className="mt-2 font-display text-4xl font-bold">
-                  {formatCurrency(BILLING_COPY.yearlyPrice)}
-                </p>
-                <p className="mt-1 text-sm text-white/72">
-                  Save {formatCurrency(BILLING_COPY.yearlySavings)}. Most painters choose yearly.
-                </p>
-              </div>
-              <div className="rounded-[24px] border border-[rgba(243,181,98,0.4)] bg-white/12 p-5">
-                <p className="text-sm uppercase tracking-[0.18em] text-[var(--accent)]">
-                  Lifetime Launch Deal
-                </p>
-                <p className="mt-2 font-display text-4xl font-bold">
-                  {formatCurrency(BILLING_COPY.lifetimePrice)}
-                </p>
-                <p className="mt-1 text-sm text-white/72">
-                  First {LIFETIME_DEAL_LIMIT} users only. {lifetimeRemaining} spot
-                  {lifetimeRemaining === 1 ? "" : "s"} left.
-                </p>
-              </div>
-            </div>
-          </div>
+    <main className="container-shell pb-8">
+      <div className="mb-6">
+        <h1 className="text-xl font-bold sm:text-2xl">Choose your plan</h1>
+        <p className="mt-1 text-sm text-[var(--muted)]">
+          You have {quotesRemaining(viewer.profile)} free unlock{quotesRemaining(viewer.profile) === 1 ? "" : "s"} remaining.
+          Upgrade for unlimited quotes.
+        </p>
+      </div>
 
-          <div className="grid gap-4">
-            <Card className="border-white/12 bg-white/96 text-[var(--foreground)]">
-              <CardContent className="space-y-4">
-                <div>
-                  <p className="text-sm uppercase tracking-[0.18em] text-[var(--muted)]">
-                    Monthly plan
-                  </p>
-                  <h2 className="mt-2 font-display text-2xl font-bold">
-                    Start for {formatCurrency(BILLING_COPY.monthlyPrice)}
-                  </h2>
-                </div>
-                {paypalReady ? (
-                  <PayPalSubscribeButton
-                    cycle="monthly"
-                    clientId={process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!}
-                    planId={process.env.NEXT_PUBLIC_PAYPAL_MONTHLY_PLAN_ID!}
-                  />
-                ) : (
-                  <p className="rounded-2xl bg-[var(--brand-soft)] px-4 py-3 text-sm text-[var(--brand-strong)]">
-                    Add your PayPal client and plan IDs to test checkout.
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card className="border-[rgba(25,101,210,0.15)] bg-white/96 text-[var(--foreground)]">
-              <CardContent className="space-y-4">
-                <div>
-                  <p className="text-sm uppercase tracking-[0.18em] text-[var(--muted)]">
-                    Yearly plan
-                  </p>
-                  <h2 className="mt-2 font-display text-2xl font-bold">
-                    Best value at {formatCurrency(BILLING_COPY.yearlyPrice)}
-                  </h2>
-                </div>
-                {paypalReady ? (
-                  <PayPalSubscribeButton
-                    cycle="yearly"
-                    clientId={process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!}
-                    planId={process.env.NEXT_PUBLIC_PAYPAL_YEARLY_PLAN_ID!}
-                  />
-                ) : (
-                  <p className="rounded-2xl bg-[var(--brand-soft)] px-4 py-3 text-sm text-[var(--brand-strong)]">
-                    Add your PayPal client and plan IDs to test checkout.
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card className="border-[rgba(243,181,98,0.4)] bg-white/96 text-[var(--foreground)]">
-              <CardContent className="space-y-4">
-                <div>
-                  <p className="text-sm uppercase tracking-[0.18em] text-[var(--muted)]">
-                    Lifetime deal
-                  </p>
-                  <h2 className="mt-2 font-display text-2xl font-bold">
-                    One payment of {formatCurrency(BILLING_COPY.lifetimePrice)}
-                  </h2>
-                  <p className="mt-2 text-sm text-[var(--muted)]">
-                    First {LIFETIME_DEAL_LIMIT} users only. This unlocks the tool permanently.
-                  </p>
-                </div>
-                {paypalReady && lifetimeRemaining > 0 ? (
-                  <PayPalSubscribeButton
-                    cycle="lifetime"
-                    clientId={process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!}
-                    amount={String(BILLING_COPY.lifetimePrice)}
-                  />
-                ) : lifetimeRemaining > 0 ? (
-                  <form action={activateLifetimeDealAction}>
-                    <Button className="w-full" size="lg" type="submit">
-                      Mark Lifetime Access Manually
-                    </Button>
-                  </form>
-                ) : (
-                  <p className="rounded-2xl bg-[var(--brand-soft)] px-4 py-3 text-sm text-[var(--brand-strong)]">
-                    The lifetime launch deal is sold out.
-                  </p>
-                )}
-              </CardContent>
-            </Card>
+      {/* What's included */}
+      <Card className="mb-6">
+        <CardContent>
+          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)] mb-3">
+            All paid plans include
+          </p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {features.map((feature) => (
+              <div key={feature} className="flex items-center gap-2 text-sm">
+                <Check className="h-4 w-4 shrink-0 text-[var(--success)]" />
+                <span>{feature}</span>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
+
+      {/* Pricing cards */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        {/* Monthly */}
+        <Card>
+          <CardContent className="space-y-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
+                Monthly
+              </p>
+              <p className="mt-2 text-3xl font-bold font-mono">
+                {formatCurrency(BILLING_COPY.monthlyPrice)}
+              </p>
+              <p className="mt-1 text-sm text-[var(--muted)]">per month</p>
+            </div>
+            {paypalReady ? (
+              <PayPalSubscribeButton
+                cycle="monthly"
+                clientId={process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!}
+                planId={process.env.NEXT_PUBLIC_PAYPAL_MONTHLY_PLAN_ID!}
+                userId={viewer.user!.id}
+              />
+            ) : (
+              <p className="rounded-[var(--radius)] bg-[var(--brand-soft)] px-4 py-3 text-sm text-[var(--brand)]">
+                PayPal not configured yet.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Yearly — highlighted */}
+        <Card className="border-[var(--brand)] border-2 relative">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+            <Badge className="bg-[var(--brand)] text-white">Best value</Badge>
+          </div>
+          <CardContent className="space-y-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
+                Yearly
+              </p>
+              <p className="mt-2 text-3xl font-bold font-mono">
+                {formatCurrency(BILLING_COPY.yearlyPrice)}
+              </p>
+              <p className="mt-1 text-sm text-[var(--muted)]">
+                per year · save {formatCurrency(BILLING_COPY.yearlySavings)}
+              </p>
+            </div>
+            {paypalReady ? (
+              <PayPalSubscribeButton
+                cycle="yearly"
+                clientId={process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!}
+                planId={process.env.NEXT_PUBLIC_PAYPAL_YEARLY_PLAN_ID!}
+                userId={viewer.user!.id}
+              />
+            ) : (
+              <p className="rounded-[var(--radius)] bg-[var(--brand-soft)] px-4 py-3 text-sm text-[var(--brand)]">
+                PayPal not configured yet.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Lifetime */}
+        <Card className="border-[var(--accent)] bg-[var(--accent-soft)]">
+          <CardContent className="space-y-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--accent-strong)]">
+                Lifetime deal
+              </p>
+              <p className="mt-2 text-3xl font-bold font-mono">
+                {formatCurrency(BILLING_COPY.lifetimePrice)}
+              </p>
+              <p className="mt-1 text-sm text-[var(--muted)]">one-time payment</p>
+            </div>
+            <LtdCounter initialRemaining={lifetimeRemaining} total={LIFETIME_DEAL_LIMIT} />
+            {paypalReady && lifetimeRemaining > 0 ? (
+              <PayPalSubscribeButton
+                cycle="lifetime"
+                clientId={process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!}
+                amount={String(BILLING_COPY.lifetimePrice)}
+                userId={viewer.user!.id}
+              />
+            ) : lifetimeRemaining > 0 ? (
+              <p className="rounded-[var(--radius)] bg-[var(--accent-soft)] px-4 py-3 text-sm text-[var(--accent-strong)]">
+                PayPal not configured yet.
+              </p>
+            ) : (
+              <p className="rounded-[var(--radius)] bg-[var(--danger-soft)] px-4 py-3 text-sm text-[var(--danger)]">
+                Sold out
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Money-back guarantee */}
+      <div className="mt-8 flex items-center justify-center gap-3 rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--surface)] px-6 py-4">
+        <ShieldCheck className="h-8 w-8 shrink-0 text-[var(--success)]" />
+        <div>
+          <p className="font-semibold text-sm">14-Day Money-Back Guarantee</p>
+          <p className="text-xs text-[var(--muted)]">
+            Not happy? Get a full refund within 14 days, no questions asked.
+          </p>
+        </div>
+      </div>
     </main>
   );
 }

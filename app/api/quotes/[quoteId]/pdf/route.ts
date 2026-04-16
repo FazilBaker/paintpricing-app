@@ -26,13 +26,21 @@ export async function GET(
 
   const { data, error } = await supabase
     .from("quotes")
-    .select("quote_data")
+    .select("quote_data, is_unlocked")
     .eq("id", quoteId)
     .eq("user_id", user.id)
     .single();
 
   if (error || !data?.quote_data) {
     return NextResponse.json({ error: "Quote not found." }, { status: 404 });
+  }
+
+  // Block PDF download for locked quotes
+  if (!data.is_unlocked) {
+    return NextResponse.json(
+      { error: "This quote is locked. Unlock it first to download the PDF." },
+      { status: 403 },
+    );
   }
 
   const pdf = await renderToBuffer(

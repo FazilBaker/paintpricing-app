@@ -1,12 +1,15 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { canCreateQuote, getViewer, hasConfiguredRates } from "@/lib/auth";
+import { getViewer, hasConfiguredRates } from "@/lib/auth";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import type { QuoteDraftPayload } from "@/lib/types";
 import { QuoteBuilder } from "@/components/quotes/quote-builder";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 
-export default async function NewQuotePage() {
+export default async function NewQuotePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ edit?: string }>;
+}) {
   const viewer = await getViewer();
 
   if (!viewer.user) {
@@ -21,46 +24,39 @@ export default async function NewQuotePage() {
     redirect("/dashboard");
   }
 
-  if (!canCreateQuote(viewer.profile)) {
-    return (
-      <main className="container-shell pb-20">
-        <Card>
-          <CardContent className="space-y-5 p-8">
-            <p className="text-sm uppercase tracking-[0.18em] text-[var(--muted)]">
-              Upgrade required
-            </p>
-            <h1 className="font-display text-4xl font-bold">
-              Your 3 free quotes are used up.
-            </h1>
-            <p className="max-w-2xl text-[var(--muted)]">
-              Upgrade to monthly, yearly, or claim one of the first-50 lifetime spots to keep creating quotes.
-            </p>
-            <Button asChild size="lg">
-              <Link href="/billing">View pricing</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </main>
-    );
+  // Load existing quote data if editing
+  const params = await searchParams;
+  let initialData: React.ComponentProps<typeof QuoteBuilder>["initialData"];
+
+  if (params.edit) {
+    const supabase = await createSupabaseServerClient();
+    if (supabase) {
+      const { data } = await supabase
+        .from("quotes")
+        .select("id, quote_data, version, parent_quote_id")
+        .eq("id", params.edit)
+        .eq("user_id", viewer.user.id)
+        .single();
+
+      if (data) {
+        const quoteData = data.quote_data as QuoteDraftPayload;
+        // The parent is always the root quote (first version)
+        const rootId = data.parent_quote_id ?? data.id;
+
+        initialData = {
+          client: quoteData.client,
+          items: quoteData.items ?? [],
+          parentQuoteId: rootId,
+          version: (data.version ?? 1) + 1,
+          discount: quoteData.discount,
+        };
+      }
+    }
   }
 
   return (
-    <main className="container-shell pb-20">
-      <Card className="mb-6">
-        <CardContent className="space-y-2">
-          <p className="text-sm uppercase tracking-[0.18em] text-[var(--muted)]">
-            Quote builder
-          </p>
-          <h1 className="font-display text-4xl font-bold">
-            Room math, gallons, labor, and totals in one place
-          </h1>
-          <p className="max-w-3xl text-[var(--muted)]">
-            Doors and windows are deducted from wall paint area automatically.
-            Turn on separate line items when you plan to paint them.
-          </p>
-        </CardContent>
-      </Card>
-      <QuoteBuilder profile={viewer.profile} />
+    <main className="container-shell py-6 pb-20">
+      <QuoteBuilder profile={viewer.profile} initialData={initialData} />
     </main>
   );
 }

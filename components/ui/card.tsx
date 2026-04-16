@@ -9,7 +9,7 @@ export function Card({
   return (
     <div
       className={cn(
-        "panel rounded-[28px] border border-[var(--line)] bg-white/85",
+        "rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface)] shadow-[var(--shadow-sm)]",
         className,
       )}
       {...props}
@@ -21,5 +21,5 @@ export function CardContent({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("p-6", className)} {...props} />;
+  return <div className={cn("p-5 sm:p-6", className)} {...props} />;
 }

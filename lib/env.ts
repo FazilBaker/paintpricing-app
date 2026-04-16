@@ -13,6 +13,14 @@ export function isPaypalConfigured() {
   );
 }
 
+export function isPaypalServerConfigured() {
+  return Boolean(
+    process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID &&
+      process.env.PAYPAL_CLIENT_SECRET &&
+      process.env.PAYPAL_WEBHOOK_ID,
+  );
+}
+
 export function getRequiredEnv(name: string) {
   const value = process.env[name];
   if (!value) {

@@ -10,6 +10,7 @@ type PayPalSubscribeButtonProps = {
   clientId: string;
   planId?: string;
   amount?: string;
+  userId: string;
 };
 
 export function PayPalSubscribeButton({
@@ -17,6 +18,7 @@ export function PayPalSubscribeButton({
   clientId,
   planId,
   amount,
+  userId,
 }: PayPalSubscribeButtonProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -45,7 +47,7 @@ export function PayPalSubscribeButton({
               : (_, actions) =>
                   actions.subscription.create({
                     plan_id: planId,
-                    custom_id: cycle,
+                    custom_id: `${userId}:${cycle}`,
                   })
           }
           createOrder={
@@ -60,7 +62,7 @@ export function PayPalSubscribeButton({
                           currency_code: "USD",
                           value: amount,
                         },
-                        custom_id: cycle,
+                        custom_id: `${userId}:lifetime`,
                         description: "PaintPricing lifetime launch deal",
                       },
                     ],
@@ -69,18 +71,10 @@ export function PayPalSubscribeButton({
           onApprove={async (data) => {
             startTransition(async () => {
               if (cycle === "lifetime") {
-                const response = await fetch("/api/paypal/webhook", {
+                const response = await fetch("/api/paypal/capture-order", {
                   method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    event_type: "CLIENT.LIFETIME.APPROVED",
-                    resource: {
-                      id: data.orderID,
-                      custom_id: cycle,
-                    },
-                  }),
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ orderID: data.orderID }),
                 });
 
                 if (response.ok) {
@@ -88,21 +82,17 @@ export function PayPalSubscribeButton({
                   return;
                 }
 
-                setMessage("Lifetime payment approved, but access sync failed. Refresh billing.");
+                const result = await response.json();
+                setMessage(result.error || "Lifetime payment failed. Please contact support.");
                 return;
               }
 
-              const response = await fetch("/api/paypal/webhook", {
+              const response = await fetch("/api/paypal/activate-subscription", {
                 method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                  event_type: "CLIENT.APPROVED",
-                  resource: {
-                    id: data.subscriptionID,
-                    custom_id: cycle,
-                  },
+                  subscriptionID: data.subscriptionID,
+                  cycle,
                 }),
               });
 
@@ -111,7 +101,8 @@ export function PayPalSubscribeButton({
                 return;
               }
 
-              setMessage("Subscription approved, but access sync failed. Refresh billing.");
+              const result = await response.json();
+              setMessage(result.error || "Subscription activation failed. Please contact support.");
             });
           }}
         />

@@ -5,11 +5,11 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "PaintPricing.com",
     short_name: "PaintPricing",
     description:
-      "Fast interior repaint quote PDFs for solo painters and small crews.",
+      "Professional painting quotes in minutes, not hours.",
     start_url: "/",
     display: "standalone",
-    background_color: "#f5f7f2",
-    theme_color: "#1965d2",
+    background_color: "#F7F8FA",
+    theme_color: "#1E3A5F",
     icons: [
       {
         src: "/icon.svg",

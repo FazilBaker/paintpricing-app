@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 const features = [
-  "One-tap room templates for common interior repaint jobs.",
+  "One-tap room templates for common interior and exterior jobs.",
   "Live gallons, labor hours, markup, tax, and totals as you edit.",
   "Professional quote PDFs with your logo, terms, and room breakdown.",
 ];
@@ -33,19 +33,15 @@ const steps = [
 export function LandingPage() {
   return (
     <main className="pb-20">
+      {/* Hero */}
       <section className="container-shell pt-6">
-        <div className="panel rounded-[32px] border border-white/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.95),rgba(220,232,251,0.84))] px-5 py-6 sm:px-8">
+        <div className="rounded-[var(--radius-2xl)] border border-[var(--line)] bg-[var(--surface)] p-5 shadow-[var(--shadow-md)] sm:p-8">
           <div className="flex flex-col gap-8">
             <header className="flex items-center justify-between gap-4">
-              <div>
-                <p className="font-display text-xl font-bold tracking-tight">
-                  PaintPricing.com
-                </p>
-                <p className="text-sm text-[var(--muted)]">
-                  Interior repaint quotes without the spreadsheet mess.
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
+              <p className="text-lg font-bold text-[var(--brand)]">
+                PaintPricing
+              </p>
+              <div className="flex items-center gap-2">
                 <Button asChild variant="ghost" size="sm">
                   <Link href="/login">Log in</Link>
                 </Button>
@@ -55,15 +51,15 @@ export function LandingPage() {
               </div>
             </header>
 
-            <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+            <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
               <div className="space-y-5">
                 <Badge>{FREE_QUOTES_LIMIT} quotes free to start</Badge>
-                <h1 className="max-w-3xl font-display text-4xl font-bold tracking-tight text-balance sm:text-6xl">
-                  Interior repaint quotes that look pro in under 60 seconds.
+                <h1 className="max-w-3xl text-3xl font-bold tracking-tight text-balance sm:text-5xl">
+                  Painting quotes that look pro in under 60 seconds.
                 </h1>
-                <p className="max-w-2xl text-lg leading-8 text-[var(--muted)]">
+                <p className="max-w-2xl text-base leading-7 text-[var(--muted)] sm:text-lg">
                   Save your rates once, tap the rooms you are painting, and
-                  turn messy Excel math into a clean branded quote PDF your
+                  turn messy spreadsheet math into a clean branded PDF your
                   customers can say yes to.
                 </p>
                 <div className="flex flex-col gap-3 sm:flex-row">
@@ -74,59 +70,60 @@ export function LandingPage() {
                     <Link href="#pricing">See pricing</Link>
                   </Button>
                 </div>
-                <div className="flex flex-wrap gap-4 text-sm text-[var(--muted)]">
+                <div className="flex flex-col gap-3 text-sm text-[var(--muted)] sm:flex-row sm:gap-6">
                   <div className="flex items-center gap-2">
                     <ShieldCheck className="h-4 w-4 text-[var(--success)]" />
-                    Start free, then upgrade only if the tool earns its place
+                    Free to start, upgrade when ready
                   </div>
                   <div className="flex items-center gap-2">
                     <TimerReset className="h-4 w-4 text-[var(--brand)]" />
-                    One setup screen, then quote after quote
+                    One setup, then quote after quote
                   </div>
                 </div>
               </div>
 
+              {/* Sample quote preview */}
               <Card className="overflow-hidden">
                 <CardContent className="space-y-5">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
-                        Sample quote preview
+                      <p className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
+                        Sample quote
                       </p>
-                      <h2 className="mt-2 font-display text-2xl font-bold">
+                      <h2 className="mt-1 text-xl font-bold">
                         Fresh Coat Estimate
                       </h2>
                     </div>
-                    <div className="rounded-2xl bg-[var(--brand-soft)] p-3 text-[var(--brand-strong)]">
-                      <FileText className="h-6 w-6" />
+                    <div className="rounded-[var(--radius)] bg-[var(--brand-soft)] p-3 text-[var(--brand)]">
+                      <FileText className="h-5 w-5" />
                     </div>
                   </div>
-                  <div className="rounded-[24px] border border-[var(--line)] bg-[var(--surface)] p-5">
-                    <div className="mb-5 flex items-center justify-between">
+                  <div className="rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--background)] p-4">
+                    <div className="mb-4 flex items-center justify-between">
                       <div>
                         <p className="font-semibold">Johnson Residence</p>
                         <p className="text-sm text-[var(--muted)]">
                           3 rooms, walls + ceilings
                         </p>
                       </div>
-                      <p className="text-lg font-bold">{formatCurrency(1820)}</p>
+                      <p className="text-lg font-bold font-mono">{formatCurrency(1820)}</p>
                     </div>
-                    <div className="space-y-3 text-sm">
+                    <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span>Paint needed</span>
-                        <span>6.5 gal</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Labor</span>
-                        <span>18.2 hrs</span>
+                        <span className="text-[var(--muted)]">Paint needed</span>
+                        <span className="font-mono">6.5 gal</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Materials + markup</span>
-                        <span>{formatCurrency(455)}</span>
+                        <span className="text-[var(--muted)]">Labor</span>
+                        <span className="font-mono">18.2 hrs</span>
                       </div>
-                      <div className="mt-4 rounded-2xl bg-[var(--brand-soft)] px-4 py-3 text-[var(--brand-strong)]">
-                        Quote looks branded, not homemade.
+                      <div className="flex justify-between">
+                        <span className="text-[var(--muted)]">Materials + markup</span>
+                        <span className="font-mono">{formatCurrency(455)}</span>
                       </div>
+                    </div>
+                    <div className="mt-4 rounded-[var(--radius)] bg-[var(--accent-soft)] px-4 py-2.5 text-sm text-[var(--accent-strong)]">
+                      Looks branded, not homemade.
                     </div>
                   </div>
                 </CardContent>
@@ -136,108 +133,101 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section className="container-shell mt-10 grid gap-4 md:grid-cols-3">
+      {/* Features */}
+      <section className="container-shell mt-8 grid gap-4 sm:grid-cols-3">
         {features.map((feature) => (
           <Card key={feature}>
-            <CardContent className="flex h-full items-start gap-4">
-              <div className="rounded-2xl bg-[var(--brand-soft)] p-3 text-[var(--brand-strong)]">
+            <CardContent className="flex items-start gap-4">
+              <div className="shrink-0 rounded-[var(--radius)] bg-[var(--brand-soft)] p-2.5 text-[var(--brand)]">
                 <Paintbrush2 className="h-5 w-5" />
               </div>
-              <p className="text-sm leading-7 text-[var(--muted)]">{feature}</p>
+              <p className="text-sm leading-6 text-[var(--muted)]">{feature}</p>
             </CardContent>
           </Card>
         ))}
       </section>
 
-      <section className="container-shell mt-16 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+      {/* How it works + Pricing */}
+      <section className="container-shell mt-12 grid gap-6 lg:grid-cols-2">
         <Card>
           <CardContent className="space-y-5">
             <Badge>How it works</Badge>
-            <h2 className="font-display text-3xl font-bold">
+            <h2 className="text-2xl font-bold sm:text-3xl">
               Fast enough to use from the driveway.
             </h2>
             <div className="space-y-4">
               {steps.map((step, index) => (
                 <div className="flex gap-4" key={step}>
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--brand)] text-sm font-bold text-white">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--brand)] text-sm font-bold text-white">
                     {index + 1}
                   </div>
-                  <p className="pt-2 text-[var(--muted)]">{step}</p>
+                  <p className="pt-1.5 text-sm text-[var(--muted)]">{step}</p>
                 </div>
               ))}
             </div>
           </CardContent>
         </Card>
 
-        <Card id="pricing" className="bg-[linear-gradient(180deg,#183452,#0e2237)] text-white">
+        <Card id="pricing" className="bg-[var(--brand)] text-white">
           <CardContent className="space-y-5">
-            <Badge className="bg-white/12 text-white">Launch pricing</Badge>
-            <div>
-              <h2 className="font-display text-3xl font-bold">
-                Start free, then choose the plan that fits how you work.
-              </h2>
-              <p className="mt-3 max-w-xl text-white/72">
-                Every account gets {FREE_QUOTES_LIMIT} free quotes. After that,
-                choose monthly, yearly, or the first-{LIFETIME_DEAL_LIMIT} lifetime launch deal.
-              </p>
-            </div>
-            <div className="grid gap-4 md:grid-cols-3">
-              <div className="rounded-[24px] border border-white/12 bg-white/8 p-5">
-                <p className="text-sm uppercase tracking-[0.18em] text-white/64">
-                  Free
-                </p>
-                <p className="mt-3 font-display text-4xl font-bold">$0</p>
-                <p className="mt-2 text-white/72">
+            <Badge className="bg-white/15 text-white">Launch pricing</Badge>
+            <h2 className="text-2xl font-bold sm:text-3xl">
+              Start free, then choose the plan that fits.
+            </h2>
+            <p className="text-sm text-white/70">
+              Every account gets {FREE_QUOTES_LIMIT} free quotes. After that,
+              choose monthly, yearly, or the first-{LIFETIME_DEAL_LIMIT} lifetime deal.
+            </p>
+            <div className="grid gap-3">
+              <div className="rounded-[var(--radius-lg)] border border-white/15 bg-white/8 p-4">
+                <p className="text-xs uppercase tracking-wider text-white/60">Free</p>
+                <p className="mt-1 text-2xl font-bold font-mono">$0</p>
+                <p className="mt-1 text-sm text-white/70">
                   {FREE_QUOTES_LIMIT} quotes included.
                 </p>
               </div>
-              <div className="rounded-[24px] border border-white/12 bg-white/8 p-5">
-                <p className="text-sm uppercase tracking-[0.18em] text-white/64">
-                  Monthly
-                </p>
-                <p className="mt-3 font-display text-4xl font-bold">
+              <div className="rounded-[var(--radius-lg)] border border-white/15 bg-white/8 p-4">
+                <p className="text-xs uppercase tracking-wider text-white/60">Monthly</p>
+                <p className="mt-1 text-2xl font-bold font-mono">
                   {formatCurrency(BILLING_COPY.monthlyPrice)}
                 </p>
-                <p className="mt-2 text-white/72">Billed every month.</p>
+                <p className="mt-1 text-sm text-white/70">Billed every month.</p>
               </div>
-              <div className="rounded-[24px] border border-white/12 bg-white/8 p-5">
-                <p className="text-sm uppercase tracking-[0.18em] text-white/64">
-                  Yearly
-                </p>
-                <p className="mt-3 font-display text-4xl font-bold">
+              <div className="rounded-[var(--radius-lg)] border border-white/15 bg-white/8 p-4">
+                <p className="text-xs uppercase tracking-wider text-white/60">Yearly</p>
+                <p className="mt-1 text-2xl font-bold font-mono">
                   {formatCurrency(BILLING_COPY.yearlyPrice)}
                 </p>
-                <p className="mt-2 text-white/72">
+                <p className="mt-1 text-sm text-white/70">
                   Save {formatCurrency(BILLING_COPY.yearlySavings)}.
                 </p>
               </div>
-            </div>
-            <div className="rounded-[24px] border border-[rgba(243,181,98,0.4)] bg-white/12 p-5">
-              <div className="flex items-center gap-2 text-[var(--accent)]">
-                <Sparkles className="h-4 w-4" />
-                <p className="text-sm uppercase tracking-[0.18em]">
-                  Lifetime Launch Deal
+              <div className="rounded-[var(--radius-lg)] border border-[var(--accent)]/40 bg-white/12 p-4">
+                <div className="flex items-center gap-2 text-[var(--accent)]">
+                  <Sparkles className="h-4 w-4" />
+                  <p className="text-xs uppercase tracking-wider">Lifetime Deal</p>
+                </div>
+                <p className="mt-1 text-2xl font-bold font-mono">
+                  {formatCurrency(BILLING_COPY.lifetimePrice)}
+                </p>
+                <p className="mt-1 text-sm text-white/70">
+                  First {LIFETIME_DEAL_LIMIT} users only.
                 </p>
               </div>
-              <p className="mt-3 font-display text-4xl font-bold">
-                {formatCurrency(BILLING_COPY.lifetimePrice)}
-              </p>
-              <p className="mt-2 text-white/72">
-                First {LIFETIME_DEAL_LIMIT} users only.
-              </p>
             </div>
-            <Button asChild size="lg">
+            <Button asChild size="lg" variant="accent" className="w-full">
               <Link href="/signup">Create account and start free</Link>
             </Button>
           </CardContent>
         </Card>
       </section>
 
-      <section className="container-shell mt-16 grid gap-6 lg:grid-cols-2">
+      {/* Why painters switch */}
+      <section className="container-shell mt-12 grid gap-6 lg:grid-cols-2">
         <Card>
           <CardContent className="space-y-4">
             <Badge>Why painters switch</Badge>
-            <h2 className="font-display text-3xl font-bold">
+            <h2 className="text-2xl font-bold">
               The spreadsheet formula is still there. It is just finally usable.
             </h2>
             <ul className="space-y-3 text-sm text-[var(--muted)]">
@@ -247,7 +237,7 @@ export function LandingPage() {
                 "Markup and tax are visible, editable, and easy to trust.",
               ].map((item) => (
                 <li key={item} className="flex gap-3">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-[var(--success)]" />
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--success)]" />
                   <span>{item}</span>
                 </li>
               ))}
@@ -257,20 +247,25 @@ export function LandingPage() {
 
         <Card>
           <CardContent className="space-y-4">
-            <Badge>Testimonials placeholder</Badge>
-            <div className="space-y-4">
+            <Badge className="bg-[var(--accent-soft)] text-[var(--accent-strong)]">
+              What painters say
+            </Badge>
+            <div className="space-y-3">
               {[
                 '"This replaced the notes app and the spreadsheet I kept breaking."',
                 '"Finally something I can use on my phone without pinching and zooming."',
                 '"Customers stopped asking why my quotes looked homemade."',
               ].map((quote) => (
                 <div
-                  className="rounded-[24px] border border-[var(--line)] bg-[var(--surface)] p-4 text-sm leading-7 text-[var(--muted)]"
+                  className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--background)] p-4 text-sm text-[var(--muted)]"
                   key={quote}
                 >
                   {quote}
                 </div>
               ))}
+              <p className="text-xs text-[var(--muted-foreground)]">
+                * Testimonials are from beta testers.
+              </p>
             </div>
           </CardContent>
         </Card>

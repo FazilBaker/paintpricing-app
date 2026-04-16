@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Plus } from "lucide-react";
 
 import {
-  canCreateQuote,
+  canUnlockQuote,
   getViewer,
   hasConfiguredRates,
   hasPaidAccess,
@@ -26,109 +27,140 @@ export default async function DashboardPage() {
   }
 
   const supabase = await createSupabaseServerClient();
-  const { data: quotes } = await supabase!
-    .from("quotes")
-    .select("id, client_name, project_address, total, created_at, pdf_url")
-    .eq("user_id", viewer.user.id)
-    .order("created_at", { ascending: false });
+  const { data: quotes } = supabase
+    ? await supabase
+        .from("quotes")
+        .select("id, client_name, project_address, total, created_at, pdf_url, version, is_latest")
+        .eq("user_id", viewer.user.id)
+        .eq("is_latest", true)
+        .order("created_at", { ascending: false })
+    : { data: null };
 
   return (
-    <main className="container-shell pb-20">
-      <section className="grid gap-6 lg:grid-cols-[0.72fr_0.28fr]">
-        <Card>
-          <CardContent className="space-y-5">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <main className="container-shell pb-8">
+      {/* Account status — shown first on mobile */}
+      <Card className="mb-6 sm:hidden">
+        <CardContent>
+          {hasPaidAccess(viewer.profile) ? (
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm uppercase tracking-[0.18em] text-[var(--muted)]">
-                  Dashboard
-                </p>
-                <h1 className="mt-2 font-display text-4xl font-bold">
-                  Ready for the next quote.
-                </h1>
+                <Badge>Pro</Badge>
+                <p className="mt-2 text-sm text-[var(--muted)]">Unlimited quotes</p>
               </div>
-              <Button asChild size="lg">
-                <Link href="/quotes/new">New Quote</Link>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-[var(--muted)]">Free unlocks left</p>
+                <p className="mt-1 text-2xl font-bold font-mono text-[var(--brand)]">
+                  {quotesRemaining(viewer.profile)}
+                </p>
+              </div>
+              <Button asChild size="sm" variant="accent">
+                <Link href="/billing">Upgrade</Link>
               </Button>
             </div>
-            <div className="space-y-4">
-              {quotes?.length ? (
-                quotes.map((quote) => (
-                  <div
-                    className="rounded-[24px] border border-[var(--line)] bg-[var(--surface)] p-5"
-                    key={quote.id}
-                  >
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                      <div>
-                        <p className="font-semibold">{quote.client_name}</p>
-                        <p className="mt-1 text-sm text-[var(--muted)]">
-                          {quote.project_address} · {formatDate(quote.created_at)}
-                        </p>
+          )}
+        </CardContent>
+      </Card>
+
+      <section className="grid gap-6 lg:grid-cols-[1fr_300px]">
+        {/* Quote list */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-bold sm:text-2xl">Your Quotes</h1>
+            <Button asChild size="sm">
+              <Link href="/quotes/new">
+                <Plus className="h-4 w-4" />
+                New Quote
+              </Link>
+            </Button>
+          </div>
+
+          {quotes?.length ? (
+            <div className="space-y-3">
+              {quotes.map((quote) => (
+                <Link
+                  href={`/quotes/${quote.id}`}
+                  key={quote.id}
+                  className="block rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--surface)] p-4 transition hover:border-[var(--line-strong)] hover:shadow-[var(--shadow)] active:scale-[0.99]"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold truncate">{quote.client_name || "Untitled"}</p>
+                        {(quote.version ?? 1) > 1 && (
+                          <Badge className="shrink-0">v{quote.version}</Badge>
+                        )}
                       </div>
-                      <div className="flex items-center gap-3">
-                        <p className="font-semibold">{formatCurrency(Number(quote.total))}</p>
-                        <Button asChild variant="secondary" size="sm">
-                          <Link href={`/quotes/${quote.id}`}>Open</Link>
-                        </Button>
-                      </div>
+                      <p className="mt-1 text-sm text-[var(--muted)] truncate">
+                        {quote.project_address} · {formatDate(quote.created_at)}
+                      </p>
                     </div>
+                    <p className="shrink-0 font-bold font-mono">
+                      {formatCurrency(Number(quote.total))}
+                    </p>
                   </div>
-                ))
-              ) : (
-                <div className="rounded-[24px] border border-dashed border-[var(--line)] bg-[var(--surface)] p-6">
-                  <p className="font-semibold">Quotes will appear here once you create them.</p>
-                  <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--muted)]">
-                    Start with a room template, tweak a couple values, and save
-                    your first branded PDF.
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <p className="font-semibold">No quotes yet</p>
+                <p className="mt-2 text-sm text-[var(--muted)]">
+                  Tap "New Quote" to create your first branded estimate.
+                </p>
+                <Button asChild className="mt-4">
+                  <Link href="/quotes/new">Create your first quote</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        {/* Account status — desktop sidebar */}
+        <div className="hidden sm:block space-y-4">
+          <Card>
+            <CardContent className="space-y-4">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
+                Account
+              </p>
+              {hasPaidAccess(viewer.profile) ? (
+                <div className="rounded-[var(--radius)] bg-[var(--brand-soft)] p-4">
+                  <Badge>Pro</Badge>
+                  <p className="mt-2 text-sm font-medium capitalize">
+                    {viewer.profile?.billingCycle} plan
+                  </p>
+                  <p className="mt-1 text-sm text-[var(--muted)]">
+                    Unlimited quotes
                   </p>
                 </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="space-y-4">
-            <p className="text-sm uppercase tracking-[0.18em] text-[var(--muted)]">
-              Account status
-            </p>
-            <div className="rounded-[24px] bg-[var(--brand-soft)] p-4">
-              {hasPaidAccess(viewer.profile) ? (
-                <>
-                  <Badge>Paid</Badge>
-                  <p className="mt-3 font-semibold capitalize">
-                    {viewer.profile?.billingCycle}
-                  </p>
-                  <p className="mt-2 text-sm text-[var(--brand-strong)]">
-                    Unlimited quote creation unlocked.
-                  </p>
-                </>
               ) : (
                 <>
-                  <p className="text-sm text-[var(--brand-strong)]">Free quotes remaining</p>
-                  <p className="mt-2 font-display text-4xl font-bold text-[var(--brand-strong)]">
-                    {quotesRemaining(viewer.profile)}
+                  <div className="rounded-[var(--radius)] bg-[var(--brand-soft)] p-4">
+                    <p className="text-sm text-[var(--muted)]">Free unlocks remaining</p>
+                    <p className="mt-1 text-3xl font-bold font-mono text-[var(--brand)]">
+                      {quotesRemaining(viewer.profile)}
+                    </p>
+                    <p className="mt-1 text-xs text-[var(--muted)]">
+                      {viewer.profile?.freeQuotesUsed ?? 0} of{" "}
+                      {viewer.profile?.freeQuotesLimit ?? 3} used
+                    </p>
+                  </div>
+                  <p className="text-sm text-[var(--muted)]">
+                    {canUnlockQuote(viewer.profile)
+                      ? "Create unlimited quotes. Unlock to download or share."
+                      : "Free unlocks used up. Upgrade for unlimited access."}
                   </p>
-                  <p className="mt-2 text-sm text-[var(--brand-strong)]">
-                    {viewer.profile?.freeQuotesUsed ?? 0} used of{" "}
-                    {viewer.profile?.freeQuotesLimit ?? 3}
-                  </p>
+                  <Button asChild className="w-full" variant="accent">
+                    <Link href="/billing">Upgrade now</Link>
+                  </Button>
                 </>
               )}
-            </div>
-            {!hasPaidAccess(viewer.profile) ? (
-              <div className="rounded-[24px] border border-[var(--line)] p-4 text-sm leading-7 text-[var(--muted)]">
-                {canCreateQuote(viewer.profile)
-                  ? "You can keep creating quotes until your free limit runs out."
-                  : "Your free quotes are used up. Upgrade to keep creating quotes."}
-              </div>
-            ) : null}
-            {!hasPaidAccess(viewer.profile) ? (
-              <Button asChild className="w-full">
-                <Link href="/billing">Upgrade now</Link>
-              </Button>
-            ) : null}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </section>
     </main>
   );

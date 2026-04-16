@@ -1,28 +1,28 @@
 import type { Metadata, Viewport } from "next";
-import { Public_Sans, Space_Grotesk } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 
 import { RegisterServiceWorker } from "@/components/pwa/register-service-worker";
 
 import "./globals.css";
 
-const publicSans = Public_Sans({
-  variable: "--font-public-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://paintpricing.com"),
+  metadataBase: new URL("https://app.paintpricing.com"),
   title: {
     default: "PaintPricing.com",
     template: "%s | PaintPricing.com",
   },
   description:
-    "Create polished interior repaint quote PDFs in under a minute with saved rates, room templates, and a live pricing calculator.",
+    "Professional painting quotes in minutes, not hours. Interior and exterior estimates with branded PDFs.",
   applicationName: "PaintPricing.com",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
@@ -37,9 +37,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1965d2",
+  themeColor: "#1E3A5F",
   width: "device-width",
   initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({
@@ -50,10 +51,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${publicSans.variable} ${spaceGrotesk.variable}`}
+      className={`${inter.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
-      <body className="min-h-screen">
+      <body className="min-h-dvh" suppressHydrationWarning>
         <RegisterServiceWorker />
         {children}
       </body>

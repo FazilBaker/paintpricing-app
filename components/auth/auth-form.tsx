@@ -15,15 +15,15 @@ export function AuthForm({ mode, action, error }: AuthFormProps) {
   const isLogin = mode === "login";
 
   return (
-    <main className="container-shell flex min-h-screen items-center justify-center py-12">
-      <Card className="w-full max-w-md">
-        <CardContent className="space-y-6 p-8">
+    <main className="container-shell flex min-h-dvh items-center justify-center py-12">
+      <Card className="w-full max-w-sm">
+        <CardContent className="space-y-6">
           <div className="space-y-2 text-center">
-            <p className="font-display text-2xl font-bold">PaintPricing.com</p>
-            <h1 className="font-display text-3xl font-bold">
+            <p className="text-lg font-bold text-[var(--brand)]">PaintPricing</p>
+            <h1 className="text-2xl font-bold">
               {isLogin ? "Welcome back" : "Create your account"}
             </h1>
-            <p className="text-sm leading-7 text-[var(--muted)]">
+            <p className="text-sm text-[var(--muted)]">
               {isLogin
                 ? "Log in to access your quote dashboard."
                 : "Set your rates, subscribe, and start sending quotes fast."}
@@ -46,8 +46,18 @@ export function AuthForm({ mode, action, error }: AuthFormProps) {
                 required
               />
             </div>
+            {isLogin ? (
+              <div className="text-right">
+                <Link
+                  className="text-sm font-medium text-[var(--brand)]"
+                  href="/forgot-password"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+            ) : null}
             {error ? (
-              <div className="rounded-2xl border border-[rgba(183,68,42,0.16)] bg-[rgba(183,68,42,0.08)] px-4 py-3 text-sm text-[var(--danger)]">
+              <div className="rounded-[var(--radius)] border border-[var(--danger)]/20 bg-[var(--danger-soft)] px-4 py-3 text-sm text-[var(--danger)]">
                 {error}
               </div>
             ) : null}

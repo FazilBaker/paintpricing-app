@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { DEFAULT_SETTINGS, FREE_QUOTES_LIMIT } from "@/lib/constants";
 import { isSupabaseConfigured } from "@/lib/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { BillingStatus, ProfileRecord } from "@/lib/types";
+import type { BillingStatus, CustomField, ProfileRecord } from "@/lib/types";
 
 const ACTIVE_STATUSES: BillingStatus[] = ["active"];
 
@@ -15,6 +15,8 @@ function normalizeProfile(record: Record<string, unknown>): ProfileRecord {
     businessEmail: (record.business_email as string | null) ?? null,
     licenseNumber: (record.license_number as string | null) ?? null,
     logoUrl: (record.logo_url as string | null) ?? null,
+    website: (record.website as string | null) ?? null,
+    customFields: (Array.isArray(record.custom_fields) ? record.custom_fields : []) as CustomField[],
     billingStatus: ((record.billing_status as BillingStatus | null) ?? "inactive"),
     billingCycle:
       ((record.billing_cycle as "monthly" | "yearly" | null) ?? null),
@@ -168,7 +170,16 @@ export function quotesRemaining(profile: ProfileRecord | null) {
   return Math.max(profile.freeQuotesLimit - profile.freeQuotesUsed, 0);
 }
 
+/**
+ * Creating (saving) a quote is always allowed — credits are consumed on unlock, not save.
+ * This only checks if the user has a profile configured.
+ */
 export function canCreateQuote(profile: ProfileRecord | null) {
+  return Boolean(profile);
+}
+
+/** Whether the user can unlock more quotes (has credits or paid plan). */
+export function canUnlockQuote(profile: ProfileRecord | null) {
   if (!profile) {
     return false;
   }
