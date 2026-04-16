@@ -9,6 +9,10 @@ const ACTIVE_EVENTS = new Set([
   "PAYMENT.SALE.COMPLETED",
 ]);
 
+const PAST_DUE_EVENTS = new Set([
+  "BILLING.SUBSCRIPTION.PAYMENT.FAILED",
+]);
+
 const INACTIVE_EVENTS = new Set([
   "BILLING.SUBSCRIPTION.CANCELLED",
   "BILLING.SUBSCRIPTION.SUSPENDED",
@@ -70,6 +74,8 @@ export async function POST(request: Request) {
   let billingStatus: string;
   if (ACTIVE_EVENTS.has(eventType)) {
     billingStatus = "active";
+  } else if (PAST_DUE_EVENTS.has(eventType)) {
+    billingStatus = "past_due";
   } else if (INACTIVE_EVENTS.has(eventType)) {
     billingStatus = "canceled";
   } else {
