@@ -551,3 +551,74 @@ export async function unlockQuoteAction(formData: FormData) {
   redirect(`/quotes/${quoteId}`);
 }
 
+export async function deleteQuoteAction(formData: FormData) {
+  const viewer = await getViewer();
+  if (!viewer.user) {
+    redirect("/login");
+  }
+
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    redirect("/dashboard");
+  }
+
+  const quoteId = String(formData.get("quoteId") ?? "").trim();
+  if (!quoteId) {
+    redirect("/dashboard");
+  }
+
+  // Verify the quote belongs to the user
+  const { data: quote } = await supabase
+    .from("quotes")
+    .select("id, is_latest, parent_quote_id")
+    .eq("id", quoteId)
+    .eq("user_id", viewer.user.id)
+    .single();
+
+  if (!quote) {
+    redirect("/dashboard");
+  }
+
+  // Delete the quote
+  const { error } = await supabase
+    .from("quotes")
+    .delete()
+    .eq("id", quoteId)
+    .eq("user_id", viewer.user.id);
+
+  if (error) {
+    redirectWithError("/dashboard", error.message);
+  }
+
+  // If the deleted quote was the latest version and has a parent,
+  // promote the previous version to latest
+  if (quote.is_latest && quote.parent_quote_id) {
+    const { data: previousVersion } = await supabase
+      .from("quotes")
+      .select("id")
+      .eq("parent_quote_id", quote.parent_quote_id)
+      .eq("user_id", viewer.user.id)
+      .order("version", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (previousVersion) {
+      await supabase
+        .from("quotes")
+        .update({ is_latest: true })
+        .eq("id", previousVersion.id)
+        .eq("user_id", viewer.user.id);
+    } else {
+      // No sibling versions — promote the parent itself
+      await supabase
+        .from("quotes")
+        .update({ is_latest: true })
+        .eq("id", quote.parent_quote_id)
+        .eq("user_id", viewer.user.id);
+    }
+  }
+
+  revalidatePath("/dashboard");
+  redirect("/dashboard");
+}
+

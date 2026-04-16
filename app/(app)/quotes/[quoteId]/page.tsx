@@ -1,14 +1,15 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, Download, Lock, Pencil, Unlock } from "lucide-react";
+import { ArrowLeft, Download, Lock, Pencil, Trash2, Unlock } from "lucide-react";
 
 import { getViewer, hasConfiguredRates } from "@/lib/auth";
-import { unlockQuoteAction } from "@/app/actions";
+import { deleteQuoteAction, unlockQuoteAction } from "@/app/actions";
 import type { QuoteRecord } from "@/lib/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { DeleteQuoteButton } from "@/components/quotes/delete-quote-button";
 import { ShareQuoteButton } from "@/components/quotes/share-quote-button";
 
 export default async function QuoteDetailPage({
@@ -140,6 +141,7 @@ export default async function QuoteDetailPage({
               </Link>
             </Button>
           )}
+          <DeleteQuoteButton quoteId={quote.id} />
         </div>
       </div>
 
