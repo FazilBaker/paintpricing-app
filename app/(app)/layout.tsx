@@ -46,7 +46,7 @@ export default async function AppLayout({
   }
 
   return (
-    <div className="min-h-dvh pb-20 sm:pb-0">
+    <div className="min-h-dvh pb-20 sm:pb-0 overflow-x-hidden">
       {/* Desktop top bar */}
       <header className="hidden sm:block container-shell py-4">
         <div className="flex items-center justify-between rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface)] px-5 py-3 shadow-[var(--shadow-sm)]">
