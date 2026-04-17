@@ -44,9 +44,15 @@ export async function signUpAction(formData: FormData) {
     redirectWithError("/signup", "Supabase is not configured.");
   }
 
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://app.paintpricing.com";
+
   const { error, data } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      emailRedirectTo: `${siteUrl}/auth/callback?next=/dashboard`,
+    },
   });
 
   if (error) {
