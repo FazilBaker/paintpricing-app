@@ -7,7 +7,7 @@ import { DEFAULT_SETTINGS, FREE_QUOTES_LIMIT } from "@/lib/constants";
 import { getViewer } from "@/lib/auth";
 import { isSupabaseConfigured } from "@/lib/env";
 import { calculateQuoteSummary } from "@/lib/quote-engine";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient, createSupabaseServerClient } from "@/lib/supabase/server";
 import type { QuoteDraftPayload } from "@/lib/types";
 import { safeRedirect, toNullableNumber } from "@/lib/utils";
 import { profileSetupSchema, quoteDraftPayloadSchema } from "@/lib/validation";
@@ -563,6 +563,7 @@ export async function deleteQuoteAction(formData: FormData) {
     redirect("/login");
   }
 
+  // Use server client (anon) only to verify ownership, then admin client to bypass RLS for write ops
   const supabase = await createSupabaseServerClient();
   if (!supabase) {
     redirect("/dashboard");
@@ -573,7 +574,7 @@ export async function deleteQuoteAction(formData: FormData) {
     redirect("/dashboard");
   }
 
-  // Verify the quote belongs to the user
+  // Verify the quote belongs to the user before allowing deletion
   const { data: quote } = await supabase
     .from("quotes")
     .select("id, is_latest, parent_quote_id")
@@ -585,8 +586,13 @@ export async function deleteQuoteAction(formData: FormData) {
     redirect("/dashboard");
   }
 
-  // Delete the quote
-  const { error } = await supabase
+  // Use admin client to bypass missing DELETE RLS policy
+  const admin = createSupabaseAdminClient();
+  if (!admin) {
+    redirectWithError("/dashboard", "Server configuration error.");
+  }
+
+  const { error } = await admin
     .from("quotes")
     .delete()
     .eq("id", quoteId)
@@ -599,7 +605,7 @@ export async function deleteQuoteAction(formData: FormData) {
   // If the deleted quote was the latest version and has a parent,
   // promote the previous version to latest
   if (quote.is_latest && quote.parent_quote_id) {
-    const { data: previousVersion } = await supabase
+    const { data: previousVersion } = await admin
       .from("quotes")
       .select("id")
       .eq("parent_quote_id", quote.parent_quote_id)
@@ -609,14 +615,13 @@ export async function deleteQuoteAction(formData: FormData) {
       .single();
 
     if (previousVersion) {
-      await supabase
+      await admin
         .from("quotes")
         .update({ is_latest: true })
         .eq("id", previousVersion.id)
         .eq("user_id", viewer.user.id);
     } else {
-      // No sibling versions — promote the parent itself
-      await supabase
+      await admin
         .from("quotes")
         .update({ is_latest: true })
         .eq("id", quote.parent_quote_id)

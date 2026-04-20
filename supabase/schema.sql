@@ -78,6 +78,10 @@ create policy "Users can update own quotes"
   on public.quotes for update
   using (auth.uid() = user_id);
 
+create policy "Users can delete own quotes"
+  on public.quotes for delete
+  using (auth.uid() = user_id);
+
 create policy "Anyone can read quotes by share_token"
   on public.quotes for select
   using (share_token is not null);
