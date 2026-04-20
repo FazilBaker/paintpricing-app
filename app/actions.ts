@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { DEFAULT_SETTINGS, FREE_QUOTES_LIMIT } from "@/lib/constants";
 import { getViewer } from "@/lib/auth";
 import { isSupabaseConfigured } from "@/lib/env";
+import { sendWelcomeEmail } from "@/lib/email";
 import { calculateQuoteSummary } from "@/lib/quote-engine";
 import { createSupabaseAdminClient, createSupabaseServerClient } from "@/lib/supabase/server";
 import type { QuoteDraftPayload } from "@/lib/types";
@@ -204,6 +205,10 @@ export async function saveProfileSetupAction(formData: FormData) {
   }
 
   revalidatePath("/dashboard");
+
+  // Fire-and-forget welcome email — don't block the redirect
+  sendWelcomeEmail(user.email ?? "", input.businessName).catch(() => {});
+
   redirect("/dashboard");
 }
 
