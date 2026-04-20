@@ -86,7 +86,7 @@ export default async function QuoteDetailPage({
       {/* Header */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <Button asChild variant="ghost" size="sm" className="mb-2 -ml-2">
+          <Button asChild variant="ghost" className="mb-2 -ml-3 h-11 px-3">
             <Link href="/dashboard">
               <ArrowLeft className="h-4 w-4" />
               Back
