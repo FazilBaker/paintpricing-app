@@ -570,7 +570,7 @@ function TemplatePicker({
   return (
     <div className="space-y-2">
       <p className="text-xs font-semibold text-[var(--muted)]">Tap to add</p>
-      <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 flex-wrap">
+      <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
         {ALL_TEMPLATES.map((t) => (
           <button
             key={t.key}

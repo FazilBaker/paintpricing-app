@@ -37,7 +37,7 @@ export default async function DashboardPage() {
     : { data: null };
 
   return (
-    <main className="container-shell pb-8">
+    <main className="container-shell pt-4 pb-8">
       {/* Account status — shown first on mobile */}
       <Card className="mb-6 sm:hidden">
         <CardContent>
