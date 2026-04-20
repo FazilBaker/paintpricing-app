@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 
 import { RegisterServiceWorker } from "@/components/pwa/register-service-worker";
+import { PostHogProvider } from "@/components/posthog-provider";
 
 import "./globals.css";
 
@@ -56,7 +57,7 @@ export default function RootLayout({
     >
       <body className="min-h-dvh" suppressHydrationWarning>
         <RegisterServiceWorker />
-        {children}
+        <PostHogProvider>{children}</PostHogProvider>
       </body>
     </html>
   );
