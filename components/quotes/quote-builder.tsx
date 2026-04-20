@@ -728,7 +728,7 @@ export function QuoteBuilder({ profile, initialData }: QuoteBuilderProps) {
       )}
 
       {/* ── Main column ──────────────── */}
-      <div className="space-y-3 pb-36 sm:pb-0">
+      <div className="space-y-3 pb-36 sm:pb-0 min-w-0">
         {/* Client info — collapsed by default on mobile */}
         <Section
           title="Client info"

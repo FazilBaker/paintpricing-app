@@ -181,7 +181,7 @@ export default async function QuoteDetailPage({
 
       <div className="grid gap-4 lg:grid-cols-[1fr_300px]">
         {/* Items breakdown */}
-        <div className="space-y-3">
+        <div className="space-y-3 min-w-0">
           {/* New unified items */}
           {(quote.quoteData.items ?? []).map((item) => (
             <Card key={item.id}>
