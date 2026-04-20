@@ -2,11 +2,8 @@ import { redirect } from "next/navigation";
 
 import { getViewer } from "@/lib/auth";
 import { isAdmin } from "@/lib/admin";
-import { LIFETIME_DEAL_LIMIT } from "@/lib/constants";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { formatCurrency } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 
 type UserRow = {
   id: string;
@@ -137,64 +134,82 @@ export default async function AdminPage() {
   const ltdRevenue = lifetimeSold * 249;
   const mrr = monthlyCount * 29 + Math.round((yearlyCount * 299) / 12);
 
+  const kpis = [
+    { label: "MRR", value: formatCurrency(mrr), sub: `+ ${formatCurrency(ltdRevenue)} LTD`, accent: "var(--amber-500)" },
+    { label: "Active users", value: String(totalUsers), sub: `${configuredUsers} configured`, accent: "var(--navy-700)" },
+    { label: "Quotes sent", value: String(totalQuotes), sub: "all time", accent: "var(--navy-500)" },
+    { label: "Paid plans", value: String(activeSubscribers), sub: `${monthlyCount} mo · ${yearlyCount} yr · ${lifetimeSold} ltd`, accent: "#94A3B8" },
+  ];
+
   return (
-    <main className="container-shell py-6 pb-20">
-      <div className="mb-6">
-        <h1 className="text-xl font-bold sm:text-2xl">Admin Dashboard</h1>
-        <p className="mt-1 text-sm text-[var(--muted)]">
-          {totalUsers} users · {totalQuotes} quotes · Updated just now
-        </p>
+    <main className="bg-[var(--background)] min-h-dvh pb-20">
+      {/* Dark sub-header */}
+      <div
+        className="relative overflow-hidden"
+        style={{ background: "linear-gradient(180deg, var(--navy-900), var(--navy-800))", color: "white", padding: "22px 32px" }}
+      >
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: "repeating-linear-gradient(135deg, transparent 0 10px, rgba(255,255,255,0.02) 10px 11px)" }}
+        />
+        <div className="relative flex items-center justify-between max-w-[1240px] mx-auto">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span
+                className="px-2 py-0.5 rounded text-[10px] font-bold"
+                style={{ background: "var(--amber-500)", color: "#3B2300", letterSpacing: "0.1em" }}
+              >
+                SUPERADMIN
+              </span>
+              <span className="text-xs font-mono opacity-50">admin.paintpricing.com</span>
+            </div>
+            <h1 className="text-[22px] font-bold tracking-tight">Operations</h1>
+          </div>
+          <div className="text-xs text-right opacity-50">
+            {totalUsers} users · {totalQuotes} quotes
+          </div>
+        </div>
       </div>
 
-      {/* Stats grid */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 mb-6">
-        <Card>
-          <CardContent className="py-4">
-            <p className="text-xs font-semibold uppercase text-[var(--muted)]">Users</p>
-            <p className="mt-1 text-2xl font-bold font-mono">{totalUsers}</p>
-            <p className="text-xs text-[var(--muted)]">{configuredUsers} configured</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="py-4">
-            <p className="text-xs font-semibold uppercase text-[var(--muted)]">Subscribers</p>
-            <p className="mt-1 text-2xl font-bold font-mono">{activeSubscribers}</p>
-            <p className="text-xs text-[var(--muted)]">
-              {monthlyCount} mo · {yearlyCount} yr · {lifetimeSold} ltd
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="py-4">
-            <p className="text-xs font-semibold uppercase text-[var(--muted)]">MRR</p>
-            <p className="mt-1 text-2xl font-bold font-mono">{formatCurrency(mrr)}</p>
-            <p className="text-xs text-[var(--muted)]">+ {formatCurrency(ltdRevenue)} LTD</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="py-4">
-            <p className="text-xs font-semibold uppercase text-[var(--muted)]">LTD Seats</p>
-            <p className="mt-1 text-2xl font-bold font-mono">
-              {lifetimeSold}/{LIFETIME_DEAL_LIMIT}
-            </p>
-            <p className="text-xs text-[var(--muted)]">{LIFETIME_DEAL_LIMIT - lifetimeSold} remaining</p>
-          </CardContent>
-        </Card>
-      </div>
+      <div className="max-w-[1240px] mx-auto px-8 py-7">
+        {/* KPI tiles */}
+        <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-4 mb-5">
+          {kpis.map((k) => (
+            <div
+              key={k.label}
+              className="rounded-[14px] border border-[var(--line)] bg-[var(--surface)] p-5 relative overflow-hidden"
+            >
+              <div
+                className="absolute left-0 top-0 bottom-0 w-[3px]"
+                style={{ background: k.accent }}
+              />
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)] mb-2">{k.label}</p>
+              <p className="font-mono text-[30px] font-bold" style={{ letterSpacing: "-0.02em" }}>{k.value}</p>
+              <p className="text-xs text-[var(--muted)] mt-1">{k.sub}</p>
+            </div>
+          ))}
+        </div>
 
-      {/* User table */}
-      <Card>
-        <CardContent className="p-0">
+        {/* User table */}
+        <div className="rounded-[14px] border border-[var(--line)] bg-[var(--surface)] overflow-hidden" style={{ boxShadow: "var(--shadow-sm)" }}>
+          <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--line-2)]">
+            <div>
+              <p className="text-[14px] font-semibold">Recent signups</p>
+              <p className="text-xs text-[var(--muted)] mt-0.5">All users</p>
+            </div>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-[var(--line)] text-left text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
-                  <th className="px-4 py-3">User</th>
-                  <th className="px-4 py-3">Plan</th>
-                  <th className="px-4 py-3">Quotes</th>
-                  <th className="px-4 py-3 hidden sm:table-cell">Quote Value</th>
-                  <th className="px-4 py-3 hidden sm:table-cell">Joined</th>
-                  <th className="px-4 py-3 hidden md:table-cell">Last Quote</th>
+                <tr style={{ background: "var(--background)" }} className="text-left">
+                  {["User", "Plan", "Quotes", "Quote Value", "Joined", "Last Quote"].map((h) => (
+                    <th
+                      key={h}
+                      className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]"
+                    >
+                      {h}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -203,59 +218,56 @@ export default async function AdminPage() {
                   const stats = quoteStatsMap.get(user.id);
                   const quoteCount = stats?.count ?? 0;
                   const quoteValue = stats?.total_revenue ?? 0;
+                  const planStyle: Record<string, { bg: string; color: string }> = {
+                    active_monthly: { bg: "var(--navy-50)", color: "var(--navy-700)" },
+                    active_yearly: { bg: "var(--navy-700)", color: "white" },
+                    active_lifetime: { bg: "var(--amber-500)", color: "#3B2300" },
+                    inactive: { bg: "#F1F5F9", color: "#475569" },
+                  };
+                  const planKey = user.billing_status === "active"
+                    ? `active_${user.billing_cycle ?? "monthly"}`
+                    : "inactive";
+                  const ps = planStyle[planKey] ?? planStyle.inactive;
+                  const planLabel = user.billing_status === "active"
+                    ? (user.billing_cycle ?? "active")
+                    : `Free (${user.free_quotes_used}/${user.free_quotes_limit})`;
 
                   return (
                     <tr
                       key={user.id}
-                      className="border-b border-[var(--line)] last:border-0 hover:bg-[var(--brand-muted)] transition"
+                      className="border-t border-[var(--line-2)] hover:bg-[var(--background)] transition"
                     >
                       <td className="px-4 py-3">
-                        <p className="font-semibold truncate max-w-[200px]">
-                          {user.business_name || "—"}
-                        </p>
-                        <p className="text-xs text-[var(--muted)] truncate max-w-[200px]">
-                          {email}
-                        </p>
+                        <p className="font-semibold truncate max-w-[180px]">{user.business_name || "—"}</p>
+                        <p className="text-xs text-[var(--muted)] truncate max-w-[180px]">{email}</p>
                       </td>
                       <td className="px-4 py-3">
                         <span
-                          className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusColor(user.billing_status)}`}
+                          className="inline-block rounded px-2 py-0.5 text-[11px] font-semibold capitalize"
+                          style={{ background: ps.bg, color: ps.color }}
                         >
-                          {user.billing_status === "active"
-                            ? user.billing_cycle ?? "active"
-                            : user.billing_status}
+                          {planLabel}
                         </span>
-                        {user.billing_status === "inactive" && (
-                          <p className="text-xs text-[var(--muted)] mt-0.5">
-                            {user.free_quotes_used}/{user.free_quotes_limit} free
-                          </p>
-                        )}
                       </td>
-                      <td className="px-4 py-3 font-mono">{quoteCount}</td>
-                      <td className="px-4 py-3 font-mono hidden sm:table-cell">
+                      <td className="px-4 py-3 font-mono font-semibold">{quoteCount}</td>
+                      <td className="px-4 py-3 font-mono text-[var(--muted)]">
                         {quoteValue > 0 ? formatCurrency(quoteValue) : "—"}
                       </td>
-                      <td className="px-4 py-3 text-[var(--muted)] hidden sm:table-cell">
-                        {formatDate(user.created_at)}
-                      </td>
-                      <td className="px-4 py-3 text-[var(--muted)] hidden md:table-cell">
-                        {formatDateShort(stats?.latest_at ?? null)}
-                      </td>
+                      <td className="px-4 py-3 text-[var(--muted)] text-xs">{formatDate(user.created_at)}</td>
+                      <td className="px-4 py-3 text-[var(--muted)] text-xs">{formatDateShort(stats?.latest_at ?? null)}</td>
                     </tr>
                   );
                 })}
                 {users.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-4 py-12 text-center text-[var(--muted)]">
-                      No users yet.
-                    </td>
+                    <td colSpan={6} className="px-4 py-12 text-center text-[var(--muted)]">No users yet.</td>
                   </tr>
                 )}
               </tbody>
             </table>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </main>
   );
 }

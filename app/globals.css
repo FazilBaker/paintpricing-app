@@ -1,33 +1,55 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-inter);
+  --font-sans: var(--font-geist), var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 }
 
 :root {
-  /* Navy + Amber brand palette */
-  --background: #F7F8FA;
-  --foreground: #1A1A2E;
+  /* ── Navy scale ─── */
+  --navy-900: #0E2340;
+  --navy-800: #14304F;
+  --navy-700: #1E3A5F;
+  --navy-600: #2C4C74;
+  --navy-500: #49658A;
+  --navy-100: #E6ECF2;
+  --navy-50:  #F2F5F8;
+
+  /* ── Amber scale ─── */
+  --amber-600: #D48410;
+  --amber-500: #F5A623;
+  --amber-400: #F8B84C;
+  --amber-100: #FEF1DA;
+  --amber-50:  #FFF8EB;
+
+  /* ── Semantic aliases (keeps existing code working) ─── */
+  --background: #F4F5F7;
+  --foreground: #0E2340;
   --surface: #FFFFFF;
   --surface-raised: #FFFFFF;
+
+  --ink: #0E2340;
+  --ink-2: #2A3D56;
   --muted: #64748B;
   --muted-foreground: #94A3B8;
-  --line: rgba(30, 58, 95, 0.10);
+  --muted-2: #94A3B8;
+
+  --line: #E6EAF0;
+  --line-2: #EEF1F5;
   --line-strong: rgba(30, 58, 95, 0.20);
 
-  /* Brand */
+  /* Brand (maps to navy-700) */
   --brand: #1E3A5F;
-  --brand-strong: #152D4A;
-  --brand-soft: #E8EEF6;
+  --brand-strong: #14304F;
+  --brand-soft: #E6ECF2;
   --brand-muted: rgba(30, 58, 95, 0.08);
 
-  /* Accent (amber) */
+  /* Accent (maps to amber-500) */
   --accent: #F5A623;
-  --accent-strong: #D4891A;
-  --accent-soft: #FFF3DD;
+  --accent-strong: #D48410;
+  --accent-soft: #FFF8EB;
 
   /* Status */
   --success: #16A34A;
@@ -36,21 +58,22 @@
   --danger-soft: #FEE2E2;
   --warning: #F59E0B;
   --warning-soft: #FEF3C7;
+  --ok: #16A34A;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(30, 58, 95, 0.06);
-  --shadow: 0 4px 12px rgba(30, 58, 95, 0.08);
-  --shadow-md: 0 8px 24px rgba(30, 58, 95, 0.10);
-  --shadow-lg: 0 16px 48px rgba(30, 58, 95, 0.12);
+  /* ── Shadows ─── */
+  --shadow-sm: 0 1px 2px rgba(14,35,64,0.04), 0 1px 3px rgba(14,35,64,0.06);
+  --shadow: 0 2px 4px rgba(14,35,64,0.04), 0 8px 24px rgba(14,35,64,0.08);
+  --shadow-md: 0 2px 4px rgba(14,35,64,0.04), 0 8px 24px rgba(14,35,64,0.08);
+  --shadow-lg: 0 8px 24px rgba(14,35,64,0.08), 0 24px 60px rgba(14,35,64,0.14);
 
-  /* Radius */
+  /* ── Radius ─── */
   --radius-sm: 8px;
   --radius: 12px;
   --radius-lg: 16px;
   --radius-xl: 20px;
   --radius-2xl: 24px;
 
-  /* Spacing for mobile touch targets */
+  /* ── Mobile ─── */
   --tap-target: 48px;
 }
 
@@ -134,4 +157,34 @@
 }
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* Styled scrollbars */
+.pp-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+.pp-scroll::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+.pp-scroll::-webkit-scrollbar-thumb:hover { background: var(--muted-2); }
+
+/* Status dots */
+.pp-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.pp-dot-sent    { background: var(--ok); box-shadow: 0 0 0 3px #D1FAE5; }
+.pp-dot-locked  { background: var(--amber-500); box-shadow: 0 0 0 3px var(--amber-100); }
+.pp-dot-draft   { background: var(--muted-2); box-shadow: 0 0 0 3px var(--navy-50); }
+
+/* Logo mark */
+.pp-logo-mark {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, var(--navy-700), var(--navy-500));
+  position: relative; overflow: hidden; flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+.pp-logo-mark::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent 55%, var(--amber-500) 55%);
 }

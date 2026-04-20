@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FileText, Home, Plus, Receipt, Settings, Shield } from "lucide-react";
+import { Home, Plus, Receipt, Settings, Shield } from "lucide-react";
 
 import { signOutAction } from "@/app/actions";
 import { isAdmin } from "@/lib/admin";
@@ -47,50 +47,64 @@ export default async function AppLayout({
 
   return (
     <div className="min-h-dvh pb-20 sm:pb-0 overflow-x-hidden">
-      {/* Desktop top bar */}
-      <header className="hidden sm:block container-shell py-4">
-        <div className="flex items-center justify-between rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface)] px-5 py-3 shadow-[var(--shadow-sm)]">
-          <div className="flex items-center gap-6">
-            <Link className="text-lg font-bold text-[var(--brand)]" href="/dashboard">
-              PaintPricing
+      {/* Desktop top nav */}
+      <header className="hidden sm:flex items-center gap-7 px-7 py-4 bg-[var(--surface)] border-b border-[var(--line)] sticky top-0 z-30">
+        {/* Logo */}
+        <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0">
+          <div className="pp-logo-mark" />
+          <div>
+            <span className="text-[17px] font-bold text-[var(--navy-700)] tracking-tight leading-none">PaintPricing</span>
+            <span className="hidden lg:block text-[11px] text-[var(--muted)] leading-none mt-0.5">Built for painters who work for a living.</span>
+          </div>
+        </Link>
+
+        {/* Nav links */}
+        <nav className="flex items-center gap-1 flex-1">
+          {[
+            { href: "/dashboard", label: "Dashboard" },
+            { href: "/quotes/new", label: "New Quote" },
+            { href: "/billing", label: "Billing" },
+            { href: "/settings", label: "Settings" },
+          ].map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className="px-3.5 py-2 rounded-[var(--radius-sm)] text-sm font-medium text-[var(--ink-2)] transition-colors hover:bg-[var(--navy-50)] hover:text-[var(--navy-700)]"
+            >
+              {label}
             </Link>
-            <nav className="flex items-center gap-1">
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/dashboard">Dashboard</Link>
-              </Button>
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/quotes/new">New Quote</Link>
-              </Button>
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/billing">Billing</Link>
-              </Button>
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/settings">Settings</Link>
-              </Button>
-              {isAdmin(viewer.user?.email) && (
-                <Button asChild variant="ghost" size="sm">
-                  <Link href="/admin">Admin</Link>
-                </Button>
-              )}
-            </nav>
+          ))}
+          {isAdmin(viewer.user?.email) && (
+            <Link
+              href="/admin"
+              className="px-3.5 py-2 rounded-[var(--radius-sm)] text-sm font-medium text-[var(--ink-2)] transition-colors hover:bg-[var(--navy-50)] hover:text-[var(--navy-700)]"
+            >
+              Admin
+            </Link>
+          )}
+        </nav>
+
+        {/* Right side */}
+        <div className="flex items-center gap-3 shrink-0">
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
+            style={{ background: "linear-gradient(135deg, var(--amber-500), var(--amber-600))" }}
+          >
+            {(viewer.profile?.businessName || viewer.user?.email || "P").charAt(0).toUpperCase()}
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-[var(--muted)]">
-              {viewer.profile?.businessName || viewer.user?.email}
-            </span>
-            <form action={signOutAction}>
-              <Button size="sm" type="submit" variant="secondary">
-                Sign out
-              </Button>
-            </form>
-          </div>
+          <form action={signOutAction}>
+            <Button size="sm" type="submit" variant="ghost">
+              Sign out
+            </Button>
+          </form>
         </div>
       </header>
 
-      {/* Mobile top bar — minimal */}
-      <header className="sm:hidden flex items-center justify-between px-4 py-3">
-        <Link className="text-lg font-bold text-[var(--brand)]" href="/dashboard">
-          PaintPricing
+      {/* Mobile top bar */}
+      <header className="sm:hidden flex items-center justify-between px-4 py-3 bg-[var(--surface)] border-b border-[var(--line)]">
+        <Link href="/dashboard" className="flex items-center gap-2">
+          <div className="pp-logo-mark" />
+          <span className="text-[15px] font-bold text-[var(--navy-700)] tracking-tight">PaintPricing</span>
         </Link>
         <form action={signOutAction}>
           <Button size="sm" type="submit" variant="ghost">
@@ -101,7 +115,7 @@ export default async function AppLayout({
 
       {children}
 
-      {/* Mobile bottom nav — thumb zone */}
+      {/* Mobile bottom nav */}
       <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-[var(--line)] bg-[var(--surface)] safe-bottom">
         <NavLink href="/dashboard" icon={Home} label="Home" />
         <NavLink href="/quotes/new" icon={Plus} label="Quote" />

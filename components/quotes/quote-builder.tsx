@@ -359,33 +359,51 @@ function ItemCard({
         ? "bg-[var(--accent-soft)] text-[var(--accent-strong)]"
         : "bg-[var(--success-soft)] text-[var(--success)]";
 
+  const isExt = item.type === "exterior";
+  const borderColor = isExt ? "var(--amber-500)" : "var(--navy-700)";
+  const badgeBg = isExt ? "var(--amber-50)" : "var(--navy-50)";
+  const badgeColor = isExt ? "var(--amber-600)" : "var(--navy-700)";
+
   return (
-    <Card>
+    <div
+      className="rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--surface)] overflow-hidden"
+      style={{ borderLeft: `3px solid ${borderColor}`, boxShadow: "var(--shadow-sm)" }}
+    >
       {/* Compact header — always visible */}
       <button
         type="button"
-        className="flex w-full items-center justify-between gap-2 p-4 sm:p-5 text-left"
+        className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left"
+        style={{ gridTemplateColumns: "auto 1fr auto auto auto" }}
         onClick={() => setExpanded(!expanded)}
       >
         <div className="flex items-center gap-3 min-w-0">
           <span
-            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${typeBadgeColors}`}
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[7px] font-mono text-xs font-bold"
+            style={{ background: badgeBg, color: badgeColor }}
           >
-            {index + 1}
+            {String(index + 1).padStart(2, "0")}
           </span>
           <div className="min-w-0">
-            <p className="font-semibold text-sm truncate">
-              {item.name || <span className="text-[var(--muted)] italic">Untitled</span>}
-            </p>
+            <div className="flex items-center gap-2 min-w-0">
+              <p className="font-semibold text-[15px] truncate">
+                {item.name || <span className="text-[var(--muted)] italic">Untitled</span>}
+              </p>
+              <span
+                className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded shrink-0"
+                style={{ background: badgeBg, color: badgeColor }}
+              >
+                {item.type}
+              </span>
+            </div>
             {!expanded && item.suggestedPrice > 0 && priceChanged && (
-              <p className="text-[10px] text-[var(--muted)] truncate">
+              <p className="text-[11px] text-[var(--muted)] truncate">
                 Suggested {formatCurrency(item.suggestedPrice)}
               </p>
             )}
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <span className="font-mono text-sm font-semibold text-[var(--brand)]">
+          <span className="font-mono text-[18px] font-semibold" style={{ letterSpacing: "-0.01em" }}>
             {formatCurrency(item.price)}
           </span>
           {expanded ? (
@@ -398,7 +416,7 @@ function ItemCard({
 
       {/* Expanded body */}
       {expanded && (
-        <div className="space-y-3 px-4 pb-4 sm:px-5 sm:pb-5 pt-0">
+        <div className="space-y-3 px-4 pb-4 sm:px-5 sm:pb-5 pt-3 border-t border-[var(--line-2)]" style={{ background: "var(--background)" }}>
           {/* Name row */}
           <div className="flex items-center gap-2">
             <Input
@@ -552,11 +570,24 @@ function ItemCard({
           )}
         </div>
       )}
-    </Card>
+    </div>
   );
 }
 
-/* ── Template picker (horizontal scroll) ── */
+/* ── Template picker (tabbed chips) ── */
+
+const INTERIOR_PRIMARY: TemplateChip[] = ALL_TEMPLATES.filter(
+  (t) => t.type === "interior" && ["living-room", "standard-bedroom", "kitchen", "bathroom", "hallway"].includes(t.key),
+);
+const INTERIOR_MORE: TemplateChip[] = ALL_TEMPLATES.filter(
+  (t) => t.type === "interior" && !INTERIOR_PRIMARY.find((p) => p.key === t.key),
+);
+const EXTERIOR_PRIMARY: TemplateChip[] = ALL_TEMPLATES.filter(
+  (t) => t.type === "exterior" && ["siding", "trim-fascia", "deck-porch", "garage-door"].includes(t.key),
+);
+const EXTERIOR_MORE: TemplateChip[] = ALL_TEMPLATES.filter(
+  (t) => t.type === "exterior" && !EXTERIOR_PRIMARY.find((p) => p.key === t.key),
+);
 
 function TemplatePicker({
   onAddInterior,
@@ -567,37 +598,114 @@ function TemplatePicker({
   onAddExterior: (key: ExteriorTemplateKey) => void;
   onAddCustom: () => void;
 }) {
+  const [tab, setTab] = useState<"interior" | "exterior">("interior");
+  const [moreOpen, setMoreOpen] = useState(false);
+  const isExt = tab === "exterior";
+  const primaryChips = isExt ? EXTERIOR_PRIMARY : INTERIOR_PRIMARY;
+  const moreChips = isExt ? EXTERIOR_MORE : INTERIOR_MORE;
+
   return (
-    <div className="space-y-2">
-      <p className="text-xs font-semibold text-[var(--muted)]">Tap to add</p>
-      <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-        {ALL_TEMPLATES.map((t) => (
+    <div className="rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--surface)] p-4" style={{ boxShadow: "var(--shadow-sm)" }}>
+      <div className="flex items-center justify-between mb-3.5">
+        <span className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">Tap to add</span>
+        {/* Interior / Exterior toggle */}
+        <div className="flex gap-1 p-0.5 rounded-lg" style={{ background: "var(--navy-50)" }}>
+          {(["interior", "exterior"] as const).map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => { setTab(t); setMoreOpen(false); }}
+              className="px-3 py-1.5 rounded-md text-xs font-semibold capitalize transition-all"
+              style={tab === t
+                ? { background: "var(--surface)", color: "var(--ink)", boxShadow: "var(--shadow-sm)" }
+                : { color: "var(--muted)", background: "transparent" }
+              }
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex gap-2 flex-wrap">
+        {primaryChips.map((c) => (
           <button
-            key={t.key}
+            key={c.key}
             type="button"
-            className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-semibold transition hover:border-[var(--brand)] hover:bg-[var(--brand-soft)] active:scale-95 ${
-              t.type === "interior"
-                ? "border-[var(--line)] bg-[var(--surface)] text-[var(--foreground)]"
-                : "border-[var(--accent-soft)] bg-[var(--accent-soft)] text-[var(--accent-strong)]"
-            }`}
             onClick={() => {
-              if (t.type === "interior") onAddInterior(t.key as RoomTemplateKey);
-              else onAddExterior(t.key as ExteriorTemplateKey);
+              if (c.type === "interior") onAddInterior(c.key as RoomTemplateKey);
+              else onAddExterior(c.key as ExteriorTemplateKey);
+            }}
+            className="flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-medium transition-all active:scale-95"
+            style={isExt
+              ? { background: "var(--amber-50)", borderColor: "var(--amber-100)", color: "var(--amber-600)" }
+              : { background: "var(--surface)", borderColor: "var(--line)", color: "var(--ink)" }
+            }
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = isExt ? "var(--amber-500)" : "var(--navy-500)";
+              (e.currentTarget as HTMLButtonElement).style.background = isExt ? "var(--amber-100)" : "var(--navy-50)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = isExt ? "var(--amber-100)" : "var(--line)";
+              (e.currentTarget as HTMLButtonElement).style.background = isExt ? "var(--amber-50)" : "var(--surface)";
             }}
           >
-            <Plus className="h-3.5 w-3.5" />
-            {t.label}
+            <span
+              className="flex h-5 w-5 items-center justify-center rounded-full text-white text-xs font-bold leading-none"
+              style={{ background: isExt ? "var(--amber-500)" : "var(--navy-700)", color: isExt ? "#3B2300" : "white" }}
+            >
+              +
+            </span>
+            {c.label}
           </button>
         ))}
+
         <button
           type="button"
-          className="flex shrink-0 items-center gap-1.5 rounded-full border-2 border-dashed border-[var(--line-strong)] px-3.5 py-2 text-xs font-semibold text-[var(--muted)] transition hover:border-[var(--brand)] hover:text-[var(--brand)] active:scale-95"
-          onClick={onAddCustom}
+          onClick={() => setMoreOpen((o) => !o)}
+          className="flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm font-medium text-[var(--muted)] transition-all"
+          style={{ borderStyle: "dashed", borderColor: "var(--muted-2)", background: "transparent" }}
         >
-          <Plus className="h-3.5 w-3.5" />
-          Custom
+          More… {moreOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
         </button>
       </div>
+
+      {moreOpen && (
+        <div className="mt-3 pt-3 border-t border-dashed border-[var(--line)] flex gap-2 flex-wrap">
+          {moreChips.map((c) => (
+            <button
+              key={c.key}
+              type="button"
+              onClick={() => {
+                if (c.type === "interior") onAddInterior(c.key as RoomTemplateKey);
+                else onAddExterior(c.key as ExteriorTemplateKey);
+                setMoreOpen(false);
+              }}
+              className="flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-medium transition-all active:scale-95"
+              style={isExt
+                ? { background: "var(--amber-50)", borderColor: "var(--amber-100)", color: "var(--amber-600)" }
+                : { background: "var(--surface)", borderColor: "var(--line)", color: "var(--ink)" }
+              }
+            >
+              <span
+                className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold leading-none"
+                style={{ background: isExt ? "var(--amber-500)" : "var(--navy-700)", color: isExt ? "#3B2300" : "white" }}
+              >
+                +
+              </span>
+              {c.label}
+            </button>
+          ))}
+          <button
+            type="button"
+            onClick={onAddCustom}
+            className="flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm font-medium transition-all active:scale-95"
+            style={{ background: "var(--surface)", borderColor: "var(--line)", color: "var(--navy-700)" }}
+          >
+            <Plus className="h-3.5 w-3.5" /> Custom item
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -830,16 +938,12 @@ export function QuoteBuilder({ profile, initialData }: QuoteBuilderProps) {
           </div>
         </Section>
 
-        {/* Template picker — all in one row, no scope toggle */}
-        <Card>
-          <CardContent className="py-3 sm:py-4">
-            <TemplatePicker
-              onAddInterior={addInterior}
-              onAddExterior={addExterior}
-              onAddCustom={addCustom}
-            />
-          </CardContent>
-        </Card>
+        {/* Template picker */}
+        <TemplatePicker
+          onAddInterior={addInterior}
+          onAddExterior={addExterior}
+          onAddCustom={addCustom}
+        />
 
         {/* Item list — flat, unified */}
         {items.map((item, i) => (
@@ -856,13 +960,12 @@ export function QuoteBuilder({ profile, initialData }: QuoteBuilderProps) {
         ))}
 
         {items.length === 0 && (
-          <div className="py-12 text-center">
-            <p className="text-lg font-semibold text-[var(--foreground)]">
-              Start building your quote
-            </p>
-            <p className="mt-1 text-sm text-[var(--muted)]">
-              Tap a template above to add your first item, or add a custom line item.
-            </p>
+          <div
+            className="py-9 text-center rounded-[var(--radius-lg)] border border-dashed"
+            style={{ borderColor: "var(--muted-2)", background: "var(--surface)" }}
+          >
+            <p className="text-[15px] font-semibold mb-1">No items yet</p>
+            <p className="text-sm text-[var(--muted)]">Tap a chip above to add your first room.</p>
           </div>
         )}
 
@@ -935,65 +1038,62 @@ export function QuoteBuilder({ profile, initialData }: QuoteBuilderProps) {
       </div>
 
       {/* ── Desktop sidebar ──────────── */}
-      <div className="hidden lg:block space-y-4 lg:sticky lg:top-4 lg:self-start">
-        <Card>
-          <CardContent className="space-y-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
-              Quote summary
-            </p>
-
-            {/* Per-item breakdown */}
-            {items.length > 0 && (
-              <div className="space-y-1.5 text-sm">
-                {items.map((item, i) => (
-                  <div key={item.id} className="flex justify-between gap-2">
-                    <span className="text-[var(--muted)] truncate">{item.name || `Item ${i + 1}`}</span>
-                    <span className="font-mono shrink-0">{formatCurrency(item.price)}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {summary.discount > 0 && (
-              <div className="flex justify-between text-sm text-[var(--success)]">
-                <span>Discount</span>
-                <span className="font-mono">-{formatCurrency(summary.discount)}</span>
-              </div>
-            )}
-
-            {summary.taxTotal > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-[var(--muted)]">Tax</span>
-                <span className="font-mono">{formatCurrency(summary.taxTotal)}</span>
-              </div>
-            )}
-
-            {summary.minimumApplied && (
-              <p className="text-xs text-[var(--accent-strong)]">
-                Minimum job charge applied.
-              </p>
-            )}
-
-            <div className="rounded-[var(--radius)] bg-[var(--brand-soft)] p-4">
-              <p className="text-sm text-[var(--brand)]">Grand total</p>
-              <p className="mt-1 text-3xl font-bold font-mono text-[var(--brand)]">
+      <div className="hidden lg:block space-y-4 lg:sticky lg:top-24 lg:self-start">
+        {/* Live summary card */}
+        <div className="rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--surface)] overflow-hidden" style={{ boxShadow: "var(--shadow-sm)" }}>
+          <div className="flex items-center justify-between px-4 py-3.5 border-b border-[var(--line-2)]">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">Live summary</span>
+            <span
+              className="text-xs font-semibold px-2 py-0.5 rounded-full"
+              style={{ background: "var(--navy-50)", color: "var(--navy-700)" }}
+            >
+              {items.length} items
+            </span>
+          </div>
+          <div className="p-4 space-y-4">
+            {/* Grand total */}
+            <div>
+              <p className="text-sm text-[var(--muted)] mb-1">Grand total</p>
+              <p className="font-mono font-bold" style={{ fontSize: 36, letterSpacing: "-0.025em" }}>
                 {formatCurrency(summary.grandTotal)}
               </p>
             </div>
+
+            {/* Breakdown */}
+            <div className="space-y-2 pt-3 border-t border-[var(--line-2)] text-sm">
+              {items.length > 0 && items.map((item, i) => (
+                <div key={item.id} className="flex justify-between gap-2">
+                  <span className="text-[var(--muted)] truncate">{item.name || `Item ${i + 1}`}</span>
+                  <span className="font-mono shrink-0">{formatCurrency(item.price)}</span>
+                </div>
+              ))}
+              {summary.discount > 0 && (
+                <div className="flex justify-between text-[var(--success)]">
+                  <span>Discount</span>
+                  <span className="font-mono">-{formatCurrency(summary.discount)}</span>
+                </div>
+              )}
+              {summary.taxTotal > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-[var(--muted)]">Tax</span>
+                  <span className="font-mono">{formatCurrency(summary.taxTotal)}</span>
+                </div>
+              )}
+              {summary.minimumApplied && (
+                <p className="text-xs text-[var(--accent-strong)]">Minimum job charge applied.</p>
+              )}
+            </div>
+
             <Button
               className="w-full"
               size="lg"
               type="submit"
               disabled={!hasItems || submitting}
             >
-              {submitting
-                ? "Saving..."
-                : isEditing
-                  ? `Save as v${initialData.version}`
-                  : "Save Quote"}
+              {submitting ? "Saving..." : isEditing ? `Save as v${initialData.version}` : "Save quote"}
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* ── Mobile sticky footer ─────── */}

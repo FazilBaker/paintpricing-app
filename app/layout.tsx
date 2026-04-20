@@ -54,6 +54,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
+      data-scroll-behavior="smooth"
     >
       <body className="min-h-dvh" suppressHydrationWarning>
         <RegisterServiceWorker />
