@@ -314,13 +314,14 @@ export async function createQuoteAction(formData: FormData) {
     redirectWithError("/quotes/new", error?.message ?? "Unable to save quote.");
   }
 
-  // Mark the previous version as not latest
+  // Mark all previous versions in this family as not latest
   if (parentQuoteId) {
     await supabase
       .from("quotes")
       .update({ is_latest: false })
-      .eq("id", parentQuoteId)
-      .eq("user_id", viewer.user.id);
+      .or(`id.eq.${parentQuoteId},parent_quote_id.eq.${parentQuoteId}`)
+      .eq("user_id", viewer.user.id)
+      .neq("id", quoteId);
   }
 
   await supabase
@@ -545,16 +546,18 @@ export async function unlockQuoteAction(formData: FormData) {
       // No credits left
       redirect("/billing");
     } else {
-      // Consume 1 credit and unlock
-      await supabase.rpc("increment_free_quotes_used", {
-        user_id: viewer.user.id,
-      });
-
-      await supabase
+      // Unlock first, then consume credit — if unlock fails, credit isn't lost
+      const { error: unlockError } = await supabase
         .from("quotes")
         .update({ is_unlocked: true })
         .eq("id", quoteId)
         .eq("user_id", viewer.user.id);
+
+      if (!unlockError) {
+        await supabase.rpc("increment_free_quotes_used", {
+          user_id: viewer.user.id,
+        });
+      }
     }
   }
 

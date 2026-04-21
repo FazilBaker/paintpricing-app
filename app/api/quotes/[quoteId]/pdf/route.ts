@@ -43,11 +43,16 @@ export async function GET(
     );
   }
 
-  const pdf = await renderToBuffer(
-    QuotePdfDocument({
-      payload: data.quote_data as QuoteDraftPayload,
-    }),
-  );
+  let pdf: Buffer;
+  try {
+    pdf = await renderToBuffer(
+      QuotePdfDocument({
+        payload: data.quote_data as QuoteDraftPayload,
+      }),
+    );
+  } catch {
+    return NextResponse.json({ error: "Failed to render PDF." }, { status: 500 });
+  }
 
   return new NextResponse(new Uint8Array(pdf), {
     headers: {

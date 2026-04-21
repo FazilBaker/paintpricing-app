@@ -11,6 +11,7 @@ export async function sendWelcomeEmail(to: string, businessName: string) {
   await resend.emails.send({
     from: FROM,
     to,
+    replyTo: "contact@paintpricing.com",
     subject: "Welcome to PaintPricing — you're all set!",
     html: welcomeHtml(businessName),
   });

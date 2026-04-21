@@ -55,8 +55,7 @@ export function OnboardingWizard({ action, profile, error }: OnboardingWizardPro
         </div>
 
         {/* Step 1: Business info */}
-        {step === 0 && (
-          <div>
+        <div hidden={step !== 0}>
             <span
               className="inline-block px-2.5 py-1 rounded-full text-xs font-semibold mb-3"
               style={{ background: "var(--navy-50)", color: "var(--navy-700)", letterSpacing: "0.06em" }}
@@ -112,12 +111,10 @@ export function OnboardingWizard({ action, profile, error }: OnboardingWizardPro
                 </div>
               </div>
             </div>
-          </div>
-        )}
+        </div>
 
         {/* Step 2: Rates */}
-        {step === 1 && (
-          <div>
+        <div hidden={step !== 1}>
             <span
               className="inline-block px-2.5 py-1 rounded-full text-xs font-semibold mb-3"
               style={{ background: "var(--navy-50)", color: "var(--navy-700)", letterSpacing: "0.06em" }}
@@ -176,12 +173,10 @@ export function OnboardingWizard({ action, profile, error }: OnboardingWizardPro
                 </p>
               </div>
             </div>
-          </div>
-        )}
+        </div>
 
         {/* Step 3: Ready */}
-        {step === 2 && (
-          <div className="text-center py-10">
+        <div hidden={step !== 2} className="text-center py-10">
             <div
               className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-5"
               style={{ background: "#D1FAE5", color: "var(--ok)" }}
@@ -212,8 +207,7 @@ export function OnboardingWizard({ action, profile, error }: OnboardingWizardPro
                 Skip for now, go to dashboard
               </button>
             </div>
-          </div>
-        )}
+        </div>
 
         {/* Navigation */}
         {step < 2 && (

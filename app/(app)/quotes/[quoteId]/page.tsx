@@ -155,7 +155,7 @@ export default async function QuoteDetailPage({
               {formatCurrency(quote.total)}
             </p>
             <p className="text-sm text-[var(--muted)] mt-1">
-              {(allItems.length || legacyRooms.length)} items · 2 coats
+              {(allItems.length || legacyRooms.length)} item{(allItems.length || legacyRooms.length) !== 1 ? "s" : ""}
             </p>
           </div>
         </div>
