@@ -75,12 +75,12 @@ export function OnboardingWizard({ action, profile, error }: OnboardingWizardPro
               <div className="space-y-4">
                 <div className="space-y-1.5">
                   <Label htmlFor="businessName" className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">Business name</Label>
-                  <Input id="businessName" name="businessName" defaultValue={profile?.businessName ?? ""} placeholder="Palmer Painting Co." required />
+                  <Input id="businessName" name="businessName" defaultValue={profile?.businessName ?? ""} placeholder="Palmer Painting Co." required={step === 0} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <Label htmlFor="phone" className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">Phone</Label>
-                    <Input id="phone" name="phone" defaultValue={profile?.phone ?? ""} placeholder="(512) 555-0142" required className="font-mono" />
+                    <Input id="phone" name="phone" defaultValue={profile?.phone ?? ""} placeholder="(512) 555-0142" required={step === 0} className="font-mono" />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="licenseNumber" className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">License #</Label>
@@ -89,7 +89,7 @@ export function OnboardingWizard({ action, profile, error }: OnboardingWizardPro
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="businessEmail" className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">Business email</Label>
-                  <Input id="businessEmail" name="businessEmail" type="email" defaultValue={profile?.businessEmail ?? ""} placeholder="you@company.com" required />
+                  <Input id="businessEmail" name="businessEmail" type="email" defaultValue={profile?.businessEmail ?? ""} placeholder="you@company.com" required={step === 0} />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="logo" className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">Logo (optional)</Label>
@@ -145,7 +145,7 @@ export function OnboardingWizard({ action, profile, error }: OnboardingWizardPro
                         min="0"
                         step="0.01"
                         defaultValue={String((defaults as Record<string, number>)[f.name])}
-                        required
+                        required={step === 1}
                         className="font-mono pr-14"
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--muted)] font-medium pointer-events-none">
