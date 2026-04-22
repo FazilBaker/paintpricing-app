@@ -76,23 +76,46 @@ export default async function AdminPage() {
     );
   }
 
-  // Fetch all profiles
+  // Fetch all auth users — source of truth for signups
+  const { data: authData } = await admin.auth.admin.listUsers({ perPage: 1000 });
+  const authUsers = (authData?.users ?? []).sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+  );
+
+  // Fetch profiles and index by id
   const { data: profiles } = await admin
     .from("profiles")
     .select(
       "id, business_name, business_email, phone, billing_status, billing_cycle, free_quotes_used, free_quotes_limit, rates_configured_at, lifetime_deal_claimed_at, created_at, status",
-    )
-    .order("created_at", { ascending: false });
+    );
 
-  const users: UserRow[] = (profiles ?? []) as UserRow[];
-
-  // Fetch user emails from auth.users
-  const { data: authData } = await admin.auth.admin.listUsers({ perPage: 1000 });
-  const authUsers = authData?.users ?? [];
-  const emailMap = new Map<string, string>();
-  for (const u of authUsers) {
-    emailMap.set(u.id, u.email ?? "");
+  const profileMap = new Map<string, UserRow>();
+  for (const p of (profiles ?? []) as UserRow[]) {
+    profileMap.set(p.id, p);
   }
+
+  // Merge: every auth user gets a row; profile fields fall back to defaults
+  const users: (UserRow & { email: string; signedUpAt: string; emailConfirmed: boolean })[] =
+    authUsers.map((u) => {
+      const p = profileMap.get(u.id);
+      return {
+        id: u.id,
+        email: u.email ?? "",
+        signedUpAt: u.created_at,
+        emailConfirmed: Boolean(u.email_confirmed_at),
+        business_name: p?.business_name ?? null,
+        business_email: p?.business_email ?? null,
+        phone: p?.phone ?? null,
+        billing_status: p?.billing_status ?? "inactive",
+        billing_cycle: p?.billing_cycle ?? null,
+        free_quotes_used: p?.free_quotes_used ?? 0,
+        free_quotes_limit: p?.free_quotes_limit ?? 3,
+        rates_configured_at: p?.rates_configured_at ?? null,
+        lifetime_deal_claimed_at: p?.lifetime_deal_claimed_at ?? null,
+        created_at: p?.created_at ?? u.created_at,
+        status: p?.status ?? "active",
+      };
+    });
 
   // Fetch quote counts per user
   const { data: quotesRaw } = await admin
@@ -217,7 +240,6 @@ export default async function AdminPage() {
               </thead>
               <tbody>
                 {users.map((user) => {
-                  const email = emailMap.get(user.id) ?? "";
                   const stats = quoteStatsMap.get(user.id);
                   const quoteCount = stats?.count ?? 0;
                   const quoteValue = stats?.total_revenue ?? 0;
@@ -243,6 +265,9 @@ export default async function AdminPage() {
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <p className="font-semibold truncate max-w-[160px]">{user.business_name || "—"}</p>
+                          {!user.emailConfirmed && (
+                            <span className="inline-block rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide bg-slate-100 text-slate-500">Unconfirmed</span>
+                          )}
                           {user.status === "suspended" && (
                             <span className="inline-block rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide bg-amber-100 text-amber-700">Suspended</span>
                           )}
@@ -250,7 +275,7 @@ export default async function AdminPage() {
                             <span className="inline-block rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide bg-red-100 text-red-700">Banned</span>
                           )}
                         </div>
-                        <p className="text-xs text-[var(--muted)] truncate max-w-[180px]">{email}</p>
+                        <p className="text-xs text-[var(--muted)] truncate max-w-[180px]">{user.email}</p>
                       </td>
                       <td className="px-4 py-3">
                         <span
@@ -287,7 +312,7 @@ export default async function AdminPage() {
                               </button>
                             </form>
                           )}
-                          <DeleteUserButton userId={user.id} label={email || user.business_name || "this user"} />
+                          <DeleteUserButton userId={user.id} label={user.email || user.business_name || "this user"} />
                         </div>
                       </td>
                     </tr>
