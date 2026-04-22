@@ -41,12 +41,12 @@ export default async function DashboardPage() {
   return (
     <main className="max-w-[1240px] mx-auto px-7 pt-8 pb-20">
       {/* Header */}
-      <div className="flex items-end justify-between mb-6">
-        <div>
+      <div className="flex items-end justify-between gap-4 mb-6">
+        <div className="min-w-0">
           <h1 className="text-[28px] font-bold tracking-tight" style={{ letterSpacing: "-0.02em" }}>Your quotes</h1>
           <p className="text-sm text-[var(--muted)] mt-1">{quotes?.length ?? 0} total · tap a quote to open</p>
         </div>
-        <Button asChild>
+        <Button asChild className="shrink-0">
           <Link href="/quotes/new">
             <Plus className="h-4 w-4" />
             New quote
