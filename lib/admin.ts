@@ -1,4 +1,7 @@
-const ADMIN_EMAILS = ["fazilbaker.fb@gmail.com"];
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? "")
+  .split(",")
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean);
 
 export function isAdmin(email: string | undefined | null): boolean {
   if (!email) return false;
