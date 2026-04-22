@@ -1,5 +1,7 @@
 export type BillingCycle = "monthly" | "yearly" | "lifetime";
 
+export type AccountStatus = "active" | "suspended" | "banned";
+
 export type BillingStatus =
   | "inactive"
   | "approval_pending"
@@ -70,6 +72,7 @@ export type ProfileRecord = {
   freeQuotesUsed: number;
   freeQuotesLimit: number;
   lifetimeDealClaimedAt: string | null;
+  accountStatus: AccountStatus;
   settings: ProfileSettings;
 };
 

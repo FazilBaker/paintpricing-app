@@ -128,3 +128,25 @@ create trigger profiles_updated_at
 create trigger quotes_updated_at
   before update on public.quotes
   for each row execute function public.handle_updated_at();
+
+-- Account moderation
+alter table public.profiles
+  add column if not exists status text not null default 'active'
+    check (status in ('active', 'suspended', 'banned'));
+
+create index if not exists profiles_status_idx on public.profiles(status);
+
+-- Auto-suspend free users with 0 quotes after 30 days of inactivity (requires pg_cron extension)
+-- Run once in Supabase SQL editor to enable:
+--   select cron.schedule(
+--     'auto-suspend-inactive-free-users',
+--     '0 3 * * *',
+--     $$
+--       update public.profiles
+--       set status = 'suspended'
+--       where status = 'active'
+--         and billing_status is distinct from 'active'
+--         and free_quotes_used = 0
+--         and created_at < now() - interval '30 days';
+--     $$
+--   );

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { DEFAULT_SETTINGS, FREE_QUOTES_LIMIT } from "@/lib/constants";
 import { isSupabaseConfigured } from "@/lib/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { BillingStatus, CustomField, ProfileRecord } from "@/lib/types";
+import type { AccountStatus, BillingStatus, CustomField, ProfileRecord } from "@/lib/types";
 
 const ACTIVE_STATUSES: BillingStatus[] = ["active"];
 
@@ -31,6 +31,7 @@ function normalizeProfile(record: Record<string, unknown>): ProfileRecord {
     freeQuotesLimit: Number(record.free_quotes_limit ?? FREE_QUOTES_LIMIT),
     lifetimeDealClaimedAt:
       (record.lifetime_deal_claimed_at as string | null) ?? null,
+    accountStatus: ((record.status as AccountStatus | null) ?? "active"),
     settings: {
       hourlyLaborRate:
         Number(record.hourly_labor_rate ?? DEFAULT_SETTINGS.hourlyLaborRate),
@@ -145,6 +146,13 @@ export async function requireViewer() {
 
   if (!viewer.user) {
     redirect("/login");
+  }
+
+  if (
+    viewer.profile?.accountStatus === "suspended" ||
+    viewer.profile?.accountStatus === "banned"
+  ) {
+    redirect("/suspended");
   }
 
   return viewer;

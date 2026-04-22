@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 
+import { deleteUserAction, reactivateUserAction, suspendUserAction } from "@/app/admin-actions";
+import { DeleteUserButton } from "./delete-user-button";
 import { getViewer } from "@/lib/auth";
 import { isAdmin } from "@/lib/admin";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
@@ -17,6 +19,7 @@ type UserRow = {
   rates_configured_at: string | null;
   lifetime_deal_claimed_at: string | null;
   created_at: string;
+  status: string;
 };
 
 type QuoteStats = {
@@ -77,7 +80,7 @@ export default async function AdminPage() {
   const { data: profiles } = await admin
     .from("profiles")
     .select(
-      "id, business_name, business_email, phone, billing_status, billing_cycle, free_quotes_used, free_quotes_limit, rates_configured_at, lifetime_deal_claimed_at, created_at",
+      "id, business_name, business_email, phone, billing_status, billing_cycle, free_quotes_used, free_quotes_limit, rates_configured_at, lifetime_deal_claimed_at, created_at, status",
     )
     .order("created_at", { ascending: false });
 
@@ -202,7 +205,7 @@ export default async function AdminPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr style={{ background: "var(--background)" }} className="text-left">
-                  {["User", "Plan", "Quotes", "Quote Value", "Joined", "Last Quote"].map((h) => (
+                  {["User", "Plan", "Quotes", "Quote Value", "Joined", "Last Quote", "Actions"].map((h) => (
                     <th
                       key={h}
                       className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]"
@@ -238,7 +241,15 @@ export default async function AdminPage() {
                       className="border-t border-[var(--line-2)] hover:bg-[var(--background)] transition"
                     >
                       <td className="px-4 py-3">
-                        <p className="font-semibold truncate max-w-[180px]">{user.business_name || "—"}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold truncate max-w-[160px]">{user.business_name || "—"}</p>
+                          {user.status === "suspended" && (
+                            <span className="inline-block rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide bg-amber-100 text-amber-700">Suspended</span>
+                          )}
+                          {user.status === "banned" && (
+                            <span className="inline-block rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide bg-red-100 text-red-700">Banned</span>
+                          )}
+                        </div>
                         <p className="text-xs text-[var(--muted)] truncate max-w-[180px]">{email}</p>
                       </td>
                       <td className="px-4 py-3">
@@ -255,6 +266,30 @@ export default async function AdminPage() {
                       </td>
                       <td className="px-4 py-3 text-[var(--muted)] text-xs">{formatDate(user.created_at)}</td>
                       <td className="px-4 py-3 text-[var(--muted)] text-xs">{formatDateShort(stats?.latest_at ?? null)}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-1.5">
+                          {user.status === "active" ? (
+                            <form action={suspendUserAction.bind(null, user.id)}>
+                              <button
+                                type="submit"
+                                className="rounded px-2 py-1 text-[11px] font-semibold bg-amber-100 text-amber-800 hover:bg-amber-200 transition"
+                              >
+                                Suspend
+                              </button>
+                            </form>
+                          ) : (
+                            <form action={reactivateUserAction.bind(null, user.id)}>
+                              <button
+                                type="submit"
+                                className="rounded px-2 py-1 text-[11px] font-semibold bg-green-100 text-green-800 hover:bg-green-200 transition"
+                              >
+                                Reactivate
+                              </button>
+                            </form>
+                          )}
+                          <DeleteUserButton userId={user.id} label={email || user.business_name || "this user"} />
+                        </div>
+                      </td>
                     </tr>
                   );
                 })}
