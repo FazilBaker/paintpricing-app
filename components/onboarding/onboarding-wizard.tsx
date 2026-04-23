@@ -54,6 +54,12 @@ export function OnboardingWizard({ action, profile, error }: OnboardingWizardPro
           <span className="font-mono text-xs text-[var(--muted)] font-semibold">{step + 1}/{STEPS.length}</span>
         </div>
 
+        {error && (
+          <div className="mb-5 rounded-[var(--radius)] border border-[var(--danger)]/20 bg-[var(--danger-soft)] px-4 py-3 text-sm text-[var(--danger)]">
+            {error}
+          </div>
+        )}
+
         {/* Step 1: Business info */}
         <div hidden={step !== 0}>
             <span
@@ -189,12 +195,7 @@ export function OnboardingWizard({ action, profile, error }: OnboardingWizardPro
             <p className="text-[15px] text-[var(--muted)] leading-relaxed max-w-sm mx-auto mb-8">
               {FREE_QUOTES_LIMIT} free unlocks to get you started. Build your first quote — takes about 60 seconds.
             </p>
-            {error && (
-              <div className="mb-4 rounded-[var(--radius)] border border-[var(--danger)]/20 bg-[var(--danger-soft)] px-4 py-3 text-sm text-[var(--danger)] text-left">
-                {error}
-              </div>
-            )}
-            <Button size="lg" type="submit" className="min-w-48 justify-center"
+            <Button size="lg" type="submit" name="intent" value="build" className="min-w-48 justify-center"
               style={{ background: "var(--amber-500)", color: "#3B2300", fontWeight: 600 }}
             >
               <Plus className="w-4 h-4" /> Build your first quote
@@ -202,6 +203,8 @@ export function OnboardingWizard({ action, profile, error }: OnboardingWizardPro
             <div className="mt-3">
               <button
                 type="submit"
+                name="intent"
+                value="skip"
                 className="text-sm text-[var(--muted)] font-medium hover:text-[var(--ink)] transition"
               >
                 Skip for now, go to dashboard

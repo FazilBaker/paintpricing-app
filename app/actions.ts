@@ -209,7 +209,8 @@ export async function saveProfileSetupAction(formData: FormData) {
   // Fire-and-forget welcome email — don't block the redirect
   sendWelcomeEmail(user.email ?? "", input.businessName).catch(() => {});
 
-  redirect("/dashboard");
+  const intent = String(formData.get("intent") ?? "skip");
+  redirect(intent === "build" ? "/quotes/new" : "/dashboard");
 }
 
 export async function createQuoteAction(formData: FormData) {
