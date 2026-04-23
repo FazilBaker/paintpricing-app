@@ -1,7 +1,7 @@
+import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -9,16 +9,35 @@ export async function GET(request: NextRequest) {
   const next = searchParams.get("next") ?? "/dashboard";
 
   if (code) {
-    const supabase = await createSupabaseServerClient();
-    if (supabase) {
-      const { error } = await supabase.auth.exchangeCodeForSession(code);
-      if (!error) {
-        return NextResponse.redirect(new URL(next, origin));
-      }
+    const cookieStore = await cookies();
+    const redirectTo = new URL(next, origin);
+    const response = NextResponse.redirect(redirectTo);
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll();
+          },
+          setAll(cookiesToSet) {
+            // Set cookies on the redirect response so they reach the browser
+            cookiesToSet.forEach(({ name, value, options }) =>
+              response.cookies.set(name, value, options),
+            );
+          },
+        },
+      },
+    );
+
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error) {
+      return response;
     }
   }
 
   return NextResponse.redirect(
-    new URL(`/login?error=${encodeURIComponent("Unable to verify reset link. Please try again.")}`, origin),
+    new URL(`/login?error=${encodeURIComponent("Unable to verify link. Please try again.")}`, origin),
   );
 }
