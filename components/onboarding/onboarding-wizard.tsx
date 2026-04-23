@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, useTransition } from "react";
 import { ArrowRight, Check, Plus } from "lucide-react";
 
 import type { ProfileRecord } from "@/lib/types";
@@ -28,10 +28,26 @@ const RATE_FIELDS = [
 
 export function OnboardingWizard({ action, profile, error }: OnboardingWizardProps) {
   const [step, setStep] = useState(0);
+  const [isPending, startTransition] = useTransition();
+  const formRef = useRef<HTMLFormElement>(null);
   const defaults = profile?.settings ?? DEFAULT_SETTINGS;
 
+  const submit = (intent: "build" | "skip") => {
+    const form = formRef.current;
+    if (!form) return;
+    const formData = new FormData(form);
+    formData.set("intent", intent);
+    startTransition(async () => {
+      try {
+        await action(formData);
+      } catch (err) {
+        console.error("[onboarding] action failed:", err);
+      }
+    });
+  };
+
   return (
-    <form action={action} className="min-h-dvh bg-[var(--background)]">
+    <form ref={formRef} className="min-h-dvh bg-[var(--background)]" onSubmit={(e) => e.preventDefault()}>
       <div className="max-w-xl mx-auto px-6 pt-8 pb-24">
         {/* Progress header */}
         <div className="flex items-center gap-3 mb-8">
@@ -81,12 +97,12 @@ export function OnboardingWizard({ action, profile, error }: OnboardingWizardPro
               <div className="space-y-4">
                 <div className="space-y-1.5">
                   <Label htmlFor="businessName" className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">Business name</Label>
-                  <Input id="businessName" name="businessName" defaultValue={profile?.businessName ?? ""} placeholder="Palmer Painting Co." required={step === 0} />
+                  <Input id="businessName" name="businessName" defaultValue={profile?.businessName ?? ""} placeholder="Palmer Painting Co." />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <Label htmlFor="phone" className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">Phone</Label>
-                    <Input id="phone" name="phone" defaultValue={profile?.phone ?? ""} placeholder="(512) 555-0142" required={step === 0} className="font-mono" />
+                    <Input id="phone" name="phone" defaultValue={profile?.phone ?? ""} placeholder="(512) 555-0142" className="font-mono" />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="licenseNumber" className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">License #</Label>
@@ -95,7 +111,7 @@ export function OnboardingWizard({ action, profile, error }: OnboardingWizardPro
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="businessEmail" className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">Business email</Label>
-                  <Input id="businessEmail" name="businessEmail" type="email" defaultValue={profile?.businessEmail ?? ""} placeholder="you@company.com" required={step === 0} />
+                  <Input id="businessEmail" name="businessEmail" type="email" defaultValue={profile?.businessEmail ?? ""} placeholder="you@company.com" />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="logo" className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">Logo (optional)</Label>
@@ -151,7 +167,6 @@ export function OnboardingWizard({ action, profile, error }: OnboardingWizardPro
                         min="0"
                         step="0.01"
                         defaultValue={String((defaults as Record<string, number>)[f.name])}
-                        required={step === 1}
                         className="font-mono pr-14"
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--muted)] font-medium pointer-events-none">
@@ -160,7 +175,6 @@ export function OnboardingWizard({ action, profile, error }: OnboardingWizardPro
                     </div>
                   </div>
                 ))}
-                {/* Hidden fields not in RATE_FIELDS */}
                 <input type="hidden" name="taxPercent" value={String(defaults.taxPercent)} />
                 <input type="hidden" name="minimumJobCharge" value={String(defaults.minimumJobCharge)} />
               </div>
@@ -195,17 +209,22 @@ export function OnboardingWizard({ action, profile, error }: OnboardingWizardPro
             <p className="text-[15px] text-[var(--muted)] leading-relaxed max-w-sm mx-auto mb-8">
               {FREE_QUOTES_LIMIT} free unlocks to get you started. Build your first quote — takes about 60 seconds.
             </p>
-            <Button size="lg" type="submit" name="intent" value="build" className="min-w-48 justify-center"
+            <Button
+              size="lg"
+              type="button"
+              disabled={isPending}
+              onClick={() => submit("build")}
+              className="min-w-48 justify-center"
               style={{ background: "var(--amber-500)", color: "#3B2300", fontWeight: 600 }}
             >
-              <Plus className="w-4 h-4" /> Build your first quote
+              <Plus className="w-4 h-4" /> {isPending ? "Saving..." : "Build your first quote"}
             </Button>
             <div className="mt-3">
               <button
-                type="submit"
-                name="intent"
-                value="skip"
-                className="text-sm text-[var(--muted)] font-medium hover:text-[var(--ink)] transition"
+                type="button"
+                disabled={isPending}
+                onClick={() => submit("skip")}
+                className="text-sm text-[var(--muted)] font-medium hover:text-[var(--ink)] transition disabled:opacity-50"
               >
                 Skip for now, go to dashboard
               </button>
