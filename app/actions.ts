@@ -111,7 +111,10 @@ export async function saveProfileSetupAction(formData: FormData) {
 
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser();
+
+  console.log("[onboarding] getUser result:", { userId: user?.id ?? null, authError: authError?.message ?? null });
 
   if (!user) {
     redirect("/login");
