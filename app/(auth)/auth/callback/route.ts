@@ -3,10 +3,14 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { cookies } from "next/headers";
 
+import { safeRedirect } from "@/lib/utils";
+
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/dashboard";
+  // Reject absolute URLs and protocol-relative URLs to prevent open redirects.
+  // safeRedirect requires the target to start with "/" — anything else falls back.
+  const next = safeRedirect(searchParams.get("next"), "/dashboard");
 
   if (code) {
     const cookieStore = await cookies();

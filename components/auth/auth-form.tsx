@@ -1,8 +1,8 @@
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SubmitButton } from "@/components/ui/submit-button";
 
 type AuthFormProps = {
   mode: "login" | "signup";
@@ -108,9 +108,13 @@ export function AuthForm({ mode, action, error }: AuthFormProps) {
                 {error}
               </div>
             )}
-            <Button className="w-full mt-2" size="lg" type="submit">
+            <SubmitButton
+              className="w-full mt-2"
+              size="lg"
+              pendingLabel={isLogin ? "Logging in…" : "Creating account…"}
+            >
               {isLogin ? "Log in →" : "Create account →"}
-            </Button>
+            </SubmitButton>
           </form>
 
           <p className="text-center text-sm text-[var(--muted)] mt-5">

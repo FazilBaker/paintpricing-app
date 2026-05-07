@@ -1,8 +1,8 @@
 import { resetPasswordAction } from "@/app/actions";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SubmitButton } from "@/components/ui/submit-button";
 
 export default async function ResetPasswordPage({
   searchParams,
@@ -51,9 +51,13 @@ export default async function ResetPasswordPage({
                 {params.error}
               </div>
             ) : null}
-            <Button className="w-full" size="lg" type="submit">
+            <SubmitButton
+              className="w-full"
+              size="lg"
+              pendingLabel="Updating…"
+            >
               Update password
-            </Button>
+            </SubmitButton>
           </form>
         </CardContent>
       </Card>

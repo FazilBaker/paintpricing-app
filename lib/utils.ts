@@ -33,11 +33,24 @@ export function toNullableNumber(value: FormDataEntryValue | null) {
 }
 
 export function safeRedirect(target: string | null | undefined, fallback: string) {
-  if (!target || !target.startsWith("/")) {
+  if (!target) {
     return fallback;
   }
 
-  return target;
+  // Must be a relative path starting with a single "/" — block:
+  //   - absolute URLs (http://, https://, javascript:, etc.)
+  //   - protocol-relative URLs (//evil.com)
+  //   - empty / whitespace strings
+  const trimmed = target.trim();
+  if (
+    !trimmed.startsWith("/") ||
+    trimmed.startsWith("//") ||
+    trimmed.startsWith("/\\")
+  ) {
+    return fallback;
+  }
+
+  return trimmed;
 }
 
 export function formatDate(dateString: string) {

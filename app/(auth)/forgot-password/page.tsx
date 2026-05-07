@@ -1,10 +1,10 @@
 import Link from "next/link";
 
 import { forgotPasswordAction } from "@/app/actions";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SubmitButton } from "@/components/ui/submit-button";
 
 export default async function ForgotPasswordPage({
   searchParams,
@@ -47,9 +47,13 @@ export default async function ForgotPasswordPage({
                 {params.error}
               </div>
             ) : null}
-            <Button className="w-full" size="lg" type="submit">
+            <SubmitButton
+              className="w-full"
+              size="lg"
+              pendingLabel="Sending…"
+            >
               Send reset link
-            </Button>
+            </SubmitButton>
           </form>
 
           <p className="text-center text-sm text-[var(--muted)]">

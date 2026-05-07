@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { verifySubscription } from "@/lib/paypal";
-import { createSupabaseAdminClient, createSupabaseServerClient } from "@/lib/supabase/server";
+import {
+  createSupabaseAdminClient,
+  createSupabaseServerClient,
+} from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
   const supabase = await createSupabaseServerClient();
@@ -33,15 +36,29 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid cycle." }, { status: 400 });
   }
 
-  // Verify subscription is actually active with PayPal
-  const result = await verifySubscription(body.subscriptionID);
-  if (!result.ok) {
-    return NextResponse.json({ error: result.error }, { status: 400 });
-  }
-
   const admin = createSupabaseAdminClient();
   if (!admin) {
     return NextResponse.json({ error: "Admin client not configured." }, { status: 500 });
+  }
+
+  // ── Idempotency: already on this subscription? Skip work. ──
+  const { data: existingProfile } = await admin
+    .from("profiles")
+    .select("billing_status, paypal_subscription_id")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (
+    existingProfile?.paypal_subscription_id === body.subscriptionID &&
+    existingProfile?.billing_status === "active"
+  ) {
+    return NextResponse.json({ ok: true, alreadyActive: true });
+  }
+
+  // ── Verify subscription is actually active with PayPal ──
+  const result = await verifySubscription(body.subscriptionID);
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error }, { status: 400 });
   }
 
   const { error } = await admin
@@ -58,7 +75,16 @@ export async function POST(request: Request) {
     .eq("id", user.id);
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error(
+      "[activate-subscription] Profile update failed",
+      {
+        subscriptionID: body.subscriptionID,
+        userId: user.id,
+        cycle: body.cycle,
+        dbError: error.message,
+      },
+    );
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true });

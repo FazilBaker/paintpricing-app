@@ -7,7 +7,7 @@ import { isPaypalConfigured } from "@/lib/env";
 import { formatCurrency } from "@/lib/utils";
 import { LtdCounter } from "@/components/billing/ltd-counter";
 import { PayPalSubscribeButton } from "@/components/billing/paypal-subscribe-button";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/server";
 
 const planFeatures = {
   monthly: ["Unlimited quotes", "Branded PDFs", "Shareable links"],
@@ -21,9 +21,11 @@ export default async function BillingPage() {
   if (!hasConfiguredRates(viewer.profile)) redirect("/onboarding");
 
   const paypalReady = isPaypalConfigured();
-  const supabase = await createSupabaseServerClient();
-  const lifetimeSoldResult = supabase
-    ? await supabase
+  // Use admin client — the seat counter must see ALL active lifetime profiles,
+  // not just the current user's row (RLS would restrict the regular client).
+  const admin = createSupabaseAdminClient();
+  const lifetimeSoldResult = admin
+    ? await admin
         .from("profiles")
         .select("id", { count: "exact", head: true })
         .eq("billing_cycle", "lifetime")
