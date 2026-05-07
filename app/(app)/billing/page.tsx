@@ -47,12 +47,12 @@ export default async function BillingPage() {
           PRICING
         </span>
         <h1 className="text-[38px] font-bold tracking-tight mb-3" style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}>
-          Quote faster. Close more jobs.
+          Send the quote before your <span style={{ color: "var(--amber-500)" }}>competitor calls back.</span>
         </h1>
-        <p className="text-base text-[var(--muted)] max-w-md mx-auto">
+        <p className="text-base text-[var(--muted)] max-w-lg mx-auto">
           {isPaid
             ? "You're on an active plan. Upgrade or manage your subscription below."
-            : <>You have <strong>{remaining}</strong> free unlock{remaining === 1 ? "" : "s"} remaining. Unlock unlimited quotes with any plan.</>
+            : <>Unlimited 4-minute painting proposals. <strong>{remaining}</strong> free unlock{remaining === 1 ? "" : "s"} remaining — unlock the rest with any plan below.</>
           }
         </p>
       </div>
@@ -145,9 +145,11 @@ export default async function BillingPage() {
           )}
         </div>
 
-        {/* Lifetime — navy gradient */}
+        {/* Lifetime — navy gradient.
+            NOTE: do NOT add overflow-hidden here — the "LIMITED · N LEFT" pill
+            below uses -top-3.5 to bleed above the card and gets clipped if hidden. */}
         <div
-          className="rounded-[var(--radius-2xl)] p-7 relative overflow-hidden"
+          className="rounded-[var(--radius-2xl)] p-7 relative"
           style={{ background: "linear-gradient(180deg, var(--navy-800), var(--navy-900))", color: "white", boxShadow: "var(--shadow-lg)" }}
         >
           <div
