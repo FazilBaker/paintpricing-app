@@ -21,6 +21,17 @@ export function isPaypalServerConfigured() {
   );
 }
 
+export function isTurnstileConfigured() {
+  return Boolean(
+    process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY &&
+      process.env.TURNSTILE_SECRET_KEY,
+  );
+}
+
+export function getTurnstileSiteKey() {
+  return process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? null;
+}
+
 export function getRequiredEnv(name: string) {
   const value = process.env[name];
   if (!value) {

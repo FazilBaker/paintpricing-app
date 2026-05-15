@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { TurnstileWidget } from "@/components/auth/turnstile-widget";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -8,6 +9,12 @@ type AuthFormProps = {
   mode: "login" | "signup";
   action: (formData: FormData) => Promise<void>;
   error?: string;
+  /**
+   * Cloudflare Turnstile site key. When provided AND mode === "signup", a
+   * Turnstile challenge is rendered above the submit button. When null/empty,
+   * the challenge is skipped (graceful degradation).
+   */
+  turnstileSiteKey?: string | null;
 };
 
 const swatchColors = [
@@ -19,8 +26,9 @@ const swatchColors = [
   "#2C4C74",
 ];
 
-export function AuthForm({ mode, action, error }: AuthFormProps) {
+export function AuthForm({ mode, action, error, turnstileSiteKey }: AuthFormProps) {
   const isLogin = mode === "login";
+  const showTurnstile = !isLogin && Boolean(turnstileSiteKey);
 
   return (
     <main className="min-h-dvh grid sm:grid-cols-2">
@@ -106,6 +114,11 @@ export function AuthForm({ mode, action, error }: AuthFormProps) {
             {error && (
               <div className="rounded-[var(--radius)] border border-[var(--danger)]/20 bg-[var(--danger-soft)] px-4 py-3 text-sm text-[var(--danger)]">
                 {error}
+              </div>
+            )}
+            {showTurnstile && (
+              <div className="pt-1">
+                <TurnstileWidget siteKey={turnstileSiteKey ?? null} />
               </div>
             )}
             <SubmitButton

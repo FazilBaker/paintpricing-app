@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AuthForm } from "@/components/auth/auth-form";
 import { signUpAction } from "@/app/actions";
 import { Button } from "@/components/ui/button";
+import { getTurnstileSiteKey } from "@/lib/env";
 
 export default async function SignupPage({
   searchParams,
@@ -10,6 +11,7 @@ export default async function SignupPage({
   searchParams: Promise<{ error?: string; confirm?: string }>;
 }) {
   const params = await searchParams;
+  const turnstileSiteKey = getTurnstileSiteKey();
 
   if (params.confirm) {
     return (
@@ -30,5 +32,12 @@ export default async function SignupPage({
     );
   }
 
-  return <AuthForm mode="signup" action={signUpAction} error={params.error} />;
+  return (
+    <AuthForm
+      mode="signup"
+      action={signUpAction}
+      error={params.error}
+      turnstileSiteKey={turnstileSiteKey}
+    />
+  );
 }

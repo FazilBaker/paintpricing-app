@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { DEFAULT_SETTINGS, FREE_QUOTES_LIMIT } from "@/lib/constants";
 import { getViewer } from "@/lib/auth";
+import { detectBotEmail, verifyTurnstileToken } from "@/lib/bot-protection";
 import { isSupabaseConfigured } from "@/lib/env";
 import { sendWelcomeEmail } from "@/lib/email";
 import { calculateQuoteSummary } from "@/lib/quote-engine";
@@ -35,10 +36,31 @@ export async function signUpAction(formData: FormData) {
 
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "").trim();
+  const turnstileToken = String(formData.get("cf-turnstile-response") ?? "").trim() || null;
   const redirectTo = safeRedirect(
     String(formData.get("redirectTo") ?? "/dashboard"),
     "/dashboard",
   );
+
+  // ----- Bot protection layer 1: heuristic email-pattern rejection -----
+  // Catches gmail-dot spam (a.b.c@gmail.com) and disposable email domains.
+  // Works without any external service or keys.
+  const botReason = detectBotEmail(email);
+  if (botReason) {
+    redirectWithError("/signup", botReason);
+  }
+
+  // ----- Bot protection layer 2: Cloudflare Turnstile -----
+  // No-op if Turnstile env vars aren't set (returns true). Activates as soon
+  // as TURNSTILE_SECRET_KEY is configured in Vercel.
+  const turnstileOk = await verifyTurnstileToken(turnstileToken);
+  if (!turnstileOk) {
+    redirectWithError(
+      "/signup",
+      "Please complete the security check on the form and try again.",
+    );
+  }
+
   const supabase = await createSupabaseServerClient();
 
   if (!supabase) {
