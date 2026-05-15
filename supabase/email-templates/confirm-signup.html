@@ -19,7 +19,7 @@
       </p>
 
       <!-- CTA -->
-      <a href="{{ .ConfirmationURL }}"
+      <a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=signup&next=/dashboard"
          style="display:block;text-align:center;background:#F5A623;color:#1E3A5F;font-weight:700;font-size:16px;padding:14px 32px;border-radius:6px;text-decoration:none;">
         Confirm my email →
       </a>
@@ -27,7 +27,7 @@
       <!-- Fallback link -->
       <p style="margin:20px 0 0;font-size:13px;color:#94A3B8;text-align:center;line-height:1.6;">
         Button not working? Copy and paste this link into your browser:<br>
-        <a href="{{ .ConfirmationURL }}" style="color:#475569;word-break:break-all;">{{ .ConfirmationURL }}</a>
+        <a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=signup&next=/dashboard" style="color:#475569;word-break:break-all;">{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=signup&next=/dashboard</a>
       </p>
     </div>
 
