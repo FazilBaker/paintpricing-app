@@ -8,10 +8,13 @@ import { getTurnstileSiteKey } from "@/lib/env";
 export default async function SignupPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; confirm?: string }>;
+  searchParams: Promise<{ error?: string; confirm?: string; from_calc?: string }>;
 }) {
   const params = await searchParams;
   const turnstileSiteKey = getTurnstileSiteKey();
+  // Painter arrived from the marketing-site /calculator/ result panel. Show a
+  // continuity banner so they know their estimate isn't lost in the funnel.
+  const fromCalc = params.from_calc === "1";
 
   if (params.confirm) {
     return (
@@ -38,6 +41,7 @@ export default async function SignupPage({
       action={signUpAction}
       error={params.error}
       turnstileSiteKey={turnstileSiteKey}
+      fromCalc={fromCalc}
     />
   );
 }

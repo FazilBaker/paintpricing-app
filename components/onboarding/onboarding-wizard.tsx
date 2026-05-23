@@ -87,9 +87,30 @@ export function OnboardingWizard({ action, profile, error }: OnboardingWizardPro
             <h1 className="text-3xl font-bold tracking-tight mb-2" style={{ letterSpacing: "-0.02em" }}>
               Your business
             </h1>
-            <p className="text-sm text-[var(--muted)] mb-7 leading-relaxed">
+            <p className="text-sm text-[var(--muted)] mb-5 leading-relaxed">
               This shows on every quote PDF so clients know who sent it.
             </p>
+
+            {/* Fast-path skip — painters who want to try the product first can
+                jump straight to building a quote with sensible defaults. We will
+                prompt for business info again when they hit the PDF step. */}
+            <div
+              className="mb-7 flex items-center justify-between gap-4 rounded-[var(--radius)] border border-dashed border-[var(--line-strong)] bg-[var(--background)] px-4 py-3"
+            >
+              <p className="text-sm text-[var(--ink-2)] leading-snug">
+                Just want to see how it works? <span className="text-[var(--muted)]">Skip setup, build a sample quote, fill this in later.</span>
+              </p>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                disabled={isPending}
+                onClick={() => submit("skip")}
+                className="shrink-0"
+              >
+                {isPending ? "Loading…" : "Try it first →"}
+              </Button>
+            </div>
             <div
               className="rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--surface)] p-6"
               style={{ boxShadow: "var(--shadow-sm)" }}
@@ -226,7 +247,7 @@ export function OnboardingWizard({ action, profile, error }: OnboardingWizardPro
                 onClick={() => submit("skip")}
                 className="text-sm text-[var(--muted)] font-medium hover:text-[var(--ink)] transition disabled:opacity-50"
               >
-                Skip for now, go to dashboard
+                Skip for now, jump into a sample quote
               </button>
             </div>
         </div>

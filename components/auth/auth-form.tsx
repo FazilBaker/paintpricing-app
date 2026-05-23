@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { GoogleSignInButton } from "@/components/auth/google-signin-button";
 import { TurnstileWidget } from "@/components/auth/turnstile-widget";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,6 +16,12 @@ type AuthFormProps = {
    * the challenge is skipped (graceful degradation).
    */
   turnstileSiteKey?: string | null;
+  /**
+   * True when the painter arrived from the marketing /calculator/ result
+   * panel. Renders a continuity banner so they understand why they need to
+   * sign up (to send the estimate as a branded PDF to their client).
+   */
+  fromCalc?: boolean;
 };
 
 const swatchColors = [
@@ -26,9 +33,10 @@ const swatchColors = [
   "#2C4C74",
 ];
 
-export function AuthForm({ mode, action, error, turnstileSiteKey }: AuthFormProps) {
+export function AuthForm({ mode, action, error, turnstileSiteKey, fromCalc }: AuthFormProps) {
   const isLogin = mode === "login";
   const showTurnstile = !isLogin && Boolean(turnstileSiteKey);
+  const showFromCalcBanner = !isLogin && Boolean(fromCalc);
 
   return (
     <main className="min-h-dvh grid sm:grid-cols-2">
@@ -77,6 +85,29 @@ export function AuthForm({ mode, action, error, turnstileSiteKey }: AuthFormProp
             <span className="font-bold text-[var(--navy-700)]">PaintPricing</span>
           </div>
 
+          {showFromCalcBanner && (
+            <div
+              className="mb-5 rounded-[var(--radius)] border px-4 py-3 flex items-start gap-3"
+              style={{ background: "var(--amber-50)", borderColor: "var(--amber-100)" }}
+            >
+              <span
+                className="inline-flex items-center justify-center w-7 h-7 rounded-full shrink-0 text-base"
+                style={{ background: "var(--amber-500)", color: "#3B2300" }}
+                aria-hidden
+              >
+                ✓
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-[var(--ink)] leading-tight">
+                  Estimate ready to send.
+                </p>
+                <p className="text-xs text-[var(--ink-2)] mt-1 leading-snug">
+                  Create a free account to turn your numbers into a branded PDF and email it to your client.
+                </p>
+              </div>
+            </div>
+          )}
+
           {!isLogin && (
             <span
               className="inline-block px-2.5 py-1 rounded-full text-xs font-semibold mb-3"
@@ -87,13 +118,28 @@ export function AuthForm({ mode, action, error, turnstileSiteKey }: AuthFormProp
           )}
 
           <h1 className="text-3xl font-bold tracking-tight mb-2" style={{ letterSpacing: "-0.02em" }}>
-            {isLogin ? "Welcome back" : "Create your account"}
+            {isLogin ? "Welcome back" : (fromCalc ? "Send it as a branded PDF" : "Create your account")}
           </h1>
           <p className="text-sm text-[var(--muted)] mb-7">
             {isLogin
               ? "Log in to access your quote dashboard."
               : "3 free quote unlocks. No credit card required."}
           </p>
+
+          {/* Google sign-in — primary path for tradespeople on phones, no password to remember. */}
+          <GoogleSignInButton label={isLogin ? "Continue with Google" : "Sign up with Google"} />
+
+          {/* Divider between OAuth and email/password */}
+          <div className="relative my-5" aria-hidden="true">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-[var(--line)]"></div>
+            </div>
+            <div className="relative flex justify-center">
+              <span className="bg-[var(--background)] px-3 text-xs font-medium uppercase tracking-wider text-[var(--muted)]">
+                or with email
+              </span>
+            </div>
+          </div>
 
           <form action={action} className="space-y-4">
             <div className="space-y-1.5">

@@ -139,6 +139,42 @@ export async function saveProfileSetupAction(formData: FormData) {
     redirect("/login");
   }
 
+  const intent = String(formData.get("intent") ?? "build");
+
+  // Fast path: "skip" means the painter wants to try the product NOW. Don't
+  // demand business name / rates upfront — write sensible defaults, stamp
+  // ratesConfiguredAt so the dashboard/new-quote redirect guards pass, and
+  // send the painter straight into their first quote. They can fill in proper
+  // business info later from Settings (and we'll nudge them at PDF time).
+  if (intent === "skip") {
+    const skipPayload: Record<string, unknown> = {
+      id: user.id,
+      business_name: "",
+      phone: "",
+      business_email: "",
+      license_number: null,
+      hourly_labor_rate: DEFAULT_SETTINGS.hourlyLaborRate,
+      paint_cost_per_gallon: DEFAULT_SETTINGS.paintCostPerGallon,
+      wall_coverage_sq_ft_per_gallon: DEFAULT_SETTINGS.wallCoverageSqFtPerGallon,
+      trim_coverage_sq_ft_per_gallon: DEFAULT_SETTINGS.trimCoverageSqFtPerGallon,
+      default_coats: DEFAULT_SETTINGS.defaultCoats,
+      material_markup_percent: DEFAULT_SETTINGS.materialMarkupPercent,
+      tax_percent: DEFAULT_SETTINGS.taxPercent,
+      minimum_job_charge: DEFAULT_SETTINGS.minimumJobCharge,
+      free_quotes_used: 0,
+      free_quotes_limit: FREE_QUOTES_LIMIT,
+      rates_configured_at: new Date().toISOString(),
+    };
+
+    const { error: skipError } = await supabase.from("profiles").upsert(skipPayload);
+    if (skipError) {
+      redirectWithError("/onboarding", skipError.message);
+    }
+
+    revalidatePath("/dashboard");
+    redirect("/quotes/new");
+  }
+
   const logo = formData.get("logo");
   let logoUrl: string | null = null;
 
@@ -231,7 +267,8 @@ export async function saveProfileSetupAction(formData: FormData) {
   // Fire-and-forget welcome email — don't block the redirect
   sendWelcomeEmail(user.email ?? "", input.businessName).catch(() => {});
 
-  const intent = String(formData.get("intent") ?? "skip");
+  // intent is read at the top of this action; "build" sends them straight into
+  // their first quote, otherwise land on the dashboard.
   redirect(intent === "build" ? "/quotes/new" : "/dashboard");
 }
 
