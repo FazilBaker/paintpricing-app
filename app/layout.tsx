@@ -35,6 +35,28 @@ export const metadata: Metadata = {
     icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
     apple: [{ url: "/apple-icon.svg", type: "image/svg+xml" }],
   },
+  openGraph: {
+    type: "website",
+    siteName: "PaintPricing.com",
+    url: "https://app.paintpricing.com",
+    title: "PaintPricing.com",
+    description:
+      "Professional painting quotes in minutes, not hours. Interior and exterior estimates with branded PDFs.",
+  },
+  twitter: {
+    card: "summary",
+    title: "PaintPricing.com",
+    description:
+      "Professional painting quotes in minutes, not hours. Interior and exterior estimates with branded PDFs.",
+  },
+  // The entire app.paintpricing.com subdomain is the authenticated product. All SEO
+  // lives on the paintpricing.com WordPress marketing site, so nothing here should be
+  // indexed: the app home/login, the (app) dashboard/billing routes, and especially
+  // the private /q/[token] shared-quote links. follow:true still lets crawlers pass
+  // through links. This clears the crawl flags (OG/sitemap/duplicate-canonical/thin
+  // content) by removing these pages from the index entirely. Child layouts may keep
+  // their own redundant robots metadata; same value, harmless.
+  robots: { index: false, follow: true },
 };
 
 export const viewport: Viewport = {
