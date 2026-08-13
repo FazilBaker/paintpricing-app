@@ -5,6 +5,7 @@ import { signOutAction } from "@/app/actions";
 import { isAdmin } from "@/lib/admin";
 import { requireViewer } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
+import { PostHogIdentify } from "@/components/posthog-identify";
 
 function NavLink({
   href,
@@ -47,6 +48,17 @@ export default async function AppLayout({
 
   return (
     <div className="min-h-dvh pb-20 sm:pb-0 overflow-x-hidden">
+      {/* Attaches this session to a PostHog person, so a signed-up painter
+          can actually be looked up later. Renders nothing. */}
+      {viewer.user && (
+        <PostHogIdentify
+          userId={viewer.user.id}
+          email={viewer.user.email}
+          businessName={viewer.profile?.businessName}
+          billingStatus={viewer.profile?.billingStatus}
+        />
+      )}
+
       {/* Desktop top nav */}
       <header className="hidden sm:flex items-center gap-7 px-7 py-4 bg-[var(--surface)] border-b border-[var(--line)] sticky top-0 z-30">
         {/* Logo */}

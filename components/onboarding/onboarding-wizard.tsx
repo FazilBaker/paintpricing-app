@@ -4,6 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import { ArrowRight, Check, Plus } from "lucide-react";
 
 import type { ProfileRecord } from "@/lib/types";
+import { track } from "@/lib/analytics";
 import { DEFAULT_SETTINGS, FREE_QUOTES_LIMIT } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,6 +38,11 @@ export function OnboardingWizard({ action, profile, error }: OnboardingWizardPro
     if (!form) return;
     const formData = new FormData(form);
     formData.set("intent", intent);
+    // Captured before the await: the server action redirects on success, so
+    // anything after it may never run.
+    track(intent === "skip" ? "onboarding_skipped" : "onboarding_completed", {
+      step_reached: step + 1,
+    });
     startTransition(async () => {
       try {
         await action(formData);

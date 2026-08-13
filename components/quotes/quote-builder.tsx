@@ -38,6 +38,7 @@ import type {
   RoomTemplateKey,
 } from "@/lib/types";
 import { formatCurrency } from "@/lib/utils";
+import { track } from "@/lib/analytics";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -743,6 +744,12 @@ export function QuoteBuilder({ profile, initialData }: QuoteBuilderProps) {
 
   const isEditing = !!initialData;
 
+  // The top of the activation funnel. Pair this with quote_item_added and
+  // quote_saved to see exactly where a new painter stops.
+  useEffect(() => {
+    track("builder_opened", { is_edit: isEditing });
+  }, [isEditing]);
+
   // Autosave to localStorage (debounced)
   useEffect(() => {
     if (isEditing) return; // don't autosave when editing existing quote
@@ -787,14 +794,17 @@ export function QuoteBuilder({ profile, initialData }: QuoteBuilderProps) {
   }, []);
 
   const addInterior = useCallback((key: RoomTemplateKey) => {
+    track("quote_item_added", { kind: "interior", template: key });
     setItems((cur) => [...cur, createInteriorItem(key, profile.settings)]);
   }, [profile.settings]);
 
   const addExterior = useCallback((key: ExteriorTemplateKey) => {
+    track("quote_item_added", { kind: "exterior", template: key });
     setItems((cur) => [...cur, createExteriorItem(key, profile.settings)]);
   }, [profile.settings]);
 
   const addCustom = useCallback(() => {
+    track("quote_item_added", { kind: "custom" });
     setItems((cur) => [...cur, createCustomItem()]);
   }, []);
 
@@ -814,9 +824,14 @@ export function QuoteBuilder({ profile, initialData }: QuoteBuilderProps) {
   }, []);
 
   const handleSubmit = useCallback(() => {
+    track("quote_saved", {
+      item_count: items.length,
+      grand_total: summary.grandTotal,
+      is_edit: Boolean(initialData),
+    });
     setSubmitting(true);
     clearDraft();
-  }, []);
+  }, [items.length, summary.grandTotal, initialData]);
 
   const hasItems = items.length > 0;
 

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DeleteQuoteButton } from "@/components/quotes/delete-quote-button";
 import { ShareQuoteButton } from "@/components/quotes/share-quote-button";
+import { TrackedLink } from "@/components/analytics/tracked-link";
 
 export default async function QuoteDetailPage({
   params,
@@ -112,9 +113,14 @@ export default async function QuoteDetailPage({
           )}
           {isUnlocked && (
             <Button asChild size="sm">
-              <Link href={`/api/quotes/${quote.id}/pdf`} target="_blank">
+              <TrackedLink
+                event="pdf_exported"
+                eventProps={{ placement: "header" }}
+                href={`/api/quotes/${quote.id}/pdf`}
+                target="_blank"
+              >
                 <Download className="h-4 w-4" /> Download PDF
-              </Link>
+              </TrackedLink>
             </Button>
           )}
           <DeleteQuoteButton quoteId={quote.id} />
@@ -317,9 +323,14 @@ export default async function QuoteDetailPage({
                   </div>
                 </div>
                 <Button asChild size="lg" className="w-full justify-center">
-                  <Link href={`/api/quotes/${quote.id}/pdf`} target="_blank">
+                  <TrackedLink
+                    event="pdf_exported"
+                    eventProps={{ placement: "success_card" }}
+                    href={`/api/quotes/${quote.id}/pdf`}
+                    target="_blank"
+                  >
                     <Download className="h-4 w-4" /> Download PDF
-                  </Link>
+                  </TrackedLink>
                 </Button>
                 {shareUrl && (
                   <ShareQuoteButton

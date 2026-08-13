@@ -10,6 +10,7 @@ import {
 } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Button } from "@/components/ui/button";
 
 function quoteStatus(quote: { is_unlocked?: boolean; pdf_url?: string | null }) {
@@ -162,7 +163,13 @@ export default async function DashboardPage() {
                       style={{ background: "var(--amber-500)", color: "#3B2300" }}
                       size="sm"
                     >
-                      <Link href="/billing">See plans →</Link>
+                      <TrackedLink
+                        event="upgrade_clicked"
+                        eventProps={{ placement: "sidebar_card", free_unlocks_left: remaining }}
+                        href="/billing"
+                      >
+                        See plans →
+                      </TrackedLink>
                     </Button>
                   </>
                 )}
@@ -183,13 +190,15 @@ export default async function DashboardPage() {
               <span style={{ color: "var(--amber-400)", fontWeight: 600 }}>{remaining}</span>{" "}
               free unlock{remaining === 1 ? "" : "s"} left
             </span>
-            <Link
+            <TrackedLink
+              event="upgrade_clicked"
+              eventProps={{ placement: "mobile_bar", free_unlocks_left: remaining }}
               href="/billing"
               className="text-xs font-semibold px-3 py-1.5 rounded-md"
               style={{ background: "var(--amber-500)", color: "#3B2300" }}
             >
               Upgrade
-            </Link>
+            </TrackedLink>
           </div>
         </div>
       )}
