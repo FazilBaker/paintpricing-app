@@ -7,7 +7,7 @@ import { DEFAULT_SETTINGS, FREE_QUOTES_LIMIT } from "@/lib/constants";
 import { getViewer } from "@/lib/auth";
 import { detectBotEmail, verifyTurnstileToken } from "@/lib/bot-protection";
 import { isSupabaseConfigured } from "@/lib/env";
-import { sendWelcomeEmail } from "@/lib/email";
+import { sendLastCreditEmail, sendWelcomeEmail } from "@/lib/email";
 import { calculateQuoteSummary } from "@/lib/quote-engine";
 import { createSupabaseAdminClient, createSupabaseServerClient } from "@/lib/supabase/server";
 import type { QuoteDraftPayload } from "@/lib/types";
@@ -582,10 +582,11 @@ export async function unlockQuoteAction(formData: FormData) {
     redirect("/dashboard");
   }
 
-  // Check if already unlocked
+  // Check if already unlocked. `total` comes along so the last-credit email can name the value
+  // of the job they just priced, which is the thing that makes the email feel written to them.
   const { data: quote } = await supabase
     .from("quotes")
-    .select("id, is_unlocked")
+    .select("id, is_unlocked, total")
     .eq("id", quoteId)
     .eq("user_id", viewer.user.id)
     .single();
@@ -603,8 +604,9 @@ export async function unlockQuoteAction(formData: FormData) {
         .eq("id", quoteId)
         .eq("user_id", viewer.user.id);
     } else if (viewer.profile.freeQuotesUsed >= viewer.profile.freeQuotesLimit) {
-      // No credits left
-      redirect("/billing");
+      // No credits left. Carry the quote id so /billing can say WHICH quote is waiting instead
+      // of dumping the user on a bare pricing page in the middle of sending a job.
+      redirect(`/billing?locked=${quoteId}`);
     } else {
       // Unlock first, then consume credit — if unlock fails, credit isn't lost
       const { error: unlockError } = await supabase
@@ -617,6 +619,23 @@ export async function unlockQuoteAction(formData: FormData) {
         await supabase.rpc("increment_free_quotes_used", {
           user_id: viewer.user.id,
         });
+
+        // If that was the final credit, tell them now, while they have just succeeded at
+        // something, rather than letting them discover it as a wall on the next quote.
+        // Wrapped so an email failure can never break the unlock the user paid a credit for.
+        const usedAfter = viewer.profile.freeQuotesUsed + 1;
+        if (usedAfter >= viewer.profile.freeQuotesLimit && viewer.user.email) {
+          try {
+            await sendLastCreditEmail(
+              viewer.user.email,
+              viewer.profile.businessName,
+              Number(quote.total ?? 0),
+              `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://app.paintpricing.com"}/billing`,
+            );
+          } catch {
+            // non-fatal
+          }
+        }
       }
     }
   }

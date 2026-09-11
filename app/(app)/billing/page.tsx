@@ -7,7 +7,7 @@ import { isPaypalConfigured } from "@/lib/env";
 import { formatCurrency } from "@/lib/utils";
 import { LtdCounter } from "@/components/billing/ltd-counter";
 import { PayPalSubscribeButton } from "@/components/billing/paypal-subscribe-button";
-import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient, createSupabaseServerClient } from "@/lib/supabase/server";
 
 const planFeatures = {
   monthly: ["Unlimited quotes", "Branded PDFs", "Shareable links"],
@@ -15,10 +15,35 @@ const planFeatures = {
   lifetime: ["Everything forever", "All future updates", "Founding member"],
 };
 
-export default async function BillingPage() {
+export default async function BillingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ locked?: string }>;
+}) {
   const viewer = await getViewer();
   if (!viewer.user) redirect("/login");
   if (!hasConfiguredRates(viewer.profile)) redirect("/onboarding");
+
+  // When unlockQuote runs out of credits it sends the user here with ?locked=<quoteId>. Look the
+  // quote up so the page can say which job is waiting. Landing on a bare pricing page in the
+  // middle of sending a real quote reads as a dead end; naming the client and the amount makes it
+  // obvious what the money buys right now.
+  const { locked } = await searchParams;
+  let lockedQuote: { clientName: string; total: number } | null = null;
+  if (locked) {
+    const supabase = await createSupabaseServerClient();
+    const { data } = supabase
+      ? await supabase
+          .from("quotes")
+          .select("client_name, total")
+          .eq("id", locked)
+          .eq("user_id", viewer.user.id)
+          .maybeSingle()
+      : { data: null };
+    if (data) {
+      lockedQuote = { clientName: data.client_name || "", total: Number(data.total ?? 0) };
+    }
+  }
 
   const paypalReady = isPaypalConfigured();
   // Use admin client — the seat counter must see ALL active lifetime profiles,
@@ -56,6 +81,34 @@ export default async function BillingPage() {
           }
         </p>
       </div>
+
+      {/* A quote is sitting locked, waiting to be sent. Say so before showing prices. */}
+      {lockedQuote && !isPaid && (
+        <div
+          className="rounded-[var(--radius-2xl)] border p-6 mb-10 flex items-start gap-4"
+          style={{ background: "var(--amber-50)", borderColor: "var(--amber-500)" }}
+        >
+          <div
+            className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+            style={{ background: "var(--amber-500)", color: "#fff" }}
+          >
+            <ShieldCheck className="h-4.5 w-4.5" strokeWidth={2.2} />
+          </div>
+          <div>
+            <p className="font-semibold text-[15px] mb-1" style={{ color: "var(--amber-600)" }}>
+              {lockedQuote.clientName
+                ? `Your quote for ${lockedQuote.clientName} is ready to send`
+                : "Your quote is ready to send"}
+              {lockedQuote.total > 0 ? ` (${formatCurrency(lockedQuote.total)})` : ""}
+            </p>
+            <p className="text-sm text-[var(--muted)] leading-relaxed">
+              You have used all {viewer.profile?.freeQuotesLimit ?? 3} free unlocks. Pick a plan
+              below and this quote unlocks immediately, along with every quote after it. Nothing
+              you have already sent is affected.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Plan cards */}
       <div className="grid gap-5 sm:grid-cols-3 items-start pt-5">

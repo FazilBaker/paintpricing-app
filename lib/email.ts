@@ -141,3 +141,60 @@ function reminderShell(
   </div>
 </body></html>`;
 }
+
+/**
+ * Sent the moment a free user spends their LAST free unlock.
+ *
+ * Before this existed the app said nothing at the one point where a user has
+ * proven the product works for them: they just priced a real job and unlocked
+ * it to send. The next quote they build hits `redirect("/billing")` with no
+ * warning and no explanation, which is the worst possible place to discover a
+ * limit. This gives them the news while the win is fresh instead.
+ *
+ * Deliberately not a hard sell. The person has used the thing three times and
+ * knows what it does; the job here is to say the credits are gone and make the
+ * next step obvious.
+ */
+export async function sendLastCreditEmail(
+  to: string,
+  businessName: string | null,
+  quoteValue: number | null,
+  billingLink: string,
+) {
+  if (!resend) return;
+  await resend.emails.send({
+    from: FROM,
+    to,
+    replyTo: "contact@paintpricing.com",
+    subject: "That was your last free quote unlock",
+    html: lastCreditHtml(businessName, quoteValue, billingLink),
+  });
+}
+
+/**
+ * Exported so the copy can be rendered and read before it is ever sent to a customer. The billing
+ * page behind it cannot be checked without logging in as a real user, so this is the part of the
+ * change that can actually be inspected. See scripts/preview-email.mjs.
+ */
+export function lastCreditHtml(
+  businessName: string | null,
+  quoteValue: number | null,
+  billingLink: string,
+) {
+  const who = businessName ? `${businessName}, that` : "That";
+  const valueLine =
+    quoteValue && quoteValue > 0
+      ? `That last quote came to ${new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+          maximumFractionDigits: 0,
+        }).format(quoteValue)}. `
+      : "";
+  return reminderShell(
+    "You have used all 3 free unlocks",
+    `${who} was your third and final free unlock. Every quote you have already built stays yours: the PDFs and share links keep working, and nothing you have sent to a client is affected.`,
+    `${valueLine}To unlock the next one, pick a plan. If you would rather tell us what is missing first, just reply to this email. It comes straight to us.`,
+    billingLink,
+    "See the plans",
+  );
+}
