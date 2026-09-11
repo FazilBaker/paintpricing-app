@@ -1,0 +1,1198 @@
+{
+  "version": "2.0.0",
+  "note": "Single source of truth for every pricing coefficient used by PaintPricing. Consumed by the Next.js app via lib/catalog/index.ts and by the WordPress theme via the generated build (scripts/build-catalog.mjs). Do not hardcode coefficients anywhere else. Values marked source:'resolved' replaced two conflicting values; see DIVERGENCES.md.",
+  "keyPolicy": "Entry keys are CANONICAL and are persisted inside saved quote payloads (QuoteItem.templateKey). Never rename a key. To rename a label, change 'label'. The 'aliases' array carries legacy or theme-side names that resolve to this entry.",
+  "labor": {
+    "defaultHourlyRate": 45,
+    "wallProductionSqFtPerHour": 200,
+    "ceilingProductionSqFtPerHour": 175,
+    "trimProductionLinearFtPerHour": 100,
+    "hoursPerDoorPerCoat": 0.5,
+    "hoursPerWindowPerCoat": 0.35,
+    "cleanupBaseHours": 0.5,
+    "cleanupHoursPerItem": 0.1,
+    "sprayMultiplier": 1.8
+  },
+  "prep": {
+    "baseHoursPer100SqFt": 0.75,
+    "exteriorMultiplier": 1.4,
+    "heavyPrepMultiplier": 1.5,
+    "conditionMultiplier": {
+      "good": 0.5,
+      "fair": 1.0,
+      "poor": 1.8
+    }
+  },
+  "materials": {
+    "paintGrades": {
+      "economy": {
+        "label": "Economy",
+        "costPerGallon": 30
+      },
+      "standard": {
+        "label": "Standard",
+        "costPerGallon": 45
+      },
+      "premium": {
+        "label": "Premium",
+        "costPerGallon": 65
+      }
+    },
+    "defaultGrade": "standard",
+    "wallCoverageSqFtPerGallon": 375,
+    "trimCoverageSqFtPerGallon": 250,
+    "defaultCoats": 2,
+    "gallonRounding": 0.25
+  },
+  "supplies": {
+    "baseCharge": 25,
+    "perHundredSqFt": 3
+  },
+  "pricing": {
+    "materialMarkupPercent": 35,
+    "defaultTaxPercent": 0,
+    "defaultMinimumJobCharge": 350,
+    "displayRange": {
+      "low": 0.85,
+      "high": 1.2
+    },
+    "costOfLivingMultiplier": {
+      "high": 1.4,
+      "medium": 1.0,
+      "low": 0.7
+    },
+    "minimumJobChargeNote": "Conventional interior minimum. Without a floor the calculator returns numbers like 118 dollars for 30 linear feet of crown molding, which no painter would accept as a standalone visit. Applies to the job total, not per item."
+  },
+  "geometry": {
+    "doorDeductionSqFt": 20,
+    "windowDeductionSqFt": 15,
+    "trimPaintAreaPerLinearFoot": 0.5
+  },
+  "roomPresets": {
+    "living-room": {
+      "label": "Living room",
+      "aliases": [
+        "living"
+      ],
+      "lengthFt": 16,
+      "widthFt": 14,
+      "heightFt": 9,
+      "trimLinearFt": 60,
+      "doors": 2,
+      "windows": 3,
+      "ceilingIncluded": true,
+      "note": "Large open common areas.",
+      "derived": {
+        "grossWallSqFt": 540,
+        "paintableWallSqFt": 455,
+        "ceilingSqFt": 224,
+        "openingDeductionSqFt": 85,
+        "totalPaintedSqFt": 679
+      },
+      "spec": [
+        "Usually the largest painted space in a house, and often the one with the highest ceiling.",
+        "Open plan rooms carry more wall area than the number of walls suggests, because there are fewer doorways breaking up the runs."
+      ]
+    },
+    "dining-room": {
+      "label": "Dining room",
+      "aliases": [
+        "dining"
+      ],
+      "lengthFt": 14,
+      "widthFt": 12,
+      "heightFt": 9,
+      "trimLinearFt": 50,
+      "doors": 1,
+      "windows": 2,
+      "ceilingIncluded": true,
+      "note": "Often has chair rail or wainscoting.",
+      "derived": {
+        "grossWallSqFt": 468,
+        "paintableWallSqFt": 418,
+        "ceilingSqFt": 168,
+        "openingDeductionSqFt": 50,
+        "totalPaintedSqFt": 586
+      },
+      "spec": [
+        "Frequently has a chair rail, picture rail or wainscoting. Raise the trim footage to include it, since panelled walls are much slower than flat ones.",
+        "Often shares an opening with the living room, so the two are usually quoted together."
+      ]
+    },
+    "master-bedroom": {
+      "label": "Master bedroom",
+      "aliases": [],
+      "lengthFt": 15,
+      "widthFt": 13,
+      "heightFt": 9,
+      "trimLinearFt": 48,
+      "doors": 2,
+      "windows": 2,
+      "ceilingIncluded": true,
+      "note": "Primary bedrooms with closets or bath access.",
+      "derived": {
+        "grossWallSqFt": 504,
+        "paintableWallSqFt": 434,
+        "ceilingSqFt": 195,
+        "openingDeductionSqFt": 70,
+        "totalPaintedSqFt": 629
+      },
+      "spec": [
+        "Larger than a secondary bedroom and usually has more doors, since closets and an ensuite both add casing.",
+        "Walk in closets are normally quoted as a separate small room rather than folded into the bedroom."
+      ]
+    },
+    "standard-bedroom": {
+      "label": "Bedroom",
+      "aliases": [
+        "bedroom"
+      ],
+      "lengthFt": 13,
+      "widthFt": 11,
+      "heightFt": 9,
+      "trimLinearFt": 44,
+      "doors": 1,
+      "windows": 2,
+      "ceilingIncluded": true,
+      "note": "Guest rooms and kids rooms.",
+      "derived": {
+        "grossWallSqFt": 432,
+        "paintableWallSqFt": 382,
+        "ceilingSqFt": 143,
+        "openingDeductionSqFt": 50,
+        "totalPaintedSqFt": 525
+      },
+      "spec": [
+        "The most commonly quoted single room, and the usual reference point for a per room price.",
+        "Two windows and one door is typical. Each door and window is deducted from wall area and priced separately if painted."
+      ]
+    },
+    "kitchen": {
+      "label": "Kitchen",
+      "aliases": [],
+      "lengthFt": 13,
+      "widthFt": 11,
+      "heightFt": 9,
+      "trimLinearFt": 55,
+      "doors": 1,
+      "windows": 1,
+      "ceilingIncluded": false,
+      "heavyTrim": true,
+      "note": "Cabinets excluded. Trim is usually heavier here.",
+      "derived": {
+        "grossWallSqFt": 432,
+        "paintableWallSqFt": 397,
+        "ceilingSqFt": 0,
+        "openingDeductionSqFt": 35,
+        "totalPaintedSqFt": 397
+      },
+      "spec": [
+        "Walls and trim only. Cabinets are priced per door and drawer front and are a different job.",
+        "The ceiling is excluded by default, because cabinets and appliances often make masking impractical.",
+        "Heavier trim than most rooms, plus a lot of cutting in around backsplash and cabinet runs."
+      ]
+    },
+    "bathroom": {
+      "label": "Bathroom",
+      "aliases": [],
+      "lengthFt": 9,
+      "widthFt": 7,
+      "heightFt": 8,
+      "trimLinearFt": 30,
+      "doors": 1,
+      "windows": 0,
+      "ceilingIncluded": true,
+      "moistureFlag": true,
+      "note": "Moisture resistant paint often applies.",
+      "derived": {
+        "grossWallSqFt": 256,
+        "paintableWallSqFt": 236,
+        "ceilingSqFt": 63,
+        "openingDeductionSqFt": 20,
+        "totalPaintedSqFt": 299
+      },
+      "spec": [
+        "Small area but high labor density. Cutting in around tile, mirrors, vanities and fixtures is most of the time on the job.",
+        "Usually takes a moisture resistant satin or semi gloss, which costs more per gallon than a flat wall paint.",
+        "The smallest rooms are where a minimum job charge matters most, since setup and cleanup do not scale down."
+      ]
+    },
+    "hallway": {
+      "label": "Hallway",
+      "aliases": [],
+      "lengthFt": 18,
+      "widthFt": 5,
+      "heightFt": 9,
+      "trimLinearFt": 70,
+      "doors": 3,
+      "windows": 0,
+      "ceilingIncluded": true,
+      "note": "Long trim runs and lots of door casing.",
+      "derived": {
+        "grossWallSqFt": 414,
+        "paintableWallSqFt": 354,
+        "ceilingSqFt": 90,
+        "openingDeductionSqFt": 60,
+        "totalPaintedSqFt": 444
+      },
+      "spec": [
+        "Modest wall area but long trim runs and a lot of door casing, and casing is slow work.",
+        "Three doors of casing can outweigh the wall area entirely, which is why hallways cost more than people expect.",
+        "Stairwells attached to a hallway need staging or ladder work and are quoted separately."
+      ]
+    },
+    "home-office": {
+      "label": "Home office",
+      "aliases": [
+        "office"
+      ],
+      "lengthFt": 12,
+      "widthFt": 11,
+      "heightFt": 9,
+      "trimLinearFt": 40,
+      "doors": 1,
+      "windows": 1,
+      "ceilingIncluded": true,
+      "note": "Spare room converted to a workspace.",
+      "derived": {
+        "grossWallSqFt": 414,
+        "paintableWallSqFt": 379,
+        "ceilingSqFt": 132,
+        "openingDeductionSqFt": 35,
+        "totalPaintedSqFt": 511
+      },
+      "spec": [
+        "Comparable to a secondary bedroom. Adjust the dimensions, since converted spare rooms vary widely.",
+        "Built in shelving is closer to cabinet work than wall work and is not included in a walls and trim estimate."
+      ]
+    },
+    "laundry-room": {
+      "label": "Laundry room",
+      "aliases": [
+        "laundry"
+      ],
+      "lengthFt": 9,
+      "widthFt": 7,
+      "heightFt": 8,
+      "trimLinearFt": 30,
+      "doors": 1,
+      "windows": 0,
+      "ceilingIncluded": true,
+      "moistureFlag": true,
+      "note": "Small utility space, often semi gloss.",
+      "derived": {
+        "grossWallSqFt": 256,
+        "paintableWallSqFt": 236,
+        "ceilingSqFt": 63,
+        "openingDeductionSqFt": 20,
+        "totalPaintedSqFt": 299
+      },
+      "spec": [
+        "Small utility space, normally finished in semi gloss or a moisture resistant paint.",
+        "Painting behind the washer and dryer means moving them, which is access time rather than painting time."
+      ]
+    },
+    "custom": {
+      "label": "Custom room",
+      "aliases": [],
+      "lengthFt": 14,
+      "widthFt": 12,
+      "heightFt": 9,
+      "trimLinearFt": 40,
+      "doors": 1,
+      "windows": 1,
+      "ceilingIncluded": true,
+      "note": "Start from a blank room and adjust everything.",
+      "derived": {
+        "grossWallSqFt": 468,
+        "paintableWallSqFt": 433,
+        "ceilingSqFt": 168,
+        "openingDeductionSqFt": 35,
+        "totalPaintedSqFt": 601
+      },
+      "spec": [
+        "A blank room. Enter your own dimensions, trim footage and openings."
+      ]
+    }
+  },
+  "surfaces": {
+    "siding": {
+      "label": "Siding",
+      "aliases": [],
+      "scope": "exterior",
+      "basis": "area",
+      "defaultSqFt": 1750,
+      "coverageSqFtPerGallon": 350,
+      "productionSqFtPerHourBrush": 175,
+      "productionSqFtPerHourSpray": 500,
+      "defaultCoats": 2,
+      "access": "ladder",
+      "source": "resolved",
+      "note": "Main body of the house. Lap, vinyl, or hardboard.",
+      "tier": 0,
+      "engineReady": true,
+      "measure": {
+        "unit": "sq ft",
+        "label": "Surface area",
+        "default": 1750
+      },
+      "production": {
+        "brush": 175,
+        "spray": 500,
+        "unit": "sqft/hr"
+      },
+      "prep": {
+        "profile": "wash-scuff",
+        "hoursPer100": 0.75
+      },
+      "system": [
+        "finish"
+      ],
+      "spec": [
+        "Sprays roughly three times faster than it brushes, which is where most of the cost difference on an exterior lives."
+      ]
+    },
+    "stucco": {
+      "label": "Stucco",
+      "aliases": [],
+      "scope": "exterior",
+      "basis": "area",
+      "defaultSqFt": 1750,
+      "coverageSqFtPerGallon": 200,
+      "productionSqFtPerHourBrush": 150,
+      "productionSqFtPerHourSpray": 400,
+      "defaultCoats": 2,
+      "access": "ladder",
+      "source": "resolved",
+      "note": "Rough texture. Absorbs significantly more paint than siding.",
+      "tier": 0,
+      "engineReady": true,
+      "measure": {
+        "unit": "sq ft",
+        "label": "Surface area",
+        "default": 1750
+      },
+      "production": {
+        "brush": 150,
+        "spray": 400,
+        "unit": "sqft/hr"
+      },
+      "prep": {
+        "profile": "wash-scuff",
+        "hoursPer100": 0.75
+      },
+      "system": [
+        "finish"
+      ],
+      "spec": [
+        "Texture holds far more paint than flat siding, so coverage per gallon is much lower.",
+        "Usually sprayed then back rolled so the coating is pushed into the texture rather than bridging over it."
+      ]
+    },
+    "brick": {
+      "label": "Brick",
+      "aliases": [],
+      "scope": "exterior",
+      "basis": "area",
+      "defaultSqFt": 1200,
+      "coverageSqFtPerGallon": 150,
+      "productionSqFtPerHourBrush": 130,
+      "productionSqFtPerHourSpray": 350,
+      "defaultCoats": 2,
+      "access": "ladder",
+      "source": "resolved",
+      "note": "Highly absorbent. Masonry primer usually required first.",
+      "tier": 0,
+      "engineReady": true,
+      "measure": {
+        "unit": "sq ft",
+        "label": "Surface area",
+        "default": 1200
+      },
+      "production": {
+        "brush": 130,
+        "spray": 350,
+        "unit": "sqft/hr"
+      },
+      "prep": {
+        "profile": "wash-scuff",
+        "hoursPer100": 0.75
+      },
+      "system": [
+        "finish"
+      ],
+      "spec": [
+        "The most absorbent exterior surface here. The first coat largely disappears into the face.",
+        "Masonry primer is effectively mandatory, and painted brick is very difficult to reverse."
+      ]
+    },
+    "trim-fascia": {
+      "label": "Trim and fascia",
+      "aliases": [
+        "trim"
+      ],
+      "scope": "exterior",
+      "basis": "area",
+      "defaultSqFt": 400,
+      "coverageSqFtPerGallon": 375,
+      "productionSqFtPerHourBrush": 80,
+      "productionSqFtPerHourSpray": 200,
+      "defaultCoats": 2,
+      "access": "ladder",
+      "source": "resolved",
+      "note": "Window casings, corner boards, fascia board. Slow ladder work.",
+      "tier": 0,
+      "engineReady": true,
+      "measure": {
+        "unit": "sq ft",
+        "label": "Surface area",
+        "default": 400
+      },
+      "production": {
+        "brush": 80,
+        "spray": 200,
+        "unit": "sqft/hr"
+      },
+      "prep": {
+        "profile": "wash-scuff",
+        "hoursPer100": 0.75
+      },
+      "system": [
+        "finish"
+      ],
+      "spec": [
+        "Costs far more per square foot than siding because production rate, not area, drives the labor.",
+        "Almost entirely ladder work on anything above a single storey."
+      ]
+    },
+    "soffit": {
+      "label": "Soffit",
+      "aliases": [],
+      "scope": "exterior",
+      "basis": "area",
+      "defaultSqFt": 275,
+      "coverageSqFtPerGallon": 350,
+      "productionSqFtPerHourBrush": 75,
+      "productionSqFtPerHourSpray": 200,
+      "defaultCoats": 2,
+      "access": "ladder",
+      "source": "app",
+      "note": "Underside of eaves. Overhead work, slower than siding.",
+      "tier": 0,
+      "engineReady": true,
+      "measure": {
+        "unit": "sq ft",
+        "label": "Surface area",
+        "default": 275
+      },
+      "production": {
+        "brush": 75,
+        "spray": 200,
+        "unit": "sqft/hr"
+      },
+      "prep": {
+        "profile": "wash-scuff",
+        "hoursPer100": 0.75
+      },
+      "system": [
+        "finish"
+      ],
+      "spec": [
+        "Overhead work, so slower than siding of the same area."
+      ]
+    },
+    "doors": {
+      "label": "Exterior doors",
+      "aliases": [],
+      "scope": "exterior",
+      "basis": "area",
+      "defaultSqFt": 42,
+      "coverageSqFtPerGallon": 375,
+      "productionSqFtPerHourBrush": 35,
+      "productionSqFtPerHourSpray": 90,
+      "defaultCoats": 2,
+      "access": "ground",
+      "source": "resolved",
+      "note": "Approximately 21 sq ft per door face. Becomes unit priced in P2.",
+      "tier": 0,
+      "engineReady": true,
+      "measure": {
+        "unit": "sq ft",
+        "label": "Surface area",
+        "default": 42
+      },
+      "production": {
+        "brush": 35,
+        "spray": 90,
+        "unit": "sqft/hr"
+      },
+      "prep": {
+        "profile": "wash-scuff",
+        "hoursPer100": 0.75
+      },
+      "system": [
+        "finish"
+      ],
+      "spec": [
+        "Approximately 21 sq ft per door face. Becomes properly unit priced once the unit basis ships."
+      ]
+    },
+    "garage-door": {
+      "label": "Garage door",
+      "aliases": [],
+      "scope": "exterior",
+      "basis": "area",
+      "defaultSqFt": 160,
+      "coverageSqFtPerGallon": 350,
+      "productionSqFtPerHourBrush": 80,
+      "productionSqFtPerHourSpray": 250,
+      "defaultCoats": 2,
+      "access": "ground",
+      "source": "app",
+      "note": "Standard two car garage door.",
+      "tier": 0,
+      "engineReady": true,
+      "measure": {
+        "unit": "sq ft",
+        "label": "Surface area",
+        "default": 160
+      },
+      "production": {
+        "brush": 80,
+        "spray": 250,
+        "unit": "sqft/hr"
+      },
+      "prep": {
+        "profile": "wash-scuff",
+        "hoursPer100": 0.75
+      },
+      "system": [
+        "finish"
+      ],
+      "spec": [
+        "Panelled doors have many more cut lines than a flush door of the same area."
+      ]
+    },
+    "shutters": {
+      "label": "Shutters",
+      "aliases": [],
+      "scope": "exterior",
+      "basis": "area",
+      "defaultSqFt": 120,
+      "coverageSqFtPerGallon": 350,
+      "productionSqFtPerHourBrush": 50,
+      "productionSqFtPerHourSpray": 150,
+      "defaultCoats": 2,
+      "access": "ladder",
+      "isAddOn": true,
+      "source": "app",
+      "note": "Approximately 15 sq ft per shutter, 8 shutters default.",
+      "tier": 0,
+      "engineReady": true,
+      "measure": {
+        "unit": "sq ft",
+        "label": "Surface area",
+        "default": 120
+      },
+      "production": {
+        "brush": 50,
+        "spray": 150,
+        "unit": "sqft/hr"
+      },
+      "prep": {
+        "profile": "wash-scuff",
+        "hoursPer100": 0.75
+      },
+      "system": [
+        "finish"
+      ],
+      "spec": [
+        "Usually removed and sprayed flat, which is faster than coating them in place."
+      ]
+    },
+    "deck-porch": {
+      "label": "Deck or porch",
+      "aliases": [
+        "deck"
+      ],
+      "scope": "exterior",
+      "basis": "area",
+      "defaultSqFt": 300,
+      "coverageSqFtPerGallon": 200,
+      "productionSqFtPerHourBrush": 175,
+      "productionSqFtPerHourSpray": 400,
+      "defaultCoats": 2,
+      "access": "ground",
+      "isAddOn": true,
+      "source": "resolved",
+      "note": "Floor area. Stain or solid color. Railings slow this down sharply.",
+      "tier": 0,
+      "engineReady": true,
+      "measure": {
+        "unit": "sq ft",
+        "label": "Surface area",
+        "default": 300
+      },
+      "production": {
+        "brush": 175,
+        "spray": 400,
+        "unit": "sqft/hr"
+      },
+      "prep": {
+        "profile": "wash-scuff",
+        "hoursPer100": 0.75
+      },
+      "system": [
+        "finish"
+      ],
+      "spec": [
+        "Floor area only. Railings and spindles are separate and are far slower per square foot."
+      ]
+    },
+    "fence": {
+      "label": "Fence",
+      "aliases": [],
+      "scope": "exterior",
+      "basis": "area",
+      "defaultSqFt": 500,
+      "coverageSqFtPerGallon": 250,
+      "productionSqFtPerHourBrush": 150,
+      "productionSqFtPerHourSpray": 400,
+      "defaultCoats": 2,
+      "access": "ground",
+      "isAddOn": true,
+      "source": "resolved",
+      "note": "Both sides if accessible. Stain or paint.",
+      "tier": 0,
+      "engineReady": true,
+      "measure": {
+        "unit": "sq ft",
+        "label": "Surface area",
+        "default": 500
+      },
+      "production": {
+        "brush": 150,
+        "spray": 400,
+        "unit": "sqft/hr"
+      },
+      "prep": {
+        "profile": "wash-scuff",
+        "hoursPer100": 0.75
+      },
+      "system": [
+        "finish"
+      ],
+      "spec": [
+        "Enter the area for both sides if both are being coated."
+      ]
+    },
+    "custom-exterior": {
+      "label": "Custom surface",
+      "aliases": [],
+      "scope": "exterior",
+      "basis": "area",
+      "defaultSqFt": 200,
+      "coverageSqFtPerGallon": 350,
+      "productionSqFtPerHourBrush": 100,
+      "productionSqFtPerHourSpray": 300,
+      "defaultCoats": 2,
+      "access": "ground",
+      "source": "app",
+      "note": "Blank exterior surface.",
+      "tier": 0,
+      "engineReady": true,
+      "measure": {
+        "unit": "sq ft",
+        "label": "Surface area",
+        "default": 200
+      },
+      "production": {
+        "brush": 100,
+        "spray": 300,
+        "unit": "sqft/hr"
+      },
+      "prep": {
+        "profile": "wash-scuff",
+        "hoursPer100": 0.75
+      },
+      "system": [
+        "finish"
+      ],
+      "spec": [
+        "Generic fallback rates. Use a specific surface where one exists."
+      ]
+    },
+    "cabinets": {
+      "basis": "unit",
+      "measure": {
+        "unit": "doors and drawer fronts",
+        "label": "How many",
+        "default": 24
+      },
+      "coverageSqFtPerGallon": 250,
+      "paintAreaPerUnit": 18,
+      "hoursPerUnitPerCoat": 0.75,
+      "defaultCoats": 2,
+      "access": "ground",
+      "label": "Kitchen cabinets",
+      "scope": "interior",
+      "tier": 1,
+      "prep": {
+        "profile": "degrease-sand-prime",
+        "hoursPer100": 3.5
+      },
+      "system": [
+        "degrease",
+        "sand",
+        "primer",
+        "finish",
+        "finish"
+      ],
+      "spec": [
+        "Priced per door and drawer front, not by wall area. A 24 front kitchen is a different job from a 40 front kitchen regardless of room size.",
+        "The per front figure covers the front plus its share of the box and face frame, which are painted at the same time and are easy to forget when bidding.",
+        "Degreasing and sanding are the bulk of the labor. Cabinet failures are almost always adhesion failures from skipped prep.",
+        "Usually sprayed for finish quality, which means removing doors, labelling hinges and setting up a spray area."
+      ],
+      "aliases": [],
+      "engineReady": true,
+      "source": "new",
+      "note": "Priced per door and drawer front, not by wall area. A 24 front kitchen is a different job from a 40 front kitchen regardless of room size."
+    },
+    "interior-doors": {
+      "basis": "unit",
+      "measure": {
+        "unit": "doors",
+        "label": "How many",
+        "default": 6
+      },
+      "coverageSqFtPerGallon": 250,
+      "paintAreaPerUnit": 40,
+      "hoursPerUnitPerCoat": 0.5,
+      "defaultCoats": 2,
+      "access": "ground",
+      "label": "Interior doors",
+      "scope": "interior",
+      "tier": 1,
+      "prep": {
+        "profile": "sand-fill",
+        "hoursPer100": 1.0
+      },
+      "system": [
+        "primer",
+        "finish"
+      ],
+      "spec": [
+        "Priced per door, counting both faces plus edges. Roughly 40 sq ft of painted area per door.",
+        "A six panel door takes noticeably longer than a flush door because every panel edge is cut in by hand.",
+        "Door casing is trim and is measured separately by the foot."
+      ],
+      "aliases": [],
+      "engineReady": true,
+      "source": "new",
+      "note": "Priced per door, counting both faces plus edges. Roughly 40 sq ft of painted area per door."
+    },
+    "baseboard": {
+      "basis": "linear",
+      "measure": {
+        "unit": "lin ft",
+        "label": "Length",
+        "default": 180
+      },
+      "coverageSqFtPerGallon": 250,
+      "paintAreaPerLinearFoot": 0.45,
+      "production": {
+        "brush": 110,
+        "spray": 240,
+        "unit": "lf/hr"
+      },
+      "defaultCoats": 2,
+      "access": "ground",
+      "label": "Baseboard",
+      "scope": "interior",
+      "tier": 1,
+      "prep": {
+        "profile": "caulk-fill-sand",
+        "hoursPer100": 1.0
+      },
+      "system": [
+        "primer",
+        "finish"
+      ],
+      "spec": [
+        "Measured by the foot along the wall. Caulking the top edge is what makes baseboard look finished and is most of the prep.",
+        "Tall or profiled baseboard covers more area per foot and takes longer to cut in."
+      ],
+      "aliases": [],
+      "engineReady": true,
+      "source": "new",
+      "note": "Measured by the foot along the wall. Caulking the top edge is what makes baseboard look finished and is most of the prep."
+    },
+    "crown-molding": {
+      "basis": "linear",
+      "measure": {
+        "unit": "lin ft",
+        "label": "Length",
+        "default": 60
+      },
+      "coverageSqFtPerGallon": 250,
+      "paintAreaPerLinearFoot": 0.55,
+      "production": {
+        "brush": 65,
+        "spray": 120,
+        "unit": "lf/hr"
+      },
+      "defaultCoats": 2,
+      "access": "ladder",
+      "label": "Crown molding",
+      "scope": "interior",
+      "tier": 1,
+      "prep": {
+        "profile": "fill-caulk-sand",
+        "hoursPer100": 1.2
+      },
+      "system": [
+        "primer",
+        "finish"
+      ],
+      "spec": [
+        "Slower per foot than baseboard because it is overhead work on a ladder with two cut lines, one to the wall and one to the ceiling.",
+        "Profiled crown holds more paint per foot than a simple cove."
+      ],
+      "aliases": [],
+      "engineReady": true,
+      "source": "new",
+      "note": "Slower per foot than baseboard because it is overhead work on a ladder with two cut lines, one to the wall and one to the ceiling."
+    },
+    "wainscoting": {
+      "basis": "area",
+      "measure": {
+        "unit": "sq ft",
+        "label": "Surface area",
+        "default": 120
+      },
+      "coverageSqFtPerGallon": 250,
+      "production": {
+        "brush": 90,
+        "spray": 200,
+        "unit": "sqft/hr"
+      },
+      "defaultCoats": 2,
+      "access": "ground",
+      "label": "Wainscoting",
+      "scope": "interior",
+      "tier": 1,
+      "prep": {
+        "profile": "fill-caulk-sand",
+        "hoursPer100": 2.0
+      },
+      "system": [
+        "primer",
+        "finish"
+      ],
+      "spec": [
+        "Panelled walls take far longer than flat walls of the same area. Every panel has inside corners that are cut in by brush.",
+        "Priced by area, but the production rate is closer to trim than to wall."
+      ],
+      "aliases": [],
+      "engineReady": true,
+      "source": "new",
+      "note": "Panelled walls take far longer than flat walls of the same area. Every panel has inside corners that are cut in by brush."
+    },
+    "stair-spindles": {
+      "basis": "unit",
+      "measure": {
+        "unit": "spindles",
+        "label": "How many",
+        "default": 30
+      },
+      "coverageSqFtPerGallon": 250,
+      "paintAreaPerUnit": 3,
+      "hoursPerUnitPerCoat": 0.25,
+      "defaultCoats": 2,
+      "access": "ground",
+      "label": "Stair spindles",
+      "scope": "interior",
+      "tier": 1,
+      "prep": {
+        "profile": "sand-fill",
+        "hoursPer100": 2.5
+      },
+      "system": [
+        "primer",
+        "finish"
+      ],
+      "spec": [
+        "Priced per spindle. Small area, very high labor, because every spindle is a full wrap by brush.",
+        "One of the most commonly underbid items in interior painting."
+      ],
+      "aliases": [],
+      "engineReady": true,
+      "source": "new",
+      "note": "Priced per spindle. Small area, very high labor, because every spindle is a full wrap by brush."
+    },
+    "handrail": {
+      "basis": "linear",
+      "measure": {
+        "unit": "lin ft",
+        "label": "Length",
+        "default": 24
+      },
+      "coverageSqFtPerGallon": 250,
+      "paintAreaPerLinearFoot": 0.6,
+      "production": {
+        "brush": 45,
+        "spray": 90,
+        "unit": "lf/hr"
+      },
+      "defaultCoats": 2,
+      "access": "ground",
+      "label": "Handrail and banister",
+      "scope": "interior",
+      "tier": 1,
+      "prep": {
+        "profile": "sand-fill",
+        "hoursPer100": 2.0
+      },
+      "system": [
+        "primer",
+        "finish"
+      ],
+      "spec": [
+        "Slow per foot. A handrail is a full wrap with a finish that has to be smooth to the touch, so it is usually sanded between coats."
+      ],
+      "aliases": [],
+      "engineReady": true,
+      "source": "new",
+      "note": "Slow per foot. A handrail is a full wrap with a finish that has to be smooth to the touch, so it is usually sanded between coats."
+    },
+    "window-sash": {
+      "basis": "unit",
+      "measure": {
+        "unit": "windows",
+        "label": "How many",
+        "default": 8
+      },
+      "coverageSqFtPerGallon": 250,
+      "paintAreaPerUnit": 15,
+      "hoursPerUnitPerCoat": 0.35,
+      "defaultCoats": 2,
+      "access": "ground",
+      "label": "Window sash",
+      "scope": "interior",
+      "tier": 1,
+      "prep": {
+        "profile": "scrape-glaze-sand",
+        "hoursPer100": 3.0
+      },
+      "system": [
+        "primer",
+        "finish"
+      ],
+      "spec": [
+        "Priced per window. Divided lights multiply the time, since every muntin is cut in by hand.",
+        "Older windows may need reglazing before painting, which is separate work."
+      ],
+      "aliases": [],
+      "engineReady": true,
+      "source": "new",
+      "note": "Priced per window. Divided lights multiply the time, since every muntin is cut in by hand."
+    },
+    "gutters-downspouts": {
+      "basis": "linear",
+      "measure": {
+        "unit": "lin ft",
+        "label": "Length",
+        "default": 120
+      },
+      "coverageSqFtPerGallon": 350,
+      "paintAreaPerLinearFoot": 0.8,
+      "production": {
+        "brush": 90,
+        "spray": 220,
+        "unit": "lf/hr"
+      },
+      "defaultCoats": 2,
+      "access": "ladder",
+      "label": "Gutters and downspouts",
+      "scope": "exterior",
+      "tier": 1,
+      "prep": {
+        "profile": "wash-degloss",
+        "hoursPer100": 1.5
+      },
+      "system": [
+        "bonding primer",
+        "finish"
+      ],
+      "spec": [
+        "Measured by the foot. Ladder work throughout, which sets the production rate more than the surface does.",
+        "Aluminium and galvanised both need a bonding primer or the coating peels."
+      ],
+      "aliases": [],
+      "engineReady": true,
+      "source": "new",
+      "note": "Measured by the foot. Ladder work throughout, which sets the production rate more than the surface does."
+    },
+    "parking-lot-striping": {
+      "basis": "linear",
+      "measure": {
+        "unit": "lin ft",
+        "label": "Length",
+        "default": 2000
+      },
+      "coverageSqFtPerGallon": 320,
+      "paintAreaPerLinearFoot": 0.33,
+      "production": {
+        "brush": 800,
+        "spray": 2400,
+        "unit": "lf/hr"
+      },
+      "defaultCoats": 2,
+      "access": "ground",
+      "label": "Parking lot striping",
+      "scope": "exterior",
+      "tier": 1,
+      "prep": {
+        "profile": "sweep-blow",
+        "hoursPer100": 0.15
+      },
+      "system": [
+        "traffic paint"
+      ],
+      "spec": [
+        "Measured in linear feet of line, typically a 4 inch stripe. Layout time on a fresh lot is separate from painting time.",
+        "Stalls, arrows, ADA symbols and crosswalks are counted as units on top of the linear footage.",
+        "Traffic paint is a different product from architectural paint, with its own coverage and cure time."
+      ],
+      "aliases": [],
+      "engineReady": true,
+      "source": "new",
+      "note": "Measured in linear feet of line, typically a 4 inch stripe. Layout time on a fresh lot is separate from painting time."
+    },
+    "parking-stalls": {
+      "basis": "unit",
+      "measure": {
+        "unit": "stalls",
+        "label": "How many",
+        "default": 60
+      },
+      "coverageSqFtPerGallon": 320,
+      "paintAreaPerUnit": 22,
+      "hoursPerUnitPerCoat": 0.06,
+      "defaultCoats": 1,
+      "access": "ground",
+      "label": "Parking stalls",
+      "scope": "exterior",
+      "tier": 1,
+      "prep": {
+        "profile": "sweep-blow",
+        "hoursPer100": 0.15
+      },
+      "system": [
+        "traffic paint"
+      ],
+      "spec": [
+        "Priced per stall, which is the unit commercial clients actually ask for a number on.",
+        "A standard single stripe stall is about 18 to 20 linear feet of line."
+      ],
+      "aliases": [],
+      "engineReady": true,
+      "source": "new",
+      "note": "Priced per stall, which is the unit commercial clients actually ask for a number on."
+    },
+    "curb-painting": {
+      "basis": "linear",
+      "measure": {
+        "unit": "lin ft",
+        "label": "Length",
+        "default": 200
+      },
+      "coverageSqFtPerGallon": 300,
+      "paintAreaPerLinearFoot": 0.9,
+      "production": {
+        "brush": 300,
+        "spray": 700,
+        "unit": "lf/hr"
+      },
+      "defaultCoats": 2,
+      "access": "ground",
+      "label": "Curb painting",
+      "scope": "exterior",
+      "tier": 1,
+      "prep": {
+        "profile": "sweep-blow",
+        "hoursPer100": 0.3
+      },
+      "system": [
+        "traffic paint"
+      ],
+      "spec": [
+        "Measured by the foot. Face and top of the curb are both coated, which is why the area per foot is high for a linear item.",
+        "Fire lane red and handicap blue are regulated colours in most jurisdictions."
+      ],
+      "aliases": [],
+      "engineReady": true,
+      "source": "new",
+      "note": "Measured by the foot. Face and top of the curb are both coated, which is why the area per foot is high for a linear item."
+    }
+  },
+  "quoteTerms": [
+    "Quote valid for 7 days from issue date.",
+    "Pricing is based on visible conditions at the time of estimating.",
+    "Uncovered repairs, water damage, or change requests are billed separately."
+  ],
+  "bases": {
+    "area": "Priced by square footage. Walls, ceilings, siding, floors.",
+    "linear": "Priced by the foot. Trim, fence, striping, curb, pipe.",
+    "unit": "Priced per item. Doors, windows, cabinet fronts, spindles, stalls.",
+    "system": "Multi layer coating systems with per layer coverage and cure windows. Epoxy, industrial.",
+    "prep": "Prep is the scope rather than a multiplier. Washing, blasting, stripping, repair.",
+    "crewday": "Priced by crew days and mobilization rather than by measurement.",
+    "dft": "Industrial film build from solids by volume against target dry film thickness."
+  },
+  "costStack": {
+    "note": "Layers 4 to 7 of the cost stack. The engine previously priced materials, sundries and direct labor only, which answers what a job consumes but not what to charge for it. Every figure here is a starting default a painter is expected to replace with their own.",
+    "laborBurden": {
+      "percentOnWage": 32,
+      "components": {
+        "payrollTaxes": 9,
+        "workersComp": 12,
+        "liabilityInsurance": 4,
+        "paidTimeOff": 4,
+        "vehicleAndPhone": 3
+      },
+      "note": "Applied on top of the base wage to get a loaded hourly cost. Typical range is 25 to 45 percent depending on state and trade classification. Pricing off the raw wage is the most common way a small painting firm loses money without noticing."
+    },
+    "overhead": {
+      "recoveryPercent": 18,
+      "note": "Rent, insurance, admin, software, sales and vehicles, as a share of revenue. Recovered across all billable work rather than marked up on paint. Small painting firms typically sit between 15 and 25 percent."
+    },
+    "profit": {
+      "targetNetMarginPercent": 10,
+      "note": "Net profit target after overhead. Distinct from gross margin. Price is derived as cost divided by one minus the margin, never cost times one plus the margin."
+    },
+    "mobilization": {
+      "baseCharge": 85,
+      "perMileRate": 0.7,
+      "defaultRoundTripMiles": 20,
+      "note": "Drive time, load in and load out. A default starting figure, not a published rate. Set the per mile figure to whatever your own vehicle cost works out to."
+    },
+    "equipmentDayRates": {
+      "scaffold": 95,
+      "scissorLift": 250,
+      "boomLift": 375,
+      "airlessSprayer": 75,
+      "pressureWasher": 90,
+      "note": "Indicative daily rental. Regional rates vary widely, so treat these as placeholders until replaced with local quotes."
+    },
+    "accessMultiplier": {
+      "ground": 1.0,
+      "ladder": 1.15,
+      "scaffold": 1.35,
+      "lift": 1.45,
+      "rope": 1.9,
+      "note": "Production slows with height and access difficulty. Applied to labor hours, not to materials."
+    }
+  }
+}

@@ -1,0 +1,761 @@
+{
+  "version": "1.0.0",
+  "note": "Tier 2 contractor calculators. Unlike the surface calculators these take no measurements: they take a painting business's own numbers and answer what to charge. Every visitor to one of these is definitionally a contractor, which is why they matter commercially. Each declares its inputs and outputs as data; the maths lives in code, keyed by 'compute'.",
+  "tools": {
+    "markup-vs-margin-calculator": {
+      "compute": "markupMargin",
+      "h1": "Markup vs Margin Calculator",
+      "metaTitle": "Markup vs Margin Calculator for Painters",
+      "metaDescription": "Convert markup to margin and back. A 40 percent markup is only a 28.6 percent margin. Free, no signup.",
+      "focusKeyword": "markup vs margin calculator",
+      "intro": "Markup and margin are not the same number, and confusing them is the most expensive arithmetic error in the trade. Enter either one and see the other, plus the price it produces.",
+      "audience": "contractor",
+      "inputs": [
+        {
+          "key": "cost",
+          "label": "Job cost",
+          "prefix": "$",
+          "default": 1000,
+          "step": 50,
+          "min": 0
+        },
+        {
+          "key": "markup",
+          "label": "Markup you apply",
+          "suffix": "%",
+          "default": 40,
+          "step": 1,
+          "min": 0,
+          "max": 500
+        }
+      ],
+      "outputs": [
+        {
+          "key": "price",
+          "label": "Price",
+          "format": "money",
+          "primary": true
+        },
+        {
+          "key": "margin",
+          "label": "Margin you actually get",
+          "format": "percent"
+        },
+        {
+          "key": "profit",
+          "label": "Gross profit",
+          "format": "money"
+        },
+        {
+          "key": "markupForSameMargin",
+          "label": "Markup needed to make that markup a real margin",
+          "format": "percent"
+        }
+      ],
+      "faqs": [
+        [
+          "What is the difference between markup and margin?",
+          "Markup is profit as a share of your cost. Margin is profit as a share of the price you charge. The same job gives two different percentages, and margin is always the smaller of the two."
+        ],
+        [
+          "Is a 50 percent markup a 50 percent margin?",
+          "No. A 50 percent markup is a 33.3 percent margin. To actually earn a 50 percent margin you need a 100 percent markup, which is double the cost."
+        ],
+        [
+          "Which should I quote on?",
+          "Price on margin. Margin tells you what share of the money coming in is yours to keep, which is the number your business actually runs on."
+        ]
+      ]
+    },
+    "labor-burden-calculator": {
+      "compute": "laborBurden",
+      "h1": "Labor Burden Calculator",
+      "metaTitle": "Labor Burden Calculator for Painting Contractors",
+      "metaDescription": "Work out what an employee really costs per hour once tax, comp and insurance are added. Free, no signup.",
+      "focusKeyword": "labor burden calculator",
+      "intro": "A painter on a 25 dollar wage does not cost you 25 dollars an hour. Payroll tax, workers comp, liability and paid time off all sit on top. This works out the real number to price against.",
+      "audience": "contractor",
+      "inputs": [
+        {
+          "key": "wage",
+          "label": "Base hourly wage",
+          "prefix": "$",
+          "default": 25,
+          "step": 0.5,
+          "min": 0
+        },
+        {
+          "key": "burden",
+          "label": "Burden rate",
+          "suffix": "%",
+          "default": 32,
+          "step": 1,
+          "min": 0,
+          "max": 100
+        }
+      ],
+      "outputs": [
+        {
+          "key": "loaded",
+          "label": "True hourly cost",
+          "format": "money",
+          "primary": true
+        },
+        {
+          "key": "burdenDollars",
+          "label": "Burden per hour",
+          "format": "money"
+        },
+        {
+          "key": "annualCost",
+          "label": "Annual cost at 1,800 billable hours",
+          "format": "money"
+        },
+        {
+          "key": "annualGap",
+          "label": "Yearly shortfall if you price on the raw wage",
+          "format": "money"
+        }
+      ],
+      "faqs": [
+        [
+          "What is included in labor burden?",
+          "Payroll taxes, workers compensation, liability insurance, paid time off, and vehicle or phone allowances. Workers comp is usually the largest single piece for painting."
+        ],
+        [
+          "What is a typical burden rate for painting?",
+          "Commonly 25 to 45 percent depending on state and how your trade is classified. Painting carries a higher comp rate than many trades because of ladder and height work."
+        ],
+        [
+          "Why does this matter so much?",
+          "Because it compounds on every hour you sell. Pricing off a raw wage means every single job is underpriced by the burden amount, and it never shows up as one obvious loss."
+        ]
+      ]
+    },
+    "break-even-calculator": {
+      "compute": "breakEven",
+      "h1": "Break Even Calculator",
+      "metaTitle": "Break Even Calculator for Painting Businesses",
+      "metaDescription": "Work out the revenue you need to cover overhead at your gross margin. Free, no signup.",
+      "focusKeyword": "break even calculator painting",
+      "intro": "How much work you have to sell before the business starts making money. Enter your fixed annual overhead and the gross margin you typically achieve.",
+      "audience": "contractor",
+      "inputs": [
+        {
+          "key": "overhead",
+          "label": "Fixed annual overhead",
+          "prefix": "$",
+          "default": 120000,
+          "step": 1000,
+          "min": 0
+        },
+        {
+          "key": "grossMargin",
+          "label": "Gross margin you achieve",
+          "suffix": "%",
+          "default": 45,
+          "step": 1,
+          "min": 1,
+          "max": 99
+        }
+      ],
+      "outputs": [
+        {
+          "key": "revenue",
+          "label": "Revenue needed to break even",
+          "format": "money",
+          "primary": true
+        },
+        {
+          "key": "monthly",
+          "label": "Per month",
+          "format": "money"
+        },
+        {
+          "key": "weekly",
+          "label": "Per week",
+          "format": "money"
+        },
+        {
+          "key": "jobsNeeded",
+          "label": "Jobs a year at a $3,000 average",
+          "format": "number"
+        }
+      ],
+      "faqs": [
+        [
+          "What counts as fixed overhead?",
+          "Anything you pay whether or not you have work on. Rent, insurance, vehicle payments, software, admin salary, accounting. Paint and site labor are not overhead, they are direct cost."
+        ],
+        [
+          "Why divide by gross margin instead of subtracting?",
+          "Because only the margin portion of each sale is left to pay overhead with. At a 45 percent margin, every dollar of revenue contributes 45 cents."
+        ],
+        [
+          "What if my margin is lower than I think?",
+          "Then break even is much further away than it looks. Halving your margin doubles the revenue you need, which is why margin discipline matters more than sales volume."
+        ]
+      ]
+    },
+    "overhead-recovery-calculator": {
+      "compute": "overheadRecovery",
+      "h1": "Overhead Recovery Calculator",
+      "metaTitle": "Overhead Recovery Calculator for Painters",
+      "metaDescription": "Work out how much overhead every billable hour has to carry, and the rate that recovers it. Free, no signup.",
+      "focusKeyword": "overhead recovery calculator",
+      "intro": "Overhead does not get paid by marking up paint. It gets recovered across every hour you sell. This works out how much each of those hours has to carry.",
+      "audience": "contractor",
+      "inputs": [
+        {
+          "key": "overhead",
+          "label": "Annual overhead",
+          "prefix": "$",
+          "default": 120000,
+          "step": 1000,
+          "min": 0
+        },
+        {
+          "key": "billableHours",
+          "label": "Billable hours a year",
+          "default": 3600,
+          "step": 100,
+          "min": 1
+        },
+        {
+          "key": "loadedRate",
+          "label": "Loaded labor cost per hour",
+          "prefix": "$",
+          "default": 33,
+          "step": 0.5,
+          "min": 0
+        }
+      ],
+      "outputs": [
+        {
+          "key": "perHour",
+          "label": "Overhead per billable hour",
+          "format": "money",
+          "primary": true
+        },
+        {
+          "key": "costPerHour",
+          "label": "Total cost per hour",
+          "format": "money"
+        },
+        {
+          "key": "breakEvenRate",
+          "label": "Hourly rate at break even",
+          "format": "money"
+        },
+        {
+          "key": "rateAt10",
+          "label": "Rate for a 10 percent net margin",
+          "format": "money"
+        }
+      ],
+      "faqs": [
+        [
+          "How many billable hours should I assume?",
+          "Count only hours you can actually invoice. A two painter crew working 45 weeks rarely bills more than about 3,600 hours between them once travel, estimating and admin come out."
+        ],
+        [
+          "Why not just add a percentage to each quote?",
+          "You can, but only if the percentage is derived from real overhead and real billable hours. A number picked because it sounds right is where under-recovery starts."
+        ],
+        [
+          "What happens if I overestimate billable hours?",
+          "You under-recover overhead on every job. Being optimistic about billable hours is one of the quietest ways to price too low all year."
+        ]
+      ]
+    },
+    "minimum-job-calculator": {
+      "compute": "minimumJob",
+      "h1": "Minimum Job Charge Calculator",
+      "metaTitle": "Minimum Job Charge Calculator for Painters",
+      "metaDescription": "Work out the smallest job worth taking once setup, travel and cleanup are paid for. Free, no signup.",
+      "focusKeyword": "minimum job charge calculator",
+      "intro": "Setup, travel and cleanup cost the same whether the job is one wall or ten. This works out the floor below which a job costs you money to accept.",
+      "audience": "contractor",
+      "inputs": [
+        {
+          "key": "fixedHours",
+          "label": "Hours consumed regardless of job size",
+          "default": 3,
+          "step": 0.5,
+          "min": 0
+        },
+        {
+          "key": "loadedRate",
+          "label": "Loaded labor cost per hour",
+          "prefix": "$",
+          "default": 33,
+          "step": 0.5,
+          "min": 0
+        },
+        {
+          "key": "mobilization",
+          "label": "Travel and mobilization",
+          "prefix": "$",
+          "default": 99,
+          "step": 5,
+          "min": 0
+        },
+        {
+          "key": "overhead",
+          "label": "Overhead recovery",
+          "suffix": "%",
+          "default": 18,
+          "step": 1,
+          "min": 0,
+          "max": 80
+        },
+        {
+          "key": "margin",
+          "label": "Target net margin",
+          "suffix": "%",
+          "default": 10,
+          "step": 1,
+          "min": 0,
+          "max": 90
+        }
+      ],
+      "outputs": [
+        {
+          "key": "minimum",
+          "label": "Minimum job charge",
+          "format": "money",
+          "primary": true
+        },
+        {
+          "key": "cost",
+          "label": "Direct cost of the visit",
+          "format": "money"
+        },
+        {
+          "key": "withOverhead",
+          "label": "After overhead recovery",
+          "format": "money"
+        }
+      ],
+      "faqs": [
+        [
+          "Should I really turn down small jobs?",
+          "Not necessarily, but you should price them at the minimum rather than by the hour. Small jobs are fine when they are priced for what they actually consume."
+        ],
+        [
+          "What is a typical painting minimum?",
+          "Most interior painters sit somewhere between 350 and 500 dollars. Below that the visit costs more than it earns once travel and setup are counted."
+        ],
+        [
+          "Does a minimum lose me customers?",
+          "It loses you the customers who were going to be unprofitable. A clear minimum stated up front also saves the estimating time you would have spent on them."
+        ]
+      ]
+    },
+    "production-rate-calculator": {
+      "compute": "productionRate",
+      "h1": "Production Rate Calculator",
+      "metaTitle": "Painting Production Rate Calculator",
+      "metaDescription": "Work out your real square feet per hour from a finished job, and use it to bid the next one. Free, no signup.",
+      "focusKeyword": "painting production rate calculator",
+      "intro": "The single most useful number a painting business can know about itself. Enter what a finished job actually took and get the rate to bid the next one with.",
+      "audience": "contractor",
+      "inputs": [
+        {
+          "key": "area",
+          "label": "Area painted",
+          "suffix": "sq ft",
+          "default": 2400,
+          "step": 50,
+          "min": 1
+        },
+        {
+          "key": "hours",
+          "label": "Hours it actually took",
+          "default": 14,
+          "step": 0.5,
+          "min": 0.1
+        },
+        {
+          "key": "crew",
+          "label": "Painters on the job",
+          "default": 2,
+          "step": 1,
+          "min": 1
+        }
+      ],
+      "outputs": [
+        {
+          "key": "ratePerCrewHour",
+          "label": "Sq ft per crew hour",
+          "format": "number",
+          "primary": true
+        },
+        {
+          "key": "ratePerManHour",
+          "label": "Sq ft per painter hour",
+          "format": "number"
+        },
+        {
+          "key": "hoursPer1000",
+          "label": "Hours per 1,000 sq ft",
+          "format": "decimal"
+        },
+        {
+          "key": "dailyOutput",
+          "label": "Sq ft in an 8 hour day",
+          "format": "number"
+        }
+      ],
+      "faqs": [
+        [
+          "Why track production rate at all?",
+          "Because it turns estimating from a guess into arithmetic. Once you know your own rate, every future bid is area divided by that number."
+        ],
+        [
+          "How many jobs should I measure?",
+          "Track several of the same type before trusting the average. One job can be distorted by an unusual amount of prep or access."
+        ],
+        [
+          "Should I use crew hours or painter hours?",
+          "Painter hours are the portable number, since they hold whether you send one painter or three. Crew hours are useful for scheduling."
+        ]
+      ]
+    },
+    "crew-day-cost-calculator": {
+      "compute": "crewDay",
+      "h1": "Crew Day Cost Calculator",
+      "metaTitle": "Crew Day Cost Calculator for Painting Contractors",
+      "metaDescription": "Work out what a crew costs you for a full day, fully loaded with burden. Free, no signup.",
+      "focusKeyword": "crew day cost calculator",
+      "intro": "What it costs to put a crew on site for a day, burden included. The number to check any day rate bid against before you accept it.",
+      "audience": "contractor",
+      "inputs": [
+        {
+          "key": "crew",
+          "label": "Painters in the crew",
+          "default": 2,
+          "step": 1,
+          "min": 1
+        },
+        {
+          "key": "hours",
+          "label": "Hours in the day",
+          "default": 8,
+          "step": 0.5,
+          "min": 1
+        },
+        {
+          "key": "wage",
+          "label": "Average base wage",
+          "prefix": "$",
+          "default": 25,
+          "step": 0.5,
+          "min": 0
+        },
+        {
+          "key": "burden",
+          "label": "Burden rate",
+          "suffix": "%",
+          "default": 32,
+          "step": 1,
+          "min": 0,
+          "max": 100
+        }
+      ],
+      "outputs": [
+        {
+          "key": "dayCost",
+          "label": "Crew cost per day",
+          "format": "money",
+          "primary": true
+        },
+        {
+          "key": "weekCost",
+          "label": "Per five day week",
+          "format": "money"
+        },
+        {
+          "key": "breakEvenDayRate",
+          "label": "Day rate at break even",
+          "format": "money"
+        },
+        {
+          "key": "targetDayRate",
+          "label": "Day rate with overhead and margin",
+          "format": "money"
+        }
+      ],
+      "faqs": [
+        [
+          "Does this include the owner working on site?",
+          "Only if you pay yourself a wage and enter it. Owners who work unpaid on site hide the true cost of the job, which makes every bid look better than it was."
+        ],
+        [
+          "What about a day with no work?",
+          "It still costs the crew day figure if they are on payroll. That is why utilisation matters as much as pricing."
+        ],
+        [
+          "How do I use this to check a bid?",
+          "Divide the bid by your crew day cost. If a three day job does not cover three crew days plus overhead and margin, it is not worth taking."
+        ]
+      ]
+    },
+    "job-profitability-calculator": {
+      "compute": "jobProfitability",
+      "h1": "Job Profitability Calculator",
+      "metaTitle": "Job Profitability Calculator for Painters",
+      "metaDescription": "Check whether a finished painting job actually made money, and what it earned per hour. Free, no signup.",
+      "focusKeyword": "job profitability calculator",
+      "intro": "Run a finished job through this to see whether it made what you thought. The profit per hour figure is usually the surprising one.",
+      "audience": "contractor",
+      "inputs": [
+        {
+          "key": "revenue",
+          "label": "What you invoiced",
+          "prefix": "$",
+          "default": 3200,
+          "step": 50,
+          "min": 0
+        },
+        {
+          "key": "materials",
+          "label": "Materials you bought",
+          "prefix": "$",
+          "default": 420,
+          "step": 10,
+          "min": 0
+        },
+        {
+          "key": "hours",
+          "label": "Hours actually worked",
+          "default": 38,
+          "step": 0.5,
+          "min": 0
+        },
+        {
+          "key": "loadedRate",
+          "label": "Loaded labor cost per hour",
+          "prefix": "$",
+          "default": 33,
+          "step": 0.5,
+          "min": 0
+        }
+      ],
+      "outputs": [
+        {
+          "key": "grossProfit",
+          "label": "Gross profit",
+          "format": "money",
+          "primary": true
+        },
+        {
+          "key": "grossMargin",
+          "label": "Gross margin",
+          "format": "percent"
+        },
+        {
+          "key": "profitPerHour",
+          "label": "Profit per hour worked",
+          "format": "money"
+        },
+        {
+          "key": "laborCost",
+          "label": "Loaded labor cost",
+          "format": "money"
+        }
+      ],
+      "faqs": [
+        [
+          "What gross margin should a painting job make?",
+          "Many painting businesses aim for 40 to 50 percent gross before overhead. What matters more is whether it is consistent enough to plan on."
+        ],
+        [
+          "Why use loaded labor rather than the wage?",
+          "Because the wage is not what the hour cost you. Using the raw wage makes every job look roughly a third more profitable than it was."
+        ],
+        [
+          "What does profit per hour tell me that margin does not?",
+          "Whether the job was worth the time. A high margin job that dragged on can earn less per hour than a lower margin job that ran clean."
+        ]
+      ]
+    },
+    "discount-impact-calculator": {
+      "compute": "discountImpact",
+      "h1": "Discount Impact Calculator",
+      "metaTitle": "Discount Impact Calculator for Painting Quotes",
+      "metaDescription": "See what a discount really costs in profit, and the extra work needed to replace it. Free, no signup.",
+      "focusKeyword": "discount impact calculator",
+      "intro": "A ten percent discount does not cost you ten percent. It comes entirely out of profit, which is a much smaller number. This shows the real damage.",
+      "audience": "contractor",
+      "inputs": [
+        {
+          "key": "price",
+          "label": "Quoted price",
+          "prefix": "$",
+          "default": 3000,
+          "step": 50,
+          "min": 0
+        },
+        {
+          "key": "discount",
+          "label": "Discount offered",
+          "suffix": "%",
+          "default": 10,
+          "step": 1,
+          "min": 0,
+          "max": 90
+        },
+        {
+          "key": "grossMargin",
+          "label": "Your gross margin",
+          "suffix": "%",
+          "default": 45,
+          "step": 1,
+          "min": 1,
+          "max": 99
+        }
+      ],
+      "outputs": [
+        {
+          "key": "newProfit",
+          "label": "Profit after discount",
+          "format": "money",
+          "primary": true
+        },
+        {
+          "key": "profitLost",
+          "label": "Share of profit given away",
+          "format": "percent"
+        },
+        {
+          "key": "originalProfit",
+          "label": "Profit before discount",
+          "format": "money"
+        },
+        {
+          "key": "extraRevenue",
+          "label": "Extra revenue needed to replace it",
+          "format": "money"
+        }
+      ],
+      "faqs": [
+        [
+          "How much does a 10 percent discount really cost?",
+          "At a 45 percent margin it removes about 22 percent of your profit on that job. The discount comes out of the margin, not out of the whole price."
+        ],
+        [
+          "Is it better to discount or to add value?",
+          "Adding something that costs you less than the discount is almost always better. A free extra coat may cost a fraction of what ten percent off costs."
+        ],
+        [
+          "What if the customer will walk without it?",
+          "Then price the discount in from the start, or accept the job knowingly at lower margin. The mistake is discounting without knowing what it costs."
+        ]
+      ]
+    },
+    "painting-price-calculator": {
+      "compute": "fullStack",
+      "h1": "Painting Price Calculator",
+      "metaTitle": "Painting Price Calculator | Full Cost to Quote",
+      "metaDescription": "Turn job cost into a defensible price with burden, overhead and margin applied properly. Free, no signup.",
+      "focusKeyword": "painting price calculator",
+      "intro": "The full stack, from what a job consumes to what you should charge. Overhead and margin are applied to the whole cost, not marked up on paint.",
+      "audience": "contractor",
+      "inputs": [
+        {
+          "key": "materials",
+          "label": "Materials",
+          "prefix": "$",
+          "default": 400,
+          "step": 25,
+          "min": 0
+        },
+        {
+          "key": "hours",
+          "label": "Labor hours",
+          "default": 30,
+          "step": 1,
+          "min": 0
+        },
+        {
+          "key": "wage",
+          "label": "Base wage per hour",
+          "prefix": "$",
+          "default": 25,
+          "step": 0.5,
+          "min": 0
+        },
+        {
+          "key": "burden",
+          "label": "Burden rate",
+          "suffix": "%",
+          "default": 32,
+          "step": 1,
+          "min": 0,
+          "max": 100
+        },
+        {
+          "key": "overhead",
+          "label": "Overhead recovery",
+          "suffix": "%",
+          "default": 18,
+          "step": 1,
+          "min": 0,
+          "max": 80
+        },
+        {
+          "key": "margin",
+          "label": "Target net margin",
+          "suffix": "%",
+          "default": 10,
+          "step": 1,
+          "min": 0,
+          "max": 80
+        }
+      ],
+      "outputs": [
+        {
+          "key": "price",
+          "label": "Price to quote",
+          "format": "money",
+          "primary": true
+        },
+        {
+          "key": "directCost",
+          "label": "Direct cost",
+          "format": "money"
+        },
+        {
+          "key": "overheadRecovered",
+          "label": "Overhead recovered",
+          "format": "money"
+        },
+        {
+          "key": "profit",
+          "label": "Profit",
+          "format": "money"
+        },
+        {
+          "key": "equivalentMarkup",
+          "label": "Equivalent markup on direct cost",
+          "format": "percent"
+        }
+      ],
+      "faqs": [
+        [
+          "Why is overhead divided rather than added?",
+          "Because overhead is a share of revenue, not of cost. Adding 18 percent of cost recovers less than 18 percent of the price, and the shortfall grows with every job."
+        ],
+        [
+          "Why does the equivalent markup look so high?",
+          "Because a markup has to cover burden, overhead and profit all at once. A markup in the thirties on direct cost is normal once everything is accounted for."
+        ],
+        [
+          "Where do I get my own numbers?",
+          "Burden from your payroll and comp rates, overhead from your annual accounts divided by revenue, and margin from what you need the business to earn."
+        ]
+      ]
+    }
+  }
+}

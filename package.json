@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "node scripts/start.mjs",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build:catalog": "node scripts/build-catalog.mjs"
   },
   "dependencies": {
     "@paypal/react-paypal-js": "^9.1.1",

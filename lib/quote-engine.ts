@@ -1,4 +1,4 @@
-import { CUSTOM_TEMPLATE, CUSTOM_EXTERIOR_TEMPLATE, EXTERIOR_TEMPLATES, INDUSTRY_ASSUMPTIONS, QUOTE_TERMS, ROOM_TEMPLATES } from "@/lib/constants";
+import { CUSTOM_TEMPLATE, CUSTOM_EXTERIOR_TEMPLATE, EXTERIOR_TEMPLATES, INDUSTRY_ASSUMPTIONS, LEGACY_ASSUMPTIONS, QUOTE_TERMS, ROOM_TEMPLATES } from "@/lib/constants";
 import type {
   CalculatedRoom,
   ExteriorCalcInputs,
@@ -76,27 +76,50 @@ export function calculateInteriorSuggested(
       settings.defaultCoats,
   );
 
+  // Labor scales with coat count. Previously it did not, which meant a three
+  // coat job was quoted at the same labor as a single coat.
+  //
+  // Ceilings are overhead work and roll slower than walls, so they carry their
+  // own production rate rather than sharing the wall rate.
+  const coats = settings.defaultCoats;
   const wallLaborHours =
-    (paintableWallArea + ceilingArea) / INDUSTRY_ASSUMPTIONS.wallProductionSqFtPerHour;
+    (paintableWallArea * coats) / INDUSTRY_ASSUMPTIONS.wallProductionSqFtPerHour;
+  const ceilingLaborHours =
+    (ceilingArea * coats) / INDUSTRY_ASSUMPTIONS.ceilingProductionSqFtPerHour;
   const trimLaborHours =
-    inputs.trimLinearFeet / INDUSTRY_ASSUMPTIONS.trimLinearFeetPerHour;
+    (inputs.trimLinearFeet * coats) / INDUSTRY_ASSUMPTIONS.trimLinearFeetPerHour;
+
+  // Doors and windows are billed per unit per coat.
   const doorLaborHours = inputs.paintDoors
-    ? inputs.doorCount / INDUSTRY_ASSUMPTIONS.doorUnitsPerHour
+    ? inputs.doorCount * coats * INDUSTRY_ASSUMPTIONS.hoursPerDoorPerCoat
     : 0;
   const windowLaborHours = inputs.paintWindows
-    ? inputs.windowCount / INDUSTRY_ASSUMPTIONS.windowUnitsPerHour
+    ? inputs.windowCount * coats * INDUSTRY_ASSUMPTIONS.hoursPerWindowPerCoat
     : 0;
+
+  // Prep covers the surfaces actually being painted, walls plus ceiling.
   const prepBaseHours =
-    (wallArea / 100) * INDUSTRY_ASSUMPTIONS.prepHoursPer100SqFt;
-  const prepHours = inputs.heavyPrep ? prepBaseHours * 1.5 : prepBaseHours;
+    ((paintableWallArea + ceilingArea) / 100) * INDUSTRY_ASSUMPTIONS.prepHoursPer100SqFt;
+  const prepHours = inputs.heavyPrep
+    ? prepBaseHours * INDUSTRY_ASSUMPTIONS.heavyPrepMultiplier
+    : prepBaseHours;
 
   const materialCost =
     (wallGallons + trimGallons) * settings.paintCostPerGallon;
   const materialSell =
     materialCost * (1 + settings.materialMarkupPercent / 100);
+  const supplies =
+    INDUSTRY_ASSUMPTIONS.suppliesBaseCharge +
+    ((paintableWallArea + ceilingArea) / 100) * INDUSTRY_ASSUMPTIONS.suppliesPerHundredSqFt;
   const laborHours =
-    wallLaborHours + trimLaborHours + doorLaborHours + windowLaborHours + prepHours;
-  const suggestedPrice = materialSell + laborHours * settings.hourlyLaborRate;
+    wallLaborHours +
+    ceilingLaborHours +
+    trimLaborHours +
+    doorLaborHours +
+    windowLaborHours +
+    prepHours +
+    INDUSTRY_ASSUMPTIONS.cleanupHoursPerItem;
+  const suggestedPrice = materialSell + supplies + laborHours * settings.hourlyLaborRate;
 
   // Auto-generate scope description
   const parts: string[] = [];
@@ -137,16 +160,22 @@ export function calculateExteriorSuggested(
   const productionRate = inputs.useSpray
     ? template.productionSqFtPerHourSpray
     : template.productionSqFtPerHourBrush;
-  const paintHours = inputs.sqFt / productionRate;
+  // Labor scales with coat count, matching the free calculator.
+  const paintHours = (inputs.sqFt * inputs.coats) / productionRate;
 
   const prepBaseHours =
     (inputs.sqFt / 100) * INDUSTRY_ASSUMPTIONS.prepHoursPer100SqFt * INDUSTRY_ASSUMPTIONS.exteriorPrepMultiplier;
-  const prepHours = inputs.heavyPrep ? prepBaseHours * 1.5 : prepBaseHours;
+  const prepHours = inputs.heavyPrep
+    ? prepBaseHours * INDUSTRY_ASSUMPTIONS.heavyPrepMultiplier
+    : prepBaseHours;
 
-  const laborHours = paintHours + prepHours;
+  const laborHours = paintHours + prepHours + INDUSTRY_ASSUMPTIONS.cleanupHoursPerItem;
   const materialCost = gallons * settings.paintCostPerGallon;
   const materialSell = materialCost * (1 + settings.materialMarkupPercent / 100);
-  const suggestedPrice = materialSell + laborHours * settings.hourlyLaborRate;
+  const supplies =
+    INDUSTRY_ASSUMPTIONS.suppliesBaseCharge +
+    (inputs.sqFt / 100) * INDUSTRY_ASSUMPTIONS.suppliesPerHundredSqFt;
+  const suggestedPrice = materialSell + supplies + laborHours * settings.hourlyLaborRate;
 
   const parts: string[] = [];
   parts.push(`${Math.round(inputs.sqFt)} sq ft`);
@@ -251,7 +280,15 @@ export function calculateItemsSummary(
   settings: ProfileSettings,
   discount: { type: "flat" | "percent"; value: number } = { type: "flat", value: 0 },
 ): QuoteSummary {
-  const subtotalBeforeDiscount = items.reduce((sum, item) => sum + item.price, 0);
+  // Per-item cleanup is priced inside each item. The flat base is a
+  // once-per-job charge, so it is added here rather than multiplied per item.
+  const baseCleanup =
+    items.length > 0
+      ? INDUSTRY_ASSUMPTIONS.cleanupHoursPerQuote * settings.hourlyLaborRate
+      : 0;
+
+  const subtotalBeforeDiscount =
+    items.reduce((sum, item) => sum + item.price, 0) + baseCleanup;
   const subtotal = Math.max(subtotalBeforeDiscount, settings.minimumJobCharge);
   const minimumApplied = subtotal > subtotalBeforeDiscount;
 
@@ -381,10 +418,10 @@ function calculateInteriorRoom(
   const trimLaborHours =
     room.trimLinearFeet / INDUSTRY_ASSUMPTIONS.trimLinearFeetPerHour;
   const doorLaborHours = room.paintDoors
-    ? room.doorCount / INDUSTRY_ASSUMPTIONS.doorUnitsPerHour
+    ? room.doorCount / LEGACY_ASSUMPTIONS.doorUnitsPerHour
     : 0;
   const windowLaborHours = room.paintWindows
-    ? room.windowCount / INDUSTRY_ASSUMPTIONS.windowUnitsPerHour
+    ? room.windowCount / LEGACY_ASSUMPTIONS.windowUnitsPerHour
     : 0;
   const prepBaseHours =
     (wallArea / 100) * INDUSTRY_ASSUMPTIONS.prepHoursPer100SqFt;
@@ -439,6 +476,8 @@ function calculateExteriorItem(
     (item.sqFt / 100) * INDUSTRY_ASSUMPTIONS.prepHoursPer100SqFt * INDUSTRY_ASSUMPTIONS.exteriorPrepMultiplier;
   const prepHours = item.heavyPrep ? prepBaseHours * 1.5 : prepBaseHours;
 
+  // FROZEN legacy path: do not add cleanup or scale by coats here. Changing
+  // this restates totals on quotes painters have already sent.
   const laborHours = paintHours + prepHours;
   const materialCost = gallons * settings.paintCostPerGallon;
   const materialSell = materialCost * (1 + settings.materialMarkupPercent / 100);

@@ -1,0 +1,917 @@
+{
+  "version": "1.3.0",
+  "note": "Tier 0 calculator variants. Each carries its own FAQ set and related links so the 17 pages are genuinely differentiated rather than one template with a swapped heading. Room and surface keys must exist in catalog.json; the build validates that.",
+  "variants": {
+    "interior-painting-calculator": {
+      "mode": "interior",
+      "h1": "Interior Painting Calculator",
+      "metaTitle": "Interior Painting Calculator | Cost Estimator",
+      "metaDescription": "Estimate interior painting cost by room. Enter dimensions and get paint quantity, labor hours and a price range. Free, no signup.",
+      "focusKeyword": "interior painting calculator",
+      "intro": "Work out what an interior paint job costs. Add each room, and the calculator works out paint, labor and a price range from real production rates.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint the inside of a house?",
+          "a": "It depends on wall area, trim footage, ceiling height and how much prep the surfaces need. Add each room and the calculator totals paint, labor and supplies rather than guessing from square footage of floor space, which is what most rules of thumb use and why they are so often wrong."
+        },
+        {
+          "q": "Does the calculator include ceilings and trim?",
+          "a": "Yes. Ceilings are priced at their own production rate because overhead rolling is slower than wall rolling, and trim is priced by linear foot rather than area."
+        },
+        {
+          "q": "Why is my estimate higher than a per square foot rule of thumb?",
+          "a": "Per square foot rules usually price walls only. Doors, windows, trim, prep and cleanup are real hours, and on a trim heavy room they can be a third of the job."
+        }
+      ],
+      "related": [
+        "house-painting-calculator",
+        "bedroom-painting-calculator",
+        "bathroom-painting-calculator",
+        "kitchen-painting-calculator",
+        "cabinet-painting-calculator",
+        "interior-door-painting-calculator"
+      ]
+    },
+    "exterior-painting-calculator": {
+      "mode": "exterior",
+      "h1": "Exterior Painting Calculator",
+      "metaTitle": "Exterior Painting Calculator | Cost Estimator",
+      "metaDescription": "Estimate exterior painting cost for siding, stucco, brick, trim and more. Paint quantity, labor hours and price range. Free, no signup.",
+      "focusKeyword": "exterior painting calculator",
+      "intro": "Price an exterior repaint surface by surface. Siding, stucco, brick, trim, decks and fences each use their own coverage and production rates.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint the outside of a house?",
+          "a": "It varies most with the surface material and whether the crew sprays or brushes. Add each surface separately, since siding, stucco, brick and trim have very different coverage and production rates."
+        },
+        {
+          "q": "Does spraying make it cheaper?",
+          "a": "It makes it faster, which lowers labor. Siding sprays at roughly three times the rate it brushes. It does not reduce the paint required, and it adds masking time that heavy prep accounts for."
+        },
+        {
+          "q": "Should I price both sides of a fence?",
+          "a": "If both sides are accessible and being coated, enter the area for both. A fence painted one side only is roughly half the job."
+        }
+      ],
+      "related": [
+        "house-painting-calculator",
+        "siding-painting-calculator",
+        "stucco-painting-calculator",
+        "brick-painting-calculator",
+        "parking-lot-striping-calculator"
+      ]
+    },
+    "house-painting-calculator": {
+      "mode": "interior",
+      "h1": "House Painting Calculator",
+      "metaTitle": "House Painting Calculator | Interior & Exterior Cost",
+      "metaDescription": "Estimate what it costs to paint a house. Add rooms or exterior surfaces and get paint, labor and a price range. Free, no signup.",
+      "focusKeyword": "house painting calculator",
+      "intro": "Estimate a whole house repaint. Start with the interior rooms, or switch to the Surfaces and items tab to price siding, trim and everything outside.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint a whole house?",
+          "a": "Price the interior room by room and the exterior surface by surface, then add them. The two use different production rates and different prep multipliers, so a single blended figure hides most of the cost."
+        },
+        {
+          "q": "Is exterior painting more expensive than interior?",
+          "a": "Per square foot the paint is similar, but exterior prep runs heavier for scraping, caulking and priming, and access adds time on anything above one storey."
+        },
+        {
+          "q": "How long is a painting estimate valid?",
+          "a": "Most painters hold a quote for about a week. Material prices and schedule availability both move, which is why quotes carry an expiry."
+        }
+      ],
+      "related": [
+        "bedroom-painting-calculator",
+        "bathroom-painting-calculator",
+        "kitchen-painting-calculator",
+        "cabinet-painting-calculator",
+        "interior-door-painting-calculator"
+      ]
+    },
+    "bedroom-painting-calculator": {
+      "mode": "interior",
+      "roomPreset": "standard-bedroom",
+      "h1": "Bedroom Painting Calculator",
+      "metaTitle": "Bedroom Painting Calculator | Cost to Paint a Bedroom",
+      "metaDescription": "Estimate the cost to paint a bedroom. Enter your room size for paint quantity, labor hours and a price range. Free, no signup.",
+      "focusKeyword": "bedroom painting calculator",
+      "intro": "Estimate the cost to paint a bedroom. The dimensions start at a typical guest room and you can change them to match yours.",
+      "audience": "homeowner",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint a bedroom?",
+          "a": "For a typical bedroom with walls, ceiling and trim in two coats, the calculator works from your actual dimensions rather than an average, because a 10 by 10 and a 15 by 13 are not close to the same job."
+        },
+        {
+          "q": "How much paint do I need for a bedroom?",
+          "a": "Wall paint is calculated at the coverage rate shown in the breakdown, times the number of coats, with door and window areas deducted. Trim paint is calculated separately because it is a different product."
+        },
+        {
+          "q": "Should I paint the ceiling too?",
+          "a": "Uncheck the ceiling if you are only doing walls. Ceilings add meaningful time because overhead rolling is slower and needs more masking."
+        }
+      ],
+      "related": [
+        "bathroom-painting-calculator",
+        "kitchen-painting-calculator",
+        "living-room-painting-calculator",
+        "dining-room-painting-calculator",
+        "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "bathroom-painting-calculator": {
+      "mode": "interior",
+      "roomPreset": "bathroom",
+      "h1": "Bathroom Painting Calculator",
+      "metaTitle": "Bathroom Painting Calculator | Cost to Paint a Bathroom",
+      "metaDescription": "Estimate the cost to paint a bathroom, including moisture resistant paint. Paint quantity, labor and price range. Free, no signup.",
+      "focusKeyword": "bathroom painting calculator",
+      "intro": "Estimate the cost to paint a bathroom. Bathrooms usually take a moisture resistant paint, which the material cost reflects.",
+      "audience": "homeowner",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint a bathroom?",
+          "a": "Bathrooms are small but not cheap per square foot. There is a lot of cutting in around fixtures, tile and mirrors, and the room usually needs a moisture resistant paint."
+        },
+        {
+          "q": "What paint should I use in a bathroom?",
+          "a": "A moisture resistant satin or semi gloss is standard. Choose the premium grade in the calculator to reflect the higher material cost."
+        },
+        {
+          "q": "Why does a small bathroom still cost a few hundred dollars?",
+          "a": "Setup, masking, cutting in and cleanup do not scale down with the room. That fixed overhead is why most painters carry a minimum charge."
+        }
+      ],
+      "related": [
+        "bedroom-painting-calculator",
+        "kitchen-painting-calculator",
+        "living-room-painting-calculator",
+        "dining-room-painting-calculator",
+        "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "kitchen-painting-calculator": {
+      "mode": "interior",
+      "roomPreset": "kitchen",
+      "h1": "Kitchen Painting Calculator",
+      "metaTitle": "Kitchen Painting Calculator | Cost to Paint a Kitchen",
+      "metaDescription": "Estimate the cost to paint a kitchen. Walls and trim only, cabinets excluded. Paint, labor and price range. Free, no signup.",
+      "focusKeyword": "kitchen painting calculator",
+      "intro": "Estimate the cost to paint a kitchen. This covers walls and trim. Cabinets are priced differently and are not included here.",
+      "audience": "homeowner",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint a kitchen?",
+          "a": "This prices walls and trim. Kitchens carry heavier trim than most rooms and a lot of cutting in around cabinets and backsplash."
+        },
+        {
+          "q": "Does this include painting the cabinets?",
+          "a": "No. Cabinet painting is priced per door and drawer front, not by wall area, and it is a different job with sanding, degreasing and often spraying."
+        },
+        {
+          "q": "Why is the ceiling excluded by default?",
+          "a": "Kitchen ceilings are frequently left alone when cabinets and appliances make masking impractical. Add it back if it is in scope."
+        }
+      ],
+      "related": [
+        "bedroom-painting-calculator",
+        "bathroom-painting-calculator",
+        "living-room-painting-calculator",
+        "dining-room-painting-calculator",
+        "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "living-room-painting-calculator": {
+      "mode": "interior",
+      "roomPreset": "living-room",
+      "h1": "Living Room Painting Calculator",
+      "metaTitle": "Living Room Painting Calculator | Cost Estimator",
+      "metaDescription": "Estimate the cost to paint a living room. Enter your dimensions for paint quantity, labor hours and a price range. Free, no signup.",
+      "focusKeyword": "living room painting calculator",
+      "intro": "Estimate the cost to paint a living room. Larger open rooms carry more wall area and more trim than the number of walls suggests.",
+      "audience": "homeowner",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint a living room?",
+          "a": "Living rooms are usually the largest painted space in a house, with more wall area and more trim than the number of walls suggests."
+        },
+        {
+          "q": "Do high ceilings cost more?",
+          "a": "Yes, and by more than the extra area alone. Anything above comfortable roller reach needs ladders or staging, which slows production."
+        },
+        {
+          "q": "How many coats do I need over a dark colour?",
+          "a": "Going light over dark usually needs a primer coat plus two finish coats. Tick the primer option so it is priced in."
+        }
+      ],
+      "related": [
+        "bedroom-painting-calculator",
+        "bathroom-painting-calculator",
+        "kitchen-painting-calculator",
+        "dining-room-painting-calculator",
+        "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "dining-room-painting-calculator": {
+      "mode": "interior",
+      "roomPreset": "dining-room",
+      "h1": "Dining Room Painting Calculator",
+      "metaTitle": "Dining Room Painting Calculator | Cost Estimator",
+      "metaDescription": "Estimate the cost to paint a dining room, including chair rail and trim. Paint, labor and price range. Free, no signup.",
+      "focusKeyword": "dining room painting calculator",
+      "intro": "Estimate the cost to paint a dining room. If the room has a chair rail or wainscoting, raise the trim footage to match.",
+      "audience": "homeowner",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint a dining room?",
+          "a": "Similar to a comparable bedroom, with more trim if the room has a chair rail, picture rail or wainscoting."
+        },
+        {
+          "q": "How do I price wainscoting or a chair rail?",
+          "a": "Raise the trim linear footage to include it. Trim is priced by the foot, and panelled walls take considerably longer than flat ones."
+        },
+        {
+          "q": "Should the ceiling be a different colour?",
+          "a": "That is a finish choice, not a cost one. It is the same area either way, though a second colour adds a little cutting in."
+        }
+      ],
+      "related": [
+        "bedroom-painting-calculator",
+        "bathroom-painting-calculator",
+        "kitchen-painting-calculator",
+        "living-room-painting-calculator",
+        "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "hallway-painting-calculator": {
+      "mode": "interior",
+      "roomPreset": "hallway",
+      "h1": "Hallway Painting Calculator",
+      "metaTitle": "Hallway Painting Calculator | Cost to Paint a Hallway",
+      "metaDescription": "Estimate the cost to paint a hallway. Long trim runs and door casings included. Paint, labor and price range. Free, no signup.",
+      "focusKeyword": "hallway painting calculator",
+      "intro": "Estimate the cost to paint a hallway. Hallways look small but carry long trim runs and a lot of door casing, which is where the hours go.",
+      "audience": "homeowner",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint a hallway?",
+          "a": "More than people expect. Hallways have modest wall area but long trim runs and a lot of door casing, and casing is slow work."
+        },
+        {
+          "q": "Why does a narrow hallway cost as much as a bedroom?",
+          "a": "Because the cost is in the trim and doors, not the walls. Three doors of casing can outweigh the wall area entirely."
+        },
+        {
+          "q": "Do stairwells cost more?",
+          "a": "Yes. Stairwells need staging or ladder work at height, which is slower and less safe than flat floor work."
+        }
+      ],
+      "related": [
+        "bedroom-painting-calculator",
+        "bathroom-painting-calculator",
+        "kitchen-painting-calculator",
+        "living-room-painting-calculator",
+        "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "home-office-painting-calculator": {
+      "mode": "interior",
+      "roomPreset": "home-office",
+      "h1": "Home Office Painting Calculator",
+      "metaTitle": "Home Office Painting Calculator | Cost Estimator",
+      "metaDescription": "Estimate the cost to paint a home office. Enter your room size for paint, labor hours and a price range. Free, no signup.",
+      "focusKeyword": "home office painting calculator",
+      "intro": "Estimate the cost to paint a home office or spare room. Adjust the dimensions to match the room you are actually painting.",
+      "audience": "homeowner",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint a home office?",
+          "a": "About the same as a comparable bedroom. Adjust the dimensions to your room, since spare rooms vary a lot in size."
+        },
+        {
+          "q": "Do built in shelves change the price?",
+          "a": "Yes. Built ins are closer to cabinet work than wall work, with a lot of edges and faces, and they are not included in a wall and trim estimate."
+        },
+        {
+          "q": "Can I paint one accent wall only?",
+          "a": "Enter the accent wall area on its own. Note that a single wall still carries full setup and cleanup time."
+        }
+      ],
+      "related": [
+        "bedroom-painting-calculator",
+        "bathroom-painting-calculator",
+        "kitchen-painting-calculator",
+        "living-room-painting-calculator",
+        "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "laundry-room-painting-calculator": {
+      "mode": "interior",
+      "roomPreset": "laundry-room",
+      "h1": "Laundry Room Painting Calculator",
+      "metaTitle": "Laundry Room Painting Calculator | Cost Estimator",
+      "metaDescription": "Estimate the cost to paint a laundry room. Small space, moisture resistant paint. Paint, labor and price range. Free, no signup.",
+      "focusKeyword": "laundry room painting calculator",
+      "intro": "Estimate the cost to paint a laundry room. Small utility spaces usually take a semi gloss or moisture resistant finish.",
+      "audience": "homeowner",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint a laundry room?",
+          "a": "Small rooms are inexpensive in materials and dominated by setup and cutting in time."
+        },
+        {
+          "q": "What finish works best in a laundry room?",
+          "a": "A semi gloss or moisture resistant finish handles humidity and wipes clean. Select the premium grade to reflect that."
+        },
+        {
+          "q": "Do I need to move the washer and dryer?",
+          "a": "To paint behind them, yes. That is access time rather than painting time, but it is real and worth allowing for."
+        }
+      ],
+      "related": [
+        "bedroom-painting-calculator",
+        "bathroom-painting-calculator",
+        "kitchen-painting-calculator",
+        "living-room-painting-calculator",
+        "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "siding-painting-calculator": {
+      "mode": "exterior",
+      "surface": "siding",
+      "h1": "Siding Painting Calculator",
+      "metaTitle": "Siding Painting Calculator | Cost to Paint Siding",
+      "metaDescription": "Estimate the cost to paint siding. Enter square footage for paint quantity, labor hours and a price range. Free, no signup.",
+      "focusKeyword": "siding painting calculator",
+      "intro": "Estimate the cost to paint siding. Spraying covers far more per hour than brushing, so the application method changes the number a lot.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint siding?",
+          "a": "It depends on the siding area, its condition and whether the crew sprays or brushes. Spraying covers roughly three times faster than brushing."
+        },
+        {
+          "q": "How much paint does siding need?",
+          "a": "The calculator uses the coverage rate shown in the breakdown. Previously painted siding in sound condition takes less than bare or chalking siding."
+        },
+        {
+          "q": "Does old peeling siding cost more?",
+          "a": "Considerably. Set the condition to poor and it applies a prep multiplier, because scraping, sanding and spot priming is most of the labor on a failing surface."
+        }
+      ],
+      "related": [
+        "stucco-painting-calculator",
+        "brick-painting-calculator",
+        "trim-painting-calculator",
+        "gutter-painting-calculator",
+        "exterior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "stucco-painting-calculator": {
+      "mode": "exterior",
+      "surface": "stucco",
+      "h1": "Stucco Painting Calculator",
+      "metaTitle": "Stucco Painting Calculator | Cost to Paint Stucco",
+      "metaDescription": "Estimate the cost to paint stucco. Rough texture absorbs more paint, which this calculator accounts for. Free, no signup.",
+      "focusKeyword": "stucco painting calculator",
+      "intro": "Estimate the cost to paint stucco. Stucco is textured and absorbent, so it takes noticeably more paint per square foot than flat siding.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint stucco?",
+          "a": "Stucco costs more per square foot than smooth siding, mainly in material. The texture holds far more paint."
+        },
+        {
+          "q": "How much paint does stucco need?",
+          "a": "Well under what flat siding needs per gallon. The calculator applies a stucco specific coverage rate rather than a generic wall figure, which is where most estimates go wrong."
+        },
+        {
+          "q": "Should stucco be sprayed or rolled?",
+          "a": "Spraying then back rolling is common, so the coating is pushed into the texture rather than bridging over it."
+        }
+      ],
+      "related": [
+        "siding-painting-calculator",
+        "brick-painting-calculator",
+        "trim-painting-calculator",
+        "gutter-painting-calculator",
+        "exterior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "brick-painting-calculator": {
+      "mode": "exterior",
+      "surface": "brick",
+      "h1": "Brick Painting Calculator",
+      "metaTitle": "Brick Painting Calculator | Cost to Paint Brick",
+      "metaDescription": "Estimate the cost to paint brick. Brick is highly absorbent and usually needs masonry primer. Free, no signup.",
+      "focusKeyword": "brick painting calculator",
+      "intro": "Estimate the cost to paint brick. Brick soaks up paint faster than any other exterior surface here, and normally needs a masonry primer first.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint brick?",
+          "a": "Brick is the most material hungry exterior surface here. It is highly absorbent, and the first coat largely disappears into it."
+        },
+        {
+          "q": "Does brick need primer?",
+          "a": "Almost always. A masonry primer or conditioner is standard, and the calculator prices a primer coat when you tick the primer option."
+        },
+        {
+          "q": "Can painted brick be undone?",
+          "a": "Not easily, and stripping is expensive and can damage the face. Worth raising with a homeowner before the job is sold."
+        }
+      ],
+      "related": [
+        "siding-painting-calculator",
+        "stucco-painting-calculator",
+        "trim-painting-calculator",
+        "gutter-painting-calculator",
+        "exterior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "deck-painting-calculator": {
+      "mode": "exterior",
+      "surface": "deck-porch",
+      "h1": "Deck Painting Calculator",
+      "metaTitle": "Deck Painting Calculator | Cost to Paint or Stain a Deck",
+      "metaDescription": "Estimate the cost to paint or stain a deck. Enter the floor area for paint, labor hours and a price range. Free, no signup.",
+      "focusKeyword": "deck painting calculator",
+      "intro": "Estimate the cost to paint or stain a deck. Enter the floor area. Railings and spindles slow the job down considerably, so add for them.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint or stain a deck?",
+          "a": "Enter the floor area. Deck boards coat quickly, but railings, spindles and stairs are slow and are not included in a floor area figure."
+        },
+        {
+          "q": "How do I price deck railings?",
+          "a": "Add their area separately. Spindles in particular take far longer per square foot than decking, since every face has to be reached."
+        },
+        {
+          "q": "Does a deck need to be washed first?",
+          "a": "Almost always, and often sanded. Set the condition to fair or poor so the prep hours reflect it."
+        }
+      ],
+      "related": [
+        "siding-painting-calculator",
+        "stucco-painting-calculator",
+        "brick-painting-calculator",
+        "trim-painting-calculator",
+        "exterior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "fence-painting-calculator": {
+      "mode": "exterior",
+      "surface": "fence",
+      "h1": "Fence Painting Calculator",
+      "metaTitle": "Fence Painting Calculator | Cost to Paint a Fence",
+      "metaDescription": "Estimate the cost to paint or stain a fence. Covers both sides where accessible. Paint, labor and price range. Free, no signup.",
+      "focusKeyword": "fence painting calculator",
+      "intro": "Estimate the cost to paint or stain a fence. If both sides are accessible and being coated, enter the area for both.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint or stain a fence?",
+          "a": "It depends on total area and whether both sides are being coated. Enter the area for both sides if both are in scope."
+        },
+        {
+          "q": "Is staining cheaper than painting a fence?",
+          "a": "Stain usually goes on faster and needs less prep, but it covers less per gallon and is recoated more often."
+        },
+        {
+          "q": "Should a fence be sprayed?",
+          "a": "Spraying is much faster on a fence, but it needs masking and calm conditions, and back brushing gives a far better result on rough timber."
+        }
+      ],
+      "related": [
+        "siding-painting-calculator",
+        "stucco-painting-calculator",
+        "brick-painting-calculator",
+        "trim-painting-calculator",
+        "exterior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "trim-painting-calculator": {
+      "mode": "exterior",
+      "surface": "trim-fascia",
+      "h1": "Trim Painting Calculator",
+      "metaTitle": "Trim Painting Calculator | Cost to Paint Trim & Fascia",
+      "metaDescription": "Estimate the cost to paint exterior trim and fascia. Slow ladder work priced properly. Free, no signup.",
+      "focusKeyword": "trim painting calculator",
+      "intro": "Estimate the cost to paint exterior trim and fascia. Trim is slow work, mostly from a ladder, so it costs far more per square foot than siding.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint exterior trim and fascia?",
+          "a": "Trim costs far more per square foot than siding. It is slow, detailed work, mostly done from a ladder."
+        },
+        {
+          "q": "Why is trim so expensive compared to walls?",
+          "a": "Because production rate is what drives labor, not area. Trim covers a fraction of the square feet per hour that open siding does."
+        },
+        {
+          "q": "Can trim be sprayed?",
+          "a": "It can, but masking the surrounding surfaces often costs more time than it saves, unless the trim is being done at the same time as the body."
+        }
+      ],
+      "related": [
+        "siding-painting-calculator",
+        "stucco-painting-calculator",
+        "brick-painting-calculator",
+        "gutter-painting-calculator",
+        "exterior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "cabinet-painting-calculator": {
+      "mode": "exterior",
+      "surface": "cabinets",
+      "h1": "Cabinet Painting Calculator",
+      "metaTitle": "Cabinet Painting Calculator | Cost Per Door",
+      "metaDescription": "Estimate cabinet painting cost by door and drawer front. Paint, labor hours and a price range. Free, no signup.",
+      "focusKeyword": "cabinet painting calculator",
+      "intro": "Estimate the cost to paint kitchen cabinets. Count doors and drawer fronts rather than measuring the room, because that is what actually drives the job.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint kitchen cabinets?",
+          "a": "Cabinet work is priced per door and drawer front, not by room size. Count every front, including drawers, and the calculator prices the front plus its share of the box and face frame."
+        },
+        {
+          "q": "Why is cabinet painting so much more expensive than walls?",
+          "a": "Because it is mostly prep and handling. Doors get removed, labelled, degreased, sanded, sprayed on both faces and rehung. The painting itself is the short part."
+        },
+        {
+          "q": "Do I need to count the cabinet boxes separately?",
+          "a": "No. The per front figure already includes a share of the box and face frame, since they are coated at the same time. Forgetting them is the classic way cabinet jobs get underbid."
+        }
+      ],
+      "related": [
+        "interior-door-painting-calculator",
+        "baseboard-painting-calculator",
+        "crown-molding-painting-calculator",
+        "stair-spindle-painting-calculator",
+        "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "interior-door-painting-calculator": {
+      "mode": "exterior",
+      "surface": "interior-doors",
+      "h1": "Interior Door Painting Calculator",
+      "metaTitle": "Door Painting Calculator | Cost Per Door",
+      "metaDescription": "Estimate the cost to paint interior doors. Priced per door including both faces and edges. Free, no signup.",
+      "focusKeyword": "door painting calculator",
+      "intro": "Estimate the cost to paint interior doors. Enter how many doors, and the calculator prices both faces plus edges at a realistic rate per door.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint an interior door?",
+          "a": "Doors are priced per door, counting both faces and the edges, which is roughly 40 sq ft of painted surface each."
+        },
+        {
+          "q": "Does a panelled door cost more than a flat one?",
+          "a": "Yes. Every panel edge is cut in by hand, so a six panel door takes noticeably longer than a flush door of the same size."
+        },
+        {
+          "q": "Is the door casing included?",
+          "a": "No. Casing is trim and is measured by the foot. Price it with the baseboard or crown calculator."
+        }
+      ],
+      "related": [
+        "cabinet-painting-calculator",
+        "baseboard-painting-calculator",
+        "crown-molding-painting-calculator",
+        "stair-spindle-painting-calculator",
+        "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "baseboard-painting-calculator": {
+      "mode": "exterior",
+      "surface": "baseboard",
+      "h1": "Baseboard Painting Calculator",
+      "metaTitle": "Baseboard Painting Calculator | Cost Per Foot",
+      "metaDescription": "Estimate baseboard painting cost by the linear foot, including caulking and filling. Free, no signup.",
+      "focusKeyword": "baseboard painting calculator",
+      "intro": "Estimate the cost to paint baseboard. Measured by the foot along the wall, priced at a real linear production rate rather than converted to area.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint baseboards per foot?",
+          "a": "Baseboard is priced by the linear foot. Caulking the top edge is what makes it look finished and is most of the prep time."
+        },
+        {
+          "q": "How do I measure baseboard?",
+          "a": "Run a tape along the base of every wall being painted, skipping doorways. That total in feet is what the calculator needs."
+        },
+        {
+          "q": "Does taller baseboard cost more?",
+          "a": "Yes. Tall or heavily profiled baseboard covers more area per foot and takes longer to cut in cleanly."
+        }
+      ],
+      "related": [
+        "cabinet-painting-calculator",
+        "interior-door-painting-calculator",
+        "crown-molding-painting-calculator",
+        "stair-spindle-painting-calculator",
+        "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "crown-molding-painting-calculator": {
+      "mode": "exterior",
+      "surface": "crown-molding",
+      "h1": "Crown Molding Painting Calculator",
+      "metaTitle": "Crown Molding Painting Calculator | Cost Per Foot",
+      "metaDescription": "Estimate crown molding painting cost by the linear foot. Ladder work priced properly. Free, no signup.",
+      "focusKeyword": "crown molding painting calculator",
+      "intro": "Estimate the cost to paint crown molding. Slower per foot than baseboard, because it is overhead ladder work with two cut lines.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint crown molding?",
+          "a": "Priced by the linear foot, and meaningfully slower than baseboard. Every foot has a cut line to the wall and another to the ceiling."
+        },
+        {
+          "q": "Why does crown cost more than baseboard per foot?",
+          "a": "It is overhead work from a ladder rather than kneeling work at floor level, and the production rate reflects that."
+        },
+        {
+          "q": "Should crown be painted before or after the walls?",
+          "a": "Most painters cut the crown first and then the wall, so the wall colour makes the final clean line."
+        }
+      ],
+      "related": [
+        "cabinet-painting-calculator",
+        "interior-door-painting-calculator",
+        "baseboard-painting-calculator",
+        "stair-spindle-painting-calculator",
+        "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "stair-spindle-painting-calculator": {
+      "mode": "exterior",
+      "surface": "stair-spindles",
+      "h1": "Stair Spindle Painting Calculator",
+      "metaTitle": "Spindle Painting Calculator | Cost Per Spindle",
+      "metaDescription": "Estimate the cost to paint stair spindles and balusters, priced per spindle. Free, no signup.",
+      "focusKeyword": "spindle painting calculator",
+      "intro": "Estimate the cost to paint stair spindles. Priced per spindle, because area badly understates how long each one takes.",
+      "audience": "contractor",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint stair spindles?",
+          "a": "Spindles are priced individually. Each is a full wrap by brush, so the labor per square foot is among the highest in interior painting."
+        },
+        {
+          "q": "Why are spindles so often underbid?",
+          "a": "Because they look small. Thirty spindles is barely any square footage but a full day of detailed brush work."
+        },
+        {
+          "q": "Is spraying spindles faster?",
+          "a": "Only if they can be removed or the surroundings fully masked. In place, masking a staircase often costs more time than brushing saves."
+        }
+      ],
+      "related": [
+        "cabinet-painting-calculator",
+        "interior-door-painting-calculator",
+        "baseboard-painting-calculator",
+        "crown-molding-painting-calculator",
+        "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "handrail-painting-calculator": {
+      "mode": "exterior",
+      "surface": "handrail",
+      "h1": "Handrail Painting Calculator",
+      "metaTitle": "Handrail Painting Calculator | Cost Per Foot",
+      "metaDescription": "Estimate the cost to paint or refinish a handrail and banister, by the linear foot. Free, no signup.",
+      "focusKeyword": "handrail painting calculator",
+      "intro": "Estimate the cost to paint a handrail or banister. Priced by the foot, at a slow rate, because the finish has to be smooth to the touch.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint a handrail?",
+          "a": "Priced by the linear foot. A handrail is a full wrap and usually sanded between coats, since anything rough gets noticed immediately."
+        },
+        {
+          "q": "Can a handrail be stained instead of painted?",
+          "a": "Yes, and stripping an old finish first is a separate job that this estimate does not include."
+        },
+        {
+          "q": "Are the spindles included?",
+          "a": "No. Spindles are counted individually. Use the spindle calculator alongside this one."
+        }
+      ],
+      "related": [
+        "cabinet-painting-calculator",
+        "interior-door-painting-calculator",
+        "baseboard-painting-calculator",
+        "crown-molding-painting-calculator",
+        "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "window-painting-calculator": {
+      "mode": "exterior",
+      "surface": "window-sash",
+      "h1": "Window Painting Calculator",
+      "metaTitle": "Window Painting Calculator | Cost Per Window",
+      "metaDescription": "Estimate the cost to paint window sashes and frames, priced per window. Free, no signup.",
+      "focusKeyword": "window painting calculator",
+      "intro": "Estimate the cost to paint window sashes. Priced per window, since the count matters far more than the glass area.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint a window?",
+          "a": "Windows are priced per window. Divided lights multiply the time, because every muntin is cut in by hand."
+        },
+        {
+          "q": "Do old windows cost more to paint?",
+          "a": "Often, yes. Failed glazing needs reputtying before painting, which is separate work not included here."
+        },
+        {
+          "q": "Is the window trim included?",
+          "a": "No. Exterior casing is trim and fascia; interior casing is measured with the baseboard run."
+        }
+      ],
+      "related": [
+        "cabinet-painting-calculator",
+        "interior-door-painting-calculator",
+        "baseboard-painting-calculator",
+        "crown-molding-painting-calculator",
+        "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "gutter-painting-calculator": {
+      "mode": "exterior",
+      "surface": "gutters-downspouts",
+      "h1": "Gutter Painting Calculator",
+      "metaTitle": "Gutter Painting Calculator | Cost Per Foot",
+      "metaDescription": "Estimate the cost to paint gutters and downspouts by the linear foot, including bonding primer. Free, no signup.",
+      "focusKeyword": "gutter painting calculator",
+      "intro": "Estimate the cost to paint gutters and downspouts. Measured by the foot, and priced as ladder work throughout.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint gutters?",
+          "a": "Priced by the linear foot. Ladder access sets the production rate more than the surface itself does."
+        },
+        {
+          "q": "Do gutters need a special primer?",
+          "a": "Aluminium and galvanised both need a bonding primer. Without one the coating peels within a season or two."
+        },
+        {
+          "q": "Should gutters be painted or replaced?",
+          "a": "Painting is worthwhile on sound gutters. If they are leaking or sagging, replacement is usually the better spend."
+        }
+      ],
+      "related": [
+        "siding-painting-calculator",
+        "stucco-painting-calculator",
+        "brick-painting-calculator",
+        "trim-painting-calculator",
+        "exterior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "parking-lot-striping-calculator": {
+      "mode": "exterior",
+      "surface": "parking-lot-striping",
+      "h1": "Parking Lot Striping Calculator",
+      "metaTitle": "Parking Lot Striping Calculator | Cost Per Foot",
+      "metaDescription": "Estimate parking lot striping cost by linear foot of line. Traffic paint coverage and labor. Free, no signup.",
+      "focusKeyword": "parking lot striping calculator",
+      "intro": "Estimate a parking lot striping job by linear feet of line. Traffic paint has its own coverage and its own production rate, both far removed from wall painting.",
+      "audience": "contractor",
+      "faqs": [
+        {
+          "q": "How much does parking lot striping cost per foot?",
+          "a": "Restriping is priced per linear foot of line, typically a 4 inch stripe. Layout on a fresh lot is separate from the painting itself."
+        },
+        {
+          "q": "How do I price stalls instead of feet?",
+          "a": "Use the parking stall calculator. A standard single stripe stall is roughly 18 to 20 linear feet of line."
+        },
+        {
+          "q": "Is traffic paint different from normal paint?",
+          "a": "Yes. It is a different product with different coverage and a much faster cure, because the lot has to reopen."
+        }
+      ],
+      "related": [
+        "parking-stall-striping-calculator",
+        "curb-painting-calculator"
+      ]
+    },
+    "parking-stall-striping-calculator": {
+      "mode": "exterior",
+      "surface": "parking-stalls",
+      "h1": "Parking Stall Striping Calculator",
+      "metaTitle": "Parking Stall Striping Calculator | Cost Per Stall",
+      "metaDescription": "Estimate parking lot restriping cost per stall, the unit commercial clients actually ask for. Free, no signup.",
+      "focusKeyword": "parking stall striping calculator",
+      "intro": "Estimate a restriping job by the stall, which is the number property managers ask for. Enter how many stalls the lot has.",
+      "audience": "contractor",
+      "faqs": [
+        {
+          "q": "How much does it cost to restripe a parking stall?",
+          "a": "Priced per stall, which is what commercial clients quote against. A single stripe stall is about 18 to 20 feet of line."
+        },
+        {
+          "q": "Are ADA spaces priced the same?",
+          "a": "No. Accessible spaces carry a symbol, hatching and often signage, so they cost several times a plain stall."
+        },
+        {
+          "q": "Does the lot need sweeping first?",
+          "a": "Yes. Traffic paint will not bond to dust or loose grit, and sweeping is included in the prep here."
+        }
+      ],
+      "related": [
+        "parking-lot-striping-calculator",
+        "curb-painting-calculator"
+      ]
+    },
+    "curb-painting-calculator": {
+      "mode": "exterior",
+      "surface": "curb-painting",
+      "h1": "Curb Painting Calculator",
+      "metaTitle": "Curb Painting Calculator | Cost Per Foot",
+      "metaDescription": "Estimate curb painting cost by the linear foot, covering face and top. Fire lane and accessible colours. Free, no signup.",
+      "focusKeyword": "curb painting calculator",
+      "intro": "Estimate curb painting by the linear foot. Both the face and the top get coated, which is why a curb carries more area per foot than a stripe.",
+      "audience": "contractor",
+      "faqs": [
+        {
+          "q": "How much does curb painting cost per foot?",
+          "a": "Priced by the linear foot, covering the face and the top of the curb, which is a wider band than a parking line."
+        },
+        {
+          "q": "What colour should a fire lane curb be?",
+          "a": "Red is standard for fire lanes and blue for accessible spaces in most jurisdictions, but the local fire code governs."
+        },
+        {
+          "q": "How often do curbs need repainting?",
+          "a": "Traffic and weather usually mean every one to three years, sooner where snow ploughs run."
+        }
+      ],
+      "related": [
+        "parking-lot-striping-calculator",
+        "parking-stall-striping-calculator"
+      ]
+    },
+    "wainscoting-painting-calculator": {
+      "mode": "exterior",
+      "surface": "wainscoting",
+      "h1": "Wainscoting Painting Calculator",
+      "metaTitle": "Wainscoting Painting Calculator | Cost Estimator",
+      "metaDescription": "Estimate the cost to paint wainscoting and panelled walls. Slower than flat walls. Free, no signup.",
+      "focusKeyword": "wainscoting painting calculator",
+      "intro": "Estimate the cost to paint wainscoting. Priced by area, but at a trim production rate, because panelled walls are nothing like flat ones.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint wainscoting?",
+          "a": "Priced by area, but far slower per square foot than a flat wall. Every panel has inside corners that must be brushed."
+        },
+        {
+          "q": "Why is panelling more expensive than a plain wall?",
+          "a": "Because production rate drives labor, not area. A panelled wall can take two or three times as long as flat drywall of the same size."
+        },
+        {
+          "q": "Should wainscoting be sprayed?",
+          "a": "Spraying gives the best finish on panelling, but masking the room above and below often offsets the time saved."
+        }
+      ],
+      "related": [
+        "cabinet-painting-calculator",
+        "interior-door-painting-calculator",
+        "baseboard-painting-calculator",
+        "crown-molding-painting-calculator",
+        "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    }
+  }
+}
