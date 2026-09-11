@@ -51,13 +51,44 @@ export function detectBotEmail(email: string): string | null {
     }
   }
 
-  // Disposable email domains (starter list — extend as patterns emerge)
+  // Disposable email domains. The first row is the original starter list, which caught nothing:
+  // measured against the 49 signups on 2026-09-11, not one bot used any of them. The rest are the
+  // domains actually observed on this site. A blocklist alone is whack-a-mole, which is why the
+  // two structural rules below matter more.
   const disposable = new Set([
     "mailinator.com", "guerrillamail.com", "10minutemail.com",
     "throwaway.email", "tempmail.com", "yopmail.com", "trashmail.com",
     "fakeinbox.com", "sharklasers.com", "maildrop.cc",
+    // observed on paintpricing signups
+    "anonmails.de", "4heats.com", "tatefarm.com", "welcometotijuana.com",
+    "gsasearchengineranker.com", "seoautomationpro.com", "hello-word-2026.store",
   ]);
   if (disposable.has(domain)) {
+    return "Disposable email addresses are not supported. Please use a real email.";
+  }
+
+  // Doubled-name local part: irish.irish98, lonnie-lonnie, charlotte.charlotte, amee.amee85,
+  // caleb-caleb, derek-derek9, alison-alison43, rosemarie-rosemarie. Eight of the 32 unconfirmed
+  // signups used this shape and no real signup does. A human whose address repeats their own name
+  // with a separator is vanishingly rare, and the alternative is letting the whole wave through.
+  if (/^([a-z]{3,})[._-]\1\d{0,3}$/.test(local)) {
+    return "Suspicious email pattern (looks automated). If this is a real address, please contact support.";
+  }
+
+  // Throwaway mailbox providers hand out addresses on a random subdomain of a novelty TLD:
+  // mahoje.blogbliss.site, hitaco.sabo.bar, nezalu.blogs.pics, gopafo.fuc.best, kegaji.carport.mom,
+  // xohovi.3mail.info, haruna.hawkmail.digital, darana.sweetmom.cv, gefede.zoomin.life.
+  // Rule: three or more labels AND a novelty TLD. Both halves are required. Plenty of legitimate
+  // mail lives on a novelty TLD (fazil@323.media and info@cashconstruction.co are real signups
+  // here), and plenty lives on a subdomain, but the combination is not something a painter types.
+  const labels = domain.split(".");
+  const tld = labels[labels.length - 1];
+  const noveltyTlds = new Set([
+    "site", "bar", "pics", "best", "mom", "digital", "cv", "life", "support",
+    "store", "click", "link", "xyz", "top", "icu", "cyou", "sbs", "rest",
+    "quest", "monster", "beauty", "makeup", "hair", "skin",
+  ]);
+  if (labels.length >= 3 && noveltyTlds.has(tld)) {
     return "Disposable email addresses are not supported. Please use a real email.";
   }
 
