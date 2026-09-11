@@ -16,6 +16,7 @@ import { createQuoteAction } from "@/app/actions";
 import {
   CUSTOM_EXTERIOR_TEMPLATE,
   EXTERIOR_TEMPLATES,
+  PAINT_GRADES,
   ROOM_TEMPLATES,
   QUOTE_TERMS,
 } from "@/lib/constants";
@@ -30,8 +31,10 @@ import {
   serializeQuotePayload,
 } from "@/lib/quote-engine";
 import type {
+  ConditionKey,
   ExteriorCalcInputs,
   ExteriorTemplateKey,
+  PaintGradeKey,
   InteriorCalcInputs,
   ProfileRecord,
   QuoteClientInfo,
@@ -59,6 +62,73 @@ type QuoteBuilderProps = {
     discount?: { type: "flat" | "percent"; value: number };
   };
 };
+
+/* ── Condition + paint grade, shared by both calculators ───────────── */
+
+/**
+ * The marketing site's free calculator has offered substrate condition and paint tier since
+ * launch; the paid product had neither, so someone could get a more configurable estimate
+ * without paying than with. Both are optional on the inputs: leaving them alone prices exactly
+ * as before, which is why every quote saved before this existed is unaffected.
+ */
+function ConditionGradeRow({
+  condition,
+  paintGrade,
+  onCondition,
+  onGrade,
+}: {
+  condition?: ConditionKey;
+  paintGrade?: PaintGradeKey;
+  onCondition: (c: ConditionKey) => void;
+  onGrade: (g: PaintGradeKey | undefined) => void;
+}) {
+  const active = condition ?? "fair";
+  const conditions: { key: ConditionKey; label: string; hint: string }[] = [
+    { key: "good", label: "Good", hint: "Sound, minimal patching" },
+    { key: "fair", label: "Fair", hint: "Some patching" },
+    { key: "poor", label: "Poor", hint: "Heavy patching and repair" },
+  ];
+
+  return (
+    <div className="space-y-2">
+      <div className="space-y-1">
+        <Label className="text-xs">Surface condition</Label>
+        <div className="flex gap-1.5">
+          {conditions.map((c) => (
+            <button
+              key={c.key}
+              type="button"
+              title={c.hint}
+              onClick={() => onCondition(c.key)}
+              className={`flex-1 rounded-[var(--radius)] px-2 py-1.5 text-xs font-medium transition-colors ${
+                active === c.key
+                  ? "bg-[var(--navy-700)] text-white"
+                  : "bg-[var(--surface)] text-[var(--muted)] hover:text-[var(--ink)]"
+              }`}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="space-y-1">
+        <Label className="text-xs">Paint grade</Label>
+        <select
+          className="h-9 w-full rounded-[var(--radius)] border border-[var(--line)] bg-[var(--surface)] px-2 text-sm"
+          value={paintGrade ?? ""}
+          onChange={(e) => onGrade((e.target.value || undefined) as PaintGradeKey | undefined)}
+        >
+          <option value="">My default rate</option>
+          {PAINT_GRADES.map((g) => (
+            <option key={g.key} value={g.key}>
+              {g.label} (${g.costPerGallon}/gal)
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+  );
+}
 
 /* ── Template chip data ────────────────── */
 
@@ -265,6 +335,13 @@ function InteriorCalculator({
           label="Heavy prep"
         />
       </div>
+
+      <ConditionGradeRow
+        condition={inputs.condition}
+        paintGrade={inputs.paintGrade}
+        onCondition={(condition) => update({ condition })}
+        onGrade={(paintGrade) => update({ paintGrade })}
+      />
     </div>
   );
 }
@@ -340,6 +417,13 @@ function ExteriorCalculator({
           label="Heavy prep"
         />
       </div>
+
+      <ConditionGradeRow
+        condition={inputs.condition}
+        paintGrade={inputs.paintGrade}
+        onCondition={(condition) => update({ condition })}
+        onGrade={(paintGrade) => update({ paintGrade })}
+      />
     </div>
   );
 }

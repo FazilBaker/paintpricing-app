@@ -14,6 +14,7 @@ import type {
   RoomTemplate,
   RoomTemplateKey,
 } from "@/lib/types";
+import { CONDITION_MULTIPLIER, PAINT_GRADE_COST } from "@/lib/constants";
 import { priceSurface } from "@/lib/pricing";
 import { roundQuarterUp } from "@/lib/utils";
 
@@ -101,12 +102,21 @@ export function calculateInteriorSuggested(
   // Prep covers the surfaces actually being painted, walls plus ceiling.
   const prepBaseHours =
     ((paintableWallArea + ceilingArea) / 100) * INDUSTRY_ASSUMPTIONS.prepHoursPer100SqFt;
-  const prepHours = inputs.heavyPrep
-    ? prepBaseHours * INDUSTRY_ASSUMPTIONS.heavyPrepMultiplier
-    : prepBaseHours;
+  // Substrate condition scales prep, exactly as it does for surfaces and on the free calculator.
+  // Absent means "fair", whose multiplier is 1.0, so every quote saved before this existed prices
+  // identically. heavyPrep still stacks on top: it is a scope choice ("we are scraping and
+  // priming"), not a description of the wall.
+  const conditionFactor = CONDITION_MULTIPLIER[inputs.condition ?? "fair"];
+  const prepHours =
+    prepBaseHours *
+    conditionFactor *
+    (inputs.heavyPrep ? INDUSTRY_ASSUMPTIONS.heavyPrepMultiplier : 1);
 
-  const materialCost =
-    (wallGallons + trimGallons) * settings.paintCostPerGallon;
+  // Same precedence as priceSurface: an explicit grade on the line beats the profile default.
+  const costPerGallon = inputs.paintGrade
+    ? PAINT_GRADE_COST[inputs.paintGrade]
+    : settings.paintCostPerGallon;
+  const materialCost = (wallGallons + trimGallons) * costPerGallon;
   const materialSell =
     materialCost * (1 + settings.materialMarkupPercent / 100);
   const supplies =
@@ -170,6 +180,8 @@ export function calculateExteriorSuggested(
       coats: inputs.coats,
       useSpray: inputs.useSpray,
       heavyPrep: inputs.heavyPrep,
+      condition: inputs.condition,
+      paintGrade: inputs.paintGrade,
     },
     {
       hourlyLaborRate: settings.hourlyLaborRate,
@@ -425,8 +437,10 @@ function calculateInteriorRoom(
     (wallArea / 100) * INDUSTRY_ASSUMPTIONS.prepHoursPer100SqFt;
   const prepHours = room.heavyPrep ? prepBaseHours * 1.5 : prepBaseHours;
 
-  const materialCost =
-    (wallGallons + trimGallons) * settings.paintCostPerGallon;
+  // FROZEN legacy path. Deliberately does NOT read condition or paintGrade: it exists only to
+  // re-render the two pre-item quotes, and changing their arithmetic would move numbers a
+  // customer has already been sent.
+  const materialCost = (wallGallons + trimGallons) * settings.paintCostPerGallon;
   const materialSell =
     materialCost * (1 + settings.materialMarkupPercent / 100);
   const laborHours =

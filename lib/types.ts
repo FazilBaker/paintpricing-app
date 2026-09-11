@@ -59,6 +59,16 @@ export type ExteriorTemplateKey =
 /** How a surface is measured, which decides what the builder asks the painter for. */
 export type SurfaceBasisKey = "area" | "linear" | "unit";
 
+/**
+ * Substrate condition, which scales prep hours (good 0.5, fair 1.0, poor 1.8 in the catalog).
+ * The free calculator on the marketing site has offered this since launch; the paid product only
+ * had a heavyPrep boolean, so a painter could not say "this wall is sound" and see the prep drop.
+ */
+export type ConditionKey = "good" | "fair" | "poor";
+
+/** Paint tier. Sets the material cost per gallon when the painter picks one for a line. */
+export type PaintGradeKey = "economy" | "standard" | "premium";
+
 export type AnyTemplateKey = RoomTemplateKey | ExteriorTemplateKey;
 
 export type QuoteItemType = "interior" | "exterior" | "custom";
@@ -155,6 +165,10 @@ export type InteriorCalcInputs = {
   paintWindows: boolean;
   heavyPrep: boolean;
   moistureFlag?: boolean;
+  /** Optional so existing saved quotes deserialize unchanged; absent behaves as "fair". */
+  condition?: ConditionKey;
+  /** Absent means fall back to the painter's own paintCostPerGallon setting. */
+  paintGrade?: PaintGradeKey;
 };
 
 export type ExteriorCalcInputs = {
@@ -162,6 +176,10 @@ export type ExteriorCalcInputs = {
   coats: number;
   useSpray: boolean;
   heavyPrep: boolean;
+  /** Optional so existing saved quotes deserialize unchanged; absent behaves as "fair". */
+  condition?: ConditionKey;
+  /** Absent means fall back to the painter's own paintCostPerGallon setting. */
+  paintGrade?: PaintGradeKey;
 };
 
 /* ── Unified quote item — the core line item ── */

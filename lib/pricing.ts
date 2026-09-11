@@ -153,8 +153,15 @@ export function priceSurface(
   const cleanup = CATALOG.labor.cleanupBaseHours + CATALOG.labor.cleanupHoursPerItem;
   const totalHours = application + prep + cleanup;
 
+  // Precedence: an explicit per-line paint grade beats the painter's profile default, because
+  // choosing "premium" on one room is a deliberate override of their usual product. With no grade
+  // chosen the painter's own configured cost wins, and only failing both does the catalog default
+  // apply. Getting this order wrong either ignores the grade picker or ignores their settings.
   const materials =
-    gallons * (settings.paintCostPerGallon ?? paintCostPerGallon(inputs.paintGrade));
+    gallons *
+    (inputs.paintGrade
+      ? paintCostPerGallon(inputs.paintGrade)
+      : (settings.paintCostPerGallon ?? paintCostPerGallon()));
   const materialsSold = materials * (1 + settings.materialMarkupPercent / 100);
   const supplies = CATALOG.supplies.baseCharge + (area / 100) * CATALOG.supplies.perHundredSqFt;
   const labor = totalHours * settings.hourlyLaborRate;

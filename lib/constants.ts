@@ -184,3 +184,20 @@ export const BILLING_COPY = {
   lifetimePrice: LIFETIME_DEAL_PRICE,
   lifetimeSeats: LIFETIME_DEAL_LIMIT,
 };
+
+/**
+ * Prep multiplier by substrate condition, and material cost by paint tier. Both come from the
+ * catalog and both were already used by the marketing site's free calculator; the paid product
+ * simply had no way to express either.
+ */
+export const CONDITION_MULTIPLIER = CATALOG.prep.conditionMultiplier;
+
+export const PAINT_GRADE_COST: Record<string, number> = Object.fromEntries(
+  Object.entries(CATALOG.materials.paintGrades).map(([k, g]) => [k, g.costPerGallon]),
+);
+
+export const PAINT_GRADES = Object.entries(CATALOG.materials.paintGrades).map(([key, g]) => ({
+  key,
+  label: g.label,
+  costPerGallon: g.costPerGallon,
+}));
