@@ -36,7 +36,18 @@ export interface SurfaceQuoteInputs {
 export interface SurfaceQuoteSettings {
   hourlyLaborRate: number;
   materialMarkupPercent: number;
+  /**
+   * Applied to a SINGLE surface. The app passes 0 here on purpose: a quote's minimum is applied
+   * once to the whole quote in calculateQuoteSummary, and flooring every line at the minimum
+   * would price a five room job at five times it. Standalone callers (the marketing
+   * calculators) do want the floor, which is why it stays configurable.
+   */
   minimumJobCharge: number;
+  /**
+   * The painter's own paint cost, overriding the catalog grade price. Painters set this in
+   * settings and ignoring it would silently price their jobs with someone else's material cost.
+   */
+  paintCostPerGallon?: number;
 }
 
 export interface SurfaceQuote {
@@ -142,7 +153,8 @@ export function priceSurface(
   const cleanup = CATALOG.labor.cleanupBaseHours + CATALOG.labor.cleanupHoursPerItem;
   const totalHours = application + prep + cleanup;
 
-  const materials = gallons * paintCostPerGallon(inputs.paintGrade);
+  const materials =
+    gallons * (settings.paintCostPerGallon ?? paintCostPerGallon(inputs.paintGrade));
   const materialsSold = materials * (1 + settings.materialMarkupPercent / 100);
   const supplies = CATALOG.supplies.baseCharge + (area / 100) * CATALOG.supplies.perHundredSqFt;
   const labor = totalHours * settings.hourlyLaborRate;

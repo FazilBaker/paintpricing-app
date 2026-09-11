@@ -14,6 +14,7 @@ import {
 
 import { createQuoteAction } from "@/app/actions";
 import {
+  CUSTOM_EXTERIOR_TEMPLATE,
   EXTERIOR_TEMPLATES,
   ROOM_TEMPLATES,
   QUOTE_TERMS,
@@ -67,24 +68,29 @@ type TemplateChip = {
   type: "interior" | "exterior";
 };
 
+/**
+ * Interior rooms stay listed by hand: they are geometry presets, not catalog surfaces, and the
+ * short chip labels ("Master Bed") are deliberately not the catalog's full names.
+ *
+ * The surface chips are DERIVED from EXTERIOR_TEMPLATES. They used to be hardcoded here, which is
+ * how the product ended up able to price twenty-two surfaces while offering seven: the catalog
+ * grew and this list did not. Deriving it means adding a surface to catalog.json is enough.
+ */
 const ALL_TEMPLATES: TemplateChip[] = [
-  // Interior
+  // Interior rooms
   { key: "living-room", label: "Living Room", type: "interior" },
   { key: "master-bedroom", label: "Master Bed", type: "interior" },
   { key: "standard-bedroom", label: "Bedroom", type: "interior" },
   { key: "kitchen", label: "Kitchen", type: "interior" },
   { key: "bathroom", label: "Bathroom", type: "interior" },
   { key: "hallway", label: "Hallway", type: "interior" },
-  // Exterior
-  { key: "siding", label: "Siding", type: "exterior" },
-  { key: "trim-fascia", label: "Trim & Fascia", type: "exterior" },
-  { key: "soffit", label: "Soffit", type: "exterior" },
-  { key: "doors", label: "Ext. Doors", type: "exterior" },
-  { key: "garage-door", label: "Garage Door", type: "exterior" },
-  { key: "deck-porch", label: "Deck / Porch", type: "exterior" },
-  { key: "fence", label: "Fence", type: "exterior" },
+  // Every priceable surface in the catalog
+  ...Object.values(EXTERIOR_TEMPLATES).map((t) => ({
+    key: t.key as string,
+    label: t.label,
+    type: "exterior" as const,
+  })),
 ];
-
 const defaultClientInfo: QuoteClientInfo = {
   customerName: "",
   customerEmail: "",
@@ -282,6 +288,14 @@ function ExteriorCalculator({
     onRecalculate(next, Math.round(suggestedPrice), scopeDescription);
   };
 
+  // Not every surface is measured in square feet. Cabinets are quoted per door and drawer front,
+  // baseboard and gutters per linear foot, parking stalls per stall. The field is still called
+  // sqFt because that name is persisted inside saved quotes, but asking a painter for "square
+  // feet" of cabinets would get a meaningless number back, so the label follows the surface.
+  const template = ALL_SURFACES[templateKey];
+  const quantityLabel = template?.measureLabel ?? "Square feet";
+  const quantityUnit = template?.measureUnit ?? "sq ft";
+
   return (
     <div className="space-y-3 rounded-[var(--radius)] bg-[var(--brand-muted)] p-3">
       <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">
@@ -290,7 +304,10 @@ function ExteriorCalculator({
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
-          <Label className="text-xs">Square feet</Label>
+          <Label className="text-xs">
+            {quantityLabel}
+            <span className="ml-1 font-normal text-[var(--muted)]">({quantityUnit})</span>
+          </Label>
           <Input
             type="number"
             min="0"
@@ -576,6 +593,12 @@ function ItemCard({
 }
 
 /* ── Template picker (tabbed chips) ── */
+
+/** Every priceable surface by key, including custom, so a line can look up how it is measured. */
+const ALL_SURFACES: Record<string, { measureLabel: string; measureUnit: string }> = {
+  ...EXTERIOR_TEMPLATES,
+  "custom-exterior": CUSTOM_EXTERIOR_TEMPLATE,
+};
 
 const INTERIOR_PRIMARY: TemplateChip[] = ALL_TEMPLATES.filter(
   (t) => t.type === "interior" && ["living-room", "standard-bedroom", "kitchen", "bathroom", "hallway"].includes(t.key),

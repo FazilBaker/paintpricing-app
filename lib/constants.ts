@@ -111,10 +111,17 @@ type CatalogExteriorKey = Exclude<ExteriorTemplateKey, "custom-exterior">;
 function exteriorTemplateFrom(key: ExteriorTemplateKey): ExteriorTemplate {
   const surface = CATALOG.surfaces[key];
 
+  const measure = surface.measure;
+
   return {
     key,
     label: surface.label,
-    defaultSqFt: surface.defaultSqFt ?? 200,
+    // Quantity in the surface's own unit. Area surfaces carry defaultSqFt; linear and unit
+    // surfaces carry it on measure.default instead.
+    defaultSqFt: surface.defaultSqFt ?? measure?.default ?? 100,
+    basis: (surface.basis ?? "area") as ExteriorTemplate["basis"],
+    measureUnit: measure?.unit ?? "sq ft",
+    measureLabel: measure?.label ?? "Square feet",
     coverageSqFtPerGallon: surface.coverageSqFtPerGallon,
     productionSqFtPerHourBrush: surface.productionSqFtPerHourBrush ?? CATALOG.labor.wallProductionSqFtPerHour,
     productionSqFtPerHourSpray:
@@ -127,8 +134,16 @@ function exteriorTemplateFrom(key: ExteriorTemplateKey): ExteriorTemplate {
   };
 }
 
+/**
+ * Every catalog surface a painter can put on a quote. This was eight exterior surfaces; the other
+ * fourteen existed in the catalog and were priceable but had no way into the product, so a painter
+ * could not quote cabinets, stucco, interior trim, gutters or striping at all.
+ */
 const CATALOG_EXTERIOR_KEYS: CatalogExteriorKey[] = [
+  // exterior
   "siding",
+  "stucco",
+  "brick",
   "trim-fascia",
   "soffit",
   "doors",
@@ -136,6 +151,20 @@ const CATALOG_EXTERIOR_KEYS: CatalogExteriorKey[] = [
   "shutters",
   "deck-porch",
   "fence",
+  "gutters-downspouts",
+  // interior detail
+  "cabinets",
+  "interior-doors",
+  "baseboard",
+  "crown-molding",
+  "wainscoting",
+  "stair-spindles",
+  "handrail",
+  "window-sash",
+  // commercial and striping
+  "parking-lot-striping",
+  "parking-stalls",
+  "curb-painting",
 ];
 
 export const EXTERIOR_TEMPLATES = Object.fromEntries(

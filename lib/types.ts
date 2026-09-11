@@ -21,8 +21,18 @@ export type RoomTemplateKey =
   | "hallway"
   | "custom";
 
+/**
+ * Every priceable surface in the catalog, not just exterior ones. The name is historical: this
+ * union started as the nine exterior templates and now carries interior detail work (cabinets,
+ * baseboard, crown molding, window sash) and commercial striping too. Renaming it would churn
+ * every call site for no behavioural gain, and the strings themselves are persisted inside saved
+ * quotes as QuoteItem.templateKey, so they are canonical and must never change.
+ */
 export type ExteriorTemplateKey =
+  // exterior
   | "siding"
+  | "stucco"
+  | "brick"
   | "trim-fascia"
   | "soffit"
   | "doors"
@@ -30,7 +40,24 @@ export type ExteriorTemplateKey =
   | "shutters"
   | "deck-porch"
   | "fence"
+  | "gutters-downspouts"
+  // interior detail
+  | "cabinets"
+  | "interior-doors"
+  | "baseboard"
+  | "crown-molding"
+  | "wainscoting"
+  | "stair-spindles"
+  | "handrail"
+  | "window-sash"
+  // commercial and striping
+  | "parking-lot-striping"
+  | "parking-stalls"
+  | "curb-painting"
   | "custom-exterior";
+
+/** How a surface is measured, which decides what the builder asks the painter for. */
+export type SurfaceBasisKey = "area" | "linear" | "unit";
 
 export type AnyTemplateKey = RoomTemplateKey | ExteriorTemplateKey;
 
@@ -93,7 +120,17 @@ export type RoomTemplate = {
 export type ExteriorTemplate = {
   key: ExteriorTemplateKey;
   label: string;
+  /**
+   * The default quantity in the surface's OWN unit. Still named defaultSqFt because
+   * ExteriorCalcInputs.sqFt is persisted under that name inside saved quotes; for a linear or
+   * unit surface it means linear feet or a count. measureUnit says which.
+   */
   defaultSqFt: number;
+  basis: SurfaceBasisKey;
+  /** "sq ft", "lin ft", "doors and drawer fronts", "stalls" ... */
+  measureUnit: string;
+  /** Field label shown to the painter, e.g. "Cabinet doors and drawer fronts". */
+  measureLabel: string;
   coverageSqFtPerGallon: number;
   productionSqFtPerHourBrush: number;
   productionSqFtPerHourSpray: number;

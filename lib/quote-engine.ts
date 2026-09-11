@@ -14,6 +14,7 @@ import type {
   RoomTemplate,
   RoomTemplateKey,
 } from "@/lib/types";
+import { priceSurface } from "@/lib/pricing";
 import { roundQuarterUp } from "@/lib/utils";
 
 // ── Interior helpers ──────────────────────────────────────
@@ -151,40 +152,37 @@ export function calculateExteriorSuggested(
   templateKey: ExteriorTemplateKey,
   settings: ProfileSettings,
 ): { suggestedPrice: number; scopeDescription: string } {
-  const template = getExteriorTemplate(templateKey);
-
-  const gallons = roundQuarterUp(
-    (inputs.sqFt / template.coverageSqFtPerGallon) * inputs.coats,
+  // Delegates to priceSurface so every basis prices correctly. The old body treated
+  // inputs.sqFt as square feet unconditionally, which was fine while this only handled the
+  // nine exterior surfaces but is wrong for the fourteen added since: cabinets are priced per
+  // door front, baseboard and gutters per linear foot, parking stalls per stall. priceSurface
+  // converts quantity to painted area per the surface's own basis before costing it.
+  //
+  // Two settings are threaded through deliberately:
+  //   paintCostPerGallon  the painter's configured material cost, which priceSurface would
+  //                       otherwise replace with the catalog grade price.
+  //   minimumJobCharge 0  the minimum belongs to the whole quote, applied once in
+  //                       calculateQuoteSummary. Flooring each line would multiply it.
+  const quote = priceSurface(
+    templateKey,
+    {
+      quantity: inputs.sqFt,
+      coats: inputs.coats,
+      useSpray: inputs.useSpray,
+      heavyPrep: inputs.heavyPrep,
+    },
+    {
+      hourlyLaborRate: settings.hourlyLaborRate,
+      materialMarkupPercent: settings.materialMarkupPercent,
+      paintCostPerGallon: settings.paintCostPerGallon,
+      minimumJobCharge: 0,
+    },
   );
 
-  const productionRate = inputs.useSpray
-    ? template.productionSqFtPerHourSpray
-    : template.productionSqFtPerHourBrush;
-  // Labor scales with coat count, matching the free calculator.
-  const paintHours = (inputs.sqFt * inputs.coats) / productionRate;
-
-  const prepBaseHours =
-    (inputs.sqFt / 100) * INDUSTRY_ASSUMPTIONS.prepHoursPer100SqFt * INDUSTRY_ASSUMPTIONS.exteriorPrepMultiplier;
-  const prepHours = inputs.heavyPrep
-    ? prepBaseHours * INDUSTRY_ASSUMPTIONS.heavyPrepMultiplier
-    : prepBaseHours;
-
-  const laborHours = paintHours + prepHours + INDUSTRY_ASSUMPTIONS.cleanupHoursPerItem;
-  const materialCost = gallons * settings.paintCostPerGallon;
-  const materialSell = materialCost * (1 + settings.materialMarkupPercent / 100);
-  const supplies =
-    INDUSTRY_ASSUMPTIONS.suppliesBaseCharge +
-    (inputs.sqFt / 100) * INDUSTRY_ASSUMPTIONS.suppliesPerHundredSqFt;
-  const suggestedPrice = materialSell + supplies + laborHours * settings.hourlyLaborRate;
-
-  const parts: string[] = [];
-  parts.push(`${Math.round(inputs.sqFt)} sq ft`);
-  if (inputs.useSpray) parts.push("spray application");
-  else parts.push("brush/roll application");
-  if (inputs.heavyPrep) parts.push("heavy prep (scrape, prime, caulk)");
-  const scopeDescription = `${template.label}: ${parts.join(", ")}. ${inputs.coats} coats.`;
-
-  return { suggestedPrice, scopeDescription };
+  return {
+    suggestedPrice: quote.total,
+    scopeDescription: quote.scopeDescription,
+  };
 }
 
 // ── Create items from templates ──────────────────────────
