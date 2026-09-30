@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import type { QuoteDraftPayload } from "@/lib/types";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate , resolveBaseCleanup, resolveMinimumTopUp } from "@/lib/utils";
 
 export const revalidate = 0;
 
@@ -237,6 +237,24 @@ export default async function SharedQuotePage({
         <section className="mb-8">
           <div className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--surface)]">
             <div className="space-y-2 px-5 py-4">
+              {resolveBaseCleanup(summary) > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-[var(--muted)]">Job setup and cleanup</span>
+                  <span className="font-mono text-[var(--foreground)]">
+                    {formatCurrency(resolveBaseCleanup(summary))}
+                  </span>
+                </div>
+              )}
+
+              {resolveMinimumTopUp(summary) > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-[var(--muted)]">Minimum job charge</span>
+                  <span className="font-mono text-[var(--foreground)]">
+                    {formatCurrency(resolveMinimumTopUp(summary))}
+                  </span>
+                </div>
+              )}
+
               <div className="flex justify-between text-sm">
                 <span className="text-[var(--muted)]">Subtotal</span>
                 <span className="font-mono text-[var(--foreground)]">

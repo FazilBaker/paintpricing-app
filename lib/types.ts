@@ -278,6 +278,12 @@ export type QuoteSummary = {
   materialBaseTotal: number;
   materialsTotal: number;
   subtotalBeforeMinimum: number;
+  /**
+   * Once-per-job setup and cleanup charge that is folded into `subtotal`.
+   * Optional because quotes saved before 2026-09-30 have no such field; read it
+   * through `resolveBaseCleanup` rather than directly, which derives it for those.
+   */
+  baseCleanup?: number;
   subtotal: number;
   discount: number;
   taxTotal: number;

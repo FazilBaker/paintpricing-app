@@ -5,7 +5,7 @@ import { Check, ChevronRight, Download, Lock, Pencil, Unlock } from "lucide-reac
 import { getViewer, hasConfiguredRates } from "@/lib/auth";
 import { deleteQuoteAction, unlockQuoteAction } from "@/app/actions";
 import type { QuoteRecord } from "@/lib/types";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate , resolveBaseCleanup, resolveMinimumTopUp } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DeleteQuoteButton } from "@/components/quotes/delete-quote-button";
@@ -347,6 +347,18 @@ export default async function QuoteDetailPage({
             <div className="rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--surface)] p-5" style={{ boxShadow: "var(--shadow-sm)" }}>
               <p className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)] mb-3">Totals</p>
               <div className="space-y-2 text-sm">
+                {resolveBaseCleanup(quote.quoteData.summary) > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-[var(--muted)]">Job setup and cleanup</span>
+                    <span className="font-mono">{formatCurrency(resolveBaseCleanup(quote.quoteData.summary))}</span>
+                  </div>
+                )}
+                {resolveMinimumTopUp(quote.quoteData.summary) > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-[var(--muted)]">Minimum job charge</span>
+                    <span className="font-mono">{formatCurrency(resolveMinimumTopUp(quote.quoteData.summary))}</span>
+                  </div>
+                )}
                 {(quote.quoteData.summary.discount ?? 0) > 0 && (
                   <div className="flex justify-between text-[var(--success)]">
                     <span>Discount</span>

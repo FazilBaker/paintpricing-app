@@ -326,6 +326,7 @@ export function calculateItemsSummary(
     materialBaseTotal: 0,
     materialsTotal: 0,
     subtotalBeforeMinimum: subtotalBeforeDiscount,
+    baseCleanup,
     subtotal,
     discount: discountAmount,
     taxTotal,
@@ -563,6 +564,9 @@ export function calculateQuoteSummary(
     materialBaseTotal,
     materialsTotal,
     subtotalBeforeMinimum,
+    // Legacy quotes fold cleanup into laborHours, and the Labor row is rendered,
+    // so there is no hidden amount to surface here.
+    baseCleanup: 0,
     subtotal,
     discount: 0,
     taxTotal,

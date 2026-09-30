@@ -9,7 +9,7 @@ import {
 
 import { QUOTE_TERMS } from "@/lib/constants";
 import type { ExteriorCalcInputs, InteriorCalcInputs, QuoteDraftPayload, QuoteItem } from "@/lib/types";
-import { formatDate } from "@/lib/utils";
+import { formatDate , resolveBaseCleanup, resolveMinimumTopUp } from "@/lib/utils";
 
 /* ── Brand palette ── */
 const NAVY = "#1E3A5F";
@@ -349,6 +349,10 @@ export function QuotePdfDocument({ payload }: { payload: QuoteDraftPayload }) {
     : new Date().toISOString().slice(0, 10).replace(/-/g, "");
 
   const hasDiscount = (payload.summary.discount ?? 0) > 0;
+  // The subtotal has always included these; until now neither was printed, so the line
+  // items did not add up to the subtotal on the page the customer reads.
+  const baseCleanup = resolveBaseCleanup(payload.summary);
+  const minimumTopUp = resolveMinimumTopUp(payload.summary);
   const hasTax = payload.summary.taxTotal > 0;
 
   return (
@@ -515,6 +519,22 @@ export function QuotePdfDocument({ payload }: { payload: QuoteDraftPayload }) {
                 </View>
               )}
 
+              {/* Job setup and cleanup: a real charge inside the subtotal, now shown */}
+              {baseCleanup > 0 && (
+                <View style={s.totalsRow}>
+                  <Text style={s.totalsLabel}>Job setup and cleanup</Text>
+                  <Text style={s.totalsValue}>{moneyDetailed(baseCleanup)}</Text>
+                </View>
+              )}
+
+              {/* Minimum job charge top-up, likewise */}
+              {minimumTopUp > 0 && (
+                <View style={s.totalsRow}>
+                  <Text style={s.totalsLabel}>Minimum job charge</Text>
+                  <Text style={s.totalsValue}>{moneyDetailed(minimumTopUp)}</Text>
+                </View>
+              )}
+
               {/* Subtotal */}
               <View style={s.totalsRow}>
                 <Text style={s.totalsLabel}>Subtotal</Text>
@@ -549,7 +569,7 @@ export function QuotePdfDocument({ payload }: { payload: QuoteDraftPayload }) {
               <View style={s.grandRow}>
                 <Text style={s.grandLabel}>Total</Text>
                 <Text style={s.grandValue}>
-                  {money(payload.summary.grandTotal)}
+                  {moneyDetailed(payload.summary.grandTotal)}
                 </Text>
               </View>
             </View>
