@@ -48,6 +48,17 @@ export interface SurfaceQuoteSettings {
    * settings and ignoring it would silently price their jobs with someone else's material cost.
    */
   paintCostPerGallon?: number;
+  /**
+   * True when this surface is ONE LINE of a larger quote rather than a job on its own.
+   *
+   * priceSurface prices a complete single-surface job: it bills the once-per-job cleanup base,
+   * the once-per-job supplies base, and the job minimum. That is right for the free calculator,
+   * where one surface IS the job. It is wrong when the result becomes a line item, because all
+   * three then multiply by the number of lines. The minimum was already neutralised by passing
+   * 0; this flag does the same for the other two, which were missed. The quote applies all of
+   * them exactly once in calculateItemsSummary.
+   */
+  lineItemMode?: boolean;
 }
 
 export interface SurfaceQuote {
@@ -150,7 +161,10 @@ export function priceSurface(
 
   const application = applicationHours(surface, quantity, coats, useSpray);
   const prep = prepHoursFor(surface, area, condition, inputs.heavyPrep ?? false);
-  const cleanup = CATALOG.labor.cleanupBaseHours + CATALOG.labor.cleanupHoursPerItem;
+  // Job-level cleanup belongs to the quote, not to each line. See lineItemMode.
+  const cleanup = settings.lineItemMode
+    ? CATALOG.labor.cleanupHoursPerItem
+    : CATALOG.labor.cleanupBaseHours + CATALOG.labor.cleanupHoursPerItem;
   const totalHours = application + prep + cleanup;
 
   // Precedence: an explicit per-line paint grade beats the painter's profile default, because
@@ -163,7 +177,10 @@ export function priceSurface(
       ? paintCostPerGallon(inputs.paintGrade)
       : (settings.paintCostPerGallon ?? paintCostPerGallon()));
   const materialsSold = materials * (1 + settings.materialMarkupPercent / 100);
-  const supplies = CATALOG.supplies.baseCharge + (area / 100) * CATALOG.supplies.perHundredSqFt;
+  // Likewise the flat supplies base. The per-area component genuinely scales with the line.
+  const supplies =
+    (settings.lineItemMode ? 0 : CATALOG.supplies.baseCharge) +
+    (area / 100) * CATALOG.supplies.perHundredSqFt;
   const labor = totalHours * settings.hourlyLaborRate;
 
   const subtotal = materialsSold + supplies + labor;

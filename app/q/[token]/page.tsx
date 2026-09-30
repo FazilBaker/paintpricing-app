@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import type { QuoteDraftPayload } from "@/lib/types";
-import { formatCurrency, formatDate , resolveBaseCleanup, resolveMinimumTopUp } from "@/lib/utils";
+import { formatCurrency, formatDate , resolveBaseCleanup, resolveBaseSupplies, resolveMinimumTopUp } from "@/lib/utils";
 
 export const revalidate = 0;
 
@@ -242,6 +242,15 @@ export default async function SharedQuotePage({
                   <span className="text-[var(--muted)]">Job setup and cleanup</span>
                   <span className="font-mono text-[var(--foreground)]">
                     {formatCurrency(resolveBaseCleanup(summary))}
+                  </span>
+                </div>
+              )}
+
+              {resolveBaseSupplies(summary) > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-[var(--muted)]">Supplies</span>
+                  <span className="font-mono text-[var(--foreground)]">
+                    {formatCurrency(resolveBaseSupplies(summary))}
                   </span>
                 </div>
               )}

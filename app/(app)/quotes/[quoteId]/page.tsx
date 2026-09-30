@@ -5,7 +5,7 @@ import { Check, ChevronRight, Download, Lock, Pencil, Unlock } from "lucide-reac
 import { getViewer, hasConfiguredRates } from "@/lib/auth";
 import { deleteQuoteAction, unlockQuoteAction } from "@/app/actions";
 import type { QuoteRecord } from "@/lib/types";
-import { formatCurrency, formatDate , resolveBaseCleanup, resolveMinimumTopUp } from "@/lib/utils";
+import { formatCurrency, formatDate , resolveBaseCleanup, resolveBaseSupplies, resolveMinimumTopUp } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DeleteQuoteButton } from "@/components/quotes/delete-quote-button";
@@ -351,6 +351,12 @@ export default async function QuoteDetailPage({
                   <div className="flex justify-between">
                     <span className="text-[var(--muted)]">Job setup and cleanup</span>
                     <span className="font-mono">{formatCurrency(resolveBaseCleanup(quote.quoteData.summary))}</span>
+                  </div>
+                )}
+                {resolveBaseSupplies(quote.quoteData.summary) > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-[var(--muted)]">Supplies</span>
+                    <span className="font-mono">{formatCurrency(resolveBaseSupplies(quote.quoteData.summary))}</span>
                   </div>
                 )}
                 {resolveMinimumTopUp(quote.quoteData.summary) > 0 && (

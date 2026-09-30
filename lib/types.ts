@@ -284,6 +284,11 @@ export type QuoteSummary = {
    * through `resolveBaseCleanup` rather than directly, which derives it for those.
    */
   baseCleanup?: number;
+  /**
+   * Once-per-job supplies charge folded into `subtotal`. Absent on quotes saved before
+   * 2026-09-30, where the charge sat inside each line instead, so do not derive it.
+   */
+  baseSupplies?: number;
   subtotal: number;
   discount: number;
   taxTotal: number;

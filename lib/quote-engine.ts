@@ -119,8 +119,9 @@ export function calculateInteriorSuggested(
   const materialCost = (wallGallons + trimGallons) * costPerGallon;
   const materialSell =
     materialCost * (1 + settings.materialMarkupPercent / 100);
+  // Only the per-area component belongs to the line. The flat supplies base is a once-per-job
+  // charge and is applied in calculateItemsSummary; adding it here multiplied it by the room count.
   const supplies =
-    INDUSTRY_ASSUMPTIONS.suppliesBaseCharge +
     ((paintableWallArea + ceilingArea) / 100) * INDUSTRY_ASSUMPTIONS.suppliesPerHundredSqFt;
   const laborHours =
     wallLaborHours +
@@ -188,6 +189,9 @@ export function calculateExteriorSuggested(
       materialMarkupPercent: settings.materialMarkupPercent,
       paintCostPerGallon: settings.paintCostPerGallon,
       minimumJobCharge: 0,
+      // The once-per-job cleanup base and supplies base belong to the quote, exactly as the
+      // minimum does. Without this each exterior line carried a whole job's worth of both.
+      lineItemMode: true,
     },
   );
 
@@ -297,8 +301,12 @@ export function calculateItemsSummary(
       ? INDUSTRY_ASSUMPTIONS.cleanupHoursPerQuote * settings.hourlyLaborRate
       : 0;
 
+  // Same reasoning as baseCleanup: a flat, once-per-job supplies charge. Both used to be billed
+  // inside every line, so a six line quote carried six of each.
+  const baseSupplies = items.length > 0 ? INDUSTRY_ASSUMPTIONS.suppliesBaseCharge : 0;
+
   const subtotalBeforeDiscount =
-    items.reduce((sum, item) => sum + item.price, 0) + baseCleanup;
+    items.reduce((sum, item) => sum + item.price, 0) + baseCleanup + baseSupplies;
   const subtotal = Math.max(subtotalBeforeDiscount, settings.minimumJobCharge);
   const minimumApplied = subtotal > subtotalBeforeDiscount;
 
@@ -327,6 +335,7 @@ export function calculateItemsSummary(
     materialsTotal: 0,
     subtotalBeforeMinimum: subtotalBeforeDiscount,
     baseCleanup,
+    baseSupplies,
     subtotal,
     discount: discountAmount,
     taxTotal,
@@ -567,6 +576,7 @@ export function calculateQuoteSummary(
     // Legacy quotes fold cleanup into laborHours, and the Labor row is rendered,
     // so there is no hidden amount to surface here.
     baseCleanup: 0,
+    baseSupplies: 0,
     subtotal,
     discount: 0,
     taxTotal,

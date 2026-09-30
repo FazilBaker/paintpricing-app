@@ -9,7 +9,7 @@ import {
 
 import { QUOTE_TERMS } from "@/lib/constants";
 import type { ExteriorCalcInputs, InteriorCalcInputs, QuoteDraftPayload, QuoteItem } from "@/lib/types";
-import { formatDate , resolveBaseCleanup, resolveMinimumTopUp } from "@/lib/utils";
+import { formatDate , resolveBaseCleanup, resolveBaseSupplies, resolveMinimumTopUp } from "@/lib/utils";
 
 /* ── Brand palette ── */
 const NAVY = "#1E3A5F";
@@ -353,6 +353,7 @@ export function QuotePdfDocument({ payload }: { payload: QuoteDraftPayload }) {
   // items did not add up to the subtotal on the page the customer reads.
   const baseCleanup = resolveBaseCleanup(payload.summary);
   const minimumTopUp = resolveMinimumTopUp(payload.summary);
+  const baseSupplies = resolveBaseSupplies(payload.summary);
   const hasTax = payload.summary.taxTotal > 0;
 
   return (
@@ -524,6 +525,13 @@ export function QuotePdfDocument({ payload }: { payload: QuoteDraftPayload }) {
                 <View style={s.totalsRow}>
                   <Text style={s.totalsLabel}>Job setup and cleanup</Text>
                   <Text style={s.totalsValue}>{moneyDetailed(baseCleanup)}</Text>
+                </View>
+              )}
+
+              {baseSupplies > 0 && (
+                <View style={s.totalsRow}>
+                  <Text style={s.totalsLabel}>Supplies</Text>
+                  <Text style={s.totalsValue}>{moneyDetailed(baseSupplies)}</Text>
                 </View>
               )}
 

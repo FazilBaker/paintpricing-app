@@ -102,3 +102,16 @@ export function resolveMinimumTopUp(summary: {
   const gap = summary.subtotal - base;
   return gap > 0.005 ? gap : 0;
 }
+
+/**
+ * The once-per-job supplies charge inside `subtotal`.
+ *
+ * Unlike the cleanup charge this is NOT derived for older quotes. Before 2026-09-30 the flat
+ * supplies base was billed inside every line rather than once, so on those quotes there is no
+ * quote-level amount to show and the money is already accounted for in the line prices.
+ */
+export function resolveBaseSupplies(summary: { baseSupplies?: number }): number {
+  return typeof summary.baseSupplies === "number" && summary.baseSupplies > 0
+    ? summary.baseSupplies
+    : 0;
+}
