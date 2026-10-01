@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { DEFAULT_SETTINGS, FREE_QUOTES_LIMIT } from "@/lib/constants";
+import { DEFAULT_SETTINGS } from "@/lib/constants";
 import { getViewer } from "@/lib/auth";
 import { detectBotEmail, verifyTurnstileToken } from "@/lib/bot-protection";
 import { isSupabaseConfigured } from "@/lib/env";
@@ -161,9 +161,7 @@ export async function saveProfileSetupAction(formData: FormData) {
       material_markup_percent: DEFAULT_SETTINGS.materialMarkupPercent,
       tax_percent: DEFAULT_SETTINGS.taxPercent,
       minimum_job_charge: DEFAULT_SETTINGS.minimumJobCharge,
-      free_quotes_used: 0,
-      free_quotes_limit: FREE_QUOTES_LIMIT,
-      rates_configured_at: new Date().toISOString(),
+            rates_configured_at: new Date().toISOString(),
     };
 
     const { error: skipError } = await supabase.from("profiles").upsert(skipPayload);
@@ -247,9 +245,7 @@ export async function saveProfileSetupAction(formData: FormData) {
     material_markup_percent: input.materialMarkupPercent,
     tax_percent: input.taxPercent,
     minimum_job_charge: input.minimumJobCharge,
-    free_quotes_used: 0,
-    free_quotes_limit: FREE_QUOTES_LIMIT,
-    rates_configured_at: new Date().toISOString(),
+      rates_configured_at: new Date().toISOString(),
   } as Record<string, unknown>;
 
   if (logoUrl) {
@@ -608,33 +604,58 @@ export async function unlockQuoteAction(formData: FormData) {
       // of dumping the user on a bare pricing page in the middle of sending a job.
       redirect(`/billing?locked=${quoteId}`);
     } else {
-      // Unlock first, then consume credit — if unlock fails, credit isn't lost
-      const { error: unlockError } = await supabase
-        .from("quotes")
-        .update({ is_unlocked: true })
-        .eq("id", quoteId)
-        .eq("user_id", viewer.user.id);
+      // Spend the credit FIRST, atomically, and only unlock if it was actually spent. The old order
+      // (unlock, then increment) let parallel requests unlock several quotes on one credit, and the
+      // unlock itself used the browser-trusted client, which the database no longer allows.
+      const { data: spent, error: spendError } = await supabase.rpc("consume_free_quote");
 
-      if (!unlockError) {
-        await supabase.rpc("increment_free_quotes_used", {
-          user_id: viewer.user.id,
-        });
+      let unlocked = false;
+      if (!spendError && spent === true) {
+        const admin = createSupabaseAdminClient();
+        const { error: unlockError } = admin
+          ? await admin
+              .from("quotes")
+              .update({ is_unlocked: true })
+              .eq("id", quoteId)
+              .eq("user_id", viewer.user.id)
+          : { error: new Error("Admin client not configured.") };
+        unlocked = !unlockError;
+        if (unlockError) {
+          // The credit is spent but the unlock failed. Rare, and recoverable by hand, so log loudly.
+          console.error("[unlockQuote] credit spent but unlock failed", { quoteId, userId: viewer.user.id });
+        }
+      } else if (spendError && /consume_free_quote/.test(spendError.message ?? "")) {
+        // Transitional: this code can ship before the 2026-10-01 migration creates
+        // consume_free_quote. Until then, keep the old behaviour so free unlocks never break.
+        // Remove this branch once the migration has run.
+        const { error: unlockError } = await supabase
+          .from("quotes")
+          .update({ is_unlocked: true })
+          .eq("id", quoteId)
+          .eq("user_id", viewer.user.id);
+        if (!unlockError) {
+          await supabase.rpc("increment_free_quotes_used", { user_id: viewer.user.id });
+          unlocked = true;
+        }
+      } else {
+        // No credit was available after all (a parallel request took it). Send them to billing.
+        redirect(`/billing?locked=${quoteId}`);
+      }
 
-        // If that was the final credit, tell them now, while they have just succeeded at
-        // something, rather than letting them discover it as a wall on the next quote.
-        // Wrapped so an email failure can never break the unlock the user paid a credit for.
-        const usedAfter = viewer.profile.freeQuotesUsed + 1;
-        if (usedAfter >= viewer.profile.freeQuotesLimit && viewer.user.email) {
-          try {
-            await sendLastCreditEmail(
-              viewer.user.email,
-              viewer.profile.businessName,
-              Number(quote.total ?? 0),
-              `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://app.paintpricing.com"}/billing`,
-            );
-          } catch {
-            // non-fatal
-          }
+      // If that was the final credit, tell them now, while they have just succeeded at
+      // something, rather than letting them discover it as a wall on the next quote.
+      // Wrapped so an email failure can never break the unlock the user paid a credit for.
+      const usedAfter = viewer.profile.freeQuotesUsed + 1;
+      if (unlocked && usedAfter >= viewer.profile.freeQuotesLimit && viewer.user.email) {
+        try {
+          await sendLastCreditEmail(
+            viewer.user.email,
+            viewer.profile.businessName,
+            Number(quote.total ?? 0),
+            `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://app.paintpricing.com"}/billing`,
+          );
+        } catch {
+          // non-fatal
         }
       }
     }

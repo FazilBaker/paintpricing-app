@@ -141,6 +141,7 @@ export async function verifySubscription(subscriptionId: string): Promise<{
   ok: boolean;
   status?: string;
   planId?: string;
+  customId?: string;
   payerId?: string;
   error?: string;
 }> {
@@ -164,6 +165,7 @@ export async function verifySubscription(subscriptionId: string): Promise<{
   const data = (await response.json()) as {
     status: string;
     plan_id?: string;
+    custom_id?: string;
     subscriber?: { payer_id?: string };
   };
 
@@ -175,6 +177,7 @@ export async function verifySubscription(subscriptionId: string): Promise<{
     ok: true,
     status: data.status,
     planId: data.plan_id,
+    customId: data.custom_id,
     payerId: data.subscriber?.payer_id,
   };
 }
@@ -189,4 +192,35 @@ export function parseCustomId(customId: string): {
     return null;
   }
   return { userId: parts[0], cycle: parts[1] };
+}
+
+/**
+ * Read an order WITHOUT capturing it, so its amount, currency and owner can be checked before
+ * any money moves. The lifetime order is created in the browser, so every field on it is
+ * attacker-controlled until PayPal reports it back to us here.
+ */
+export async function getOrder(orderId: string): Promise<{
+  ok: boolean;
+  amount?: number;
+  currency?: string;
+  customId?: string;
+  error?: string;
+}> {
+  const token = await getAccessToken();
+  const response = await fetch(`${PAYPAL_API_BASE}/v2/checkout/orders/${encodeURIComponent(orderId)}`, {
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+  });
+  if (!response.ok) {
+    return { ok: false, error: `Order lookup failed: ${response.status}` };
+  }
+  const data = (await response.json()) as {
+    purchase_units?: Array<{ custom_id?: string; amount?: { value?: string; currency_code?: string } }>;
+  };
+  const unit = data.purchase_units?.[0];
+  return {
+    ok: true,
+    amount: Number(unit?.amount?.value ?? "0"),
+    currency: unit?.amount?.currency_code,
+    customId: unit?.custom_id,
+  };
 }

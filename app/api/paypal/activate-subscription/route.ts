@@ -61,6 +61,38 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: result.error }, { status: 400 });
   }
 
+  // ── Make sure this subscription is ours, for this user, on the plan they claim ──
+  // Without these checks one paid subscription ID could activate any number of accounts, and a
+  // subscription to any plan on the merchant account would count.
+  const expectedPlan =
+    body.cycle === "monthly"
+      ? process.env.NEXT_PUBLIC_PAYPAL_PLAN_MONTHLY
+      : process.env.NEXT_PUBLIC_PAYPAL_PLAN_YEARLY;
+  if (!expectedPlan || result.planId !== expectedPlan) {
+    console.error("[activate-subscription] Plan mismatch", {
+      subscriptionID: body.subscriptionID, userId: user.id, planId: result.planId, cycle: body.cycle,
+    });
+    return NextResponse.json({ error: "This subscription is not for the selected plan." }, { status: 400 });
+  }
+  if (result.customId !== `${user.id}:${body.cycle}`) {
+    console.error("[activate-subscription] Subscription belongs to a different user", {
+      subscriptionID: body.subscriptionID, userId: user.id, customId: result.customId,
+    });
+    return NextResponse.json({ error: "This subscription does not belong to your account." }, { status: 400 });
+  }
+  const { data: holder } = await admin
+    .from("profiles")
+    .select("id")
+    .eq("paypal_subscription_id", body.subscriptionID)
+    .neq("id", user.id)
+    .maybeSingle();
+  if (holder) {
+    console.error("[activate-subscription] Subscription already attached to another account", {
+      subscriptionID: body.subscriptionID, userId: user.id, otherUserId: holder.id,
+    });
+    return NextResponse.json({ error: "This subscription is already in use." }, { status: 409 });
+  }
+
   const { error } = await admin
     .from("profiles")
     .update({

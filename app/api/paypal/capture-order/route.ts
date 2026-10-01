@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { LIFETIME_DEAL_LIMIT, LIFETIME_DEAL_PRICE } from "@/lib/constants";
-import { captureOrder } from "@/lib/paypal";
+import { captureOrder, getOrder } from "@/lib/paypal";
 import {
   createSupabaseAdminClient,
   createSupabaseServerClient,
@@ -70,6 +70,27 @@ export async function POST(request: Request) {
       { error: "The lifetime launch deal is sold out." },
       { status: 400 },
     );
+  }
+
+  // ── Check the order BEFORE capturing it ──
+  // The order is created in the browser, so its amount, currency and custom_id are whatever the
+  // client sent. The old code only compared the numeric amount after capture, so an order for
+  // 249 JPY (about $1.70) would have passed. Check everything first, while no money has moved.
+  const order = await getOrder(body.orderID);
+  if (!order.ok) {
+    return NextResponse.json({ error: order.error }, { status: 400 });
+  }
+  if (order.currency !== "USD" || (order.amount ?? 0) < LIFETIME_DEAL_PRICE) {
+    console.error("[capture-order] Rejected order before capture: wrong amount or currency", {
+      orderID: body.orderID, userId: user.id, amount: order.amount, currency: order.currency,
+    });
+    return NextResponse.json({ error: "This order does not match the lifetime deal." }, { status: 400 });
+  }
+  if (order.customId !== `${user.id}:lifetime`) {
+    console.error("[capture-order] Rejected order before capture: belongs to a different user", {
+      orderID: body.orderID, userId: user.id, customId: order.customId,
+    });
+    return NextResponse.json({ error: "This order does not belong to your account." }, { status: 400 });
   }
 
   // ── Capture (PayPal charges the customer here) ──
