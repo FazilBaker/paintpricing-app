@@ -32,6 +32,21 @@ begin;
 -- 1. No bulk read of shared quotes ---------------------------------------------------------------
 drop policy if exists "Anyone can read quotes by share_token" on public.quotes;
 
+-- The live database may not match schema.sql exactly. Drop any remaining SELECT policy on quotes
+-- whose only condition is share_token being present, whatever it is called, so a renamed copy of
+-- the leak cannot survive this migration.
+do $$
+declare pol record;
+begin
+  for pol in
+    select policyname from pg_policies
+     where schemaname = 'public' and tablename = 'quotes' and cmd = 'SELECT'
+       and replace(lower(qual), ' ', '') in ('(share_tokenisnotnull)', 'share_tokenisnotnull')
+  loop
+    execute format('drop policy %I on public.quotes', pol.policyname);
+  end loop;
+end $$;
+
 
 -- 2. Profiles: billing, credit and moderation columns are server-only -----------------------------
 create or replace function public.guard_profile_privileged_columns()
@@ -139,3 +154,6 @@ revoke all on function public.consume_free_quote() from public, anon;
 grant execute on function public.consume_free_quote() to authenticated;
 
 commit;
+
+-- PostgREST caches the schema. Reload it so the API sees consume_free_quote now, not later.
+notify pgrst, 'reload schema';

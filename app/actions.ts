@@ -161,7 +161,7 @@ export async function saveProfileSetupAction(formData: FormData) {
       material_markup_percent: DEFAULT_SETTINGS.materialMarkupPercent,
       tax_percent: DEFAULT_SETTINGS.taxPercent,
       minimum_job_charge: DEFAULT_SETTINGS.minimumJobCharge,
-            rates_configured_at: new Date().toISOString(),
+      rates_configured_at: new Date().toISOString(),
     };
 
     const { error: skipError } = await supabase.from("profiles").upsert(skipPayload);
@@ -245,7 +245,7 @@ export async function saveProfileSetupAction(formData: FormData) {
     material_markup_percent: input.materialMarkupPercent,
     tax_percent: input.taxPercent,
     minimum_job_charge: input.minimumJobCharge,
-      rates_configured_at: new Date().toISOString(),
+    rates_configured_at: new Date().toISOString(),
   } as Record<string, unknown>;
 
   if (logoUrl) {
@@ -624,16 +624,18 @@ export async function unlockQuoteAction(formData: FormData) {
           // The credit is spent but the unlock failed. Rare, and recoverable by hand, so log loudly.
           console.error("[unlockQuote] credit spent but unlock failed", { quoteId, userId: viewer.user.id });
         }
-      } else if (spendError && /consume_free_quote/.test(spendError.message ?? "")) {
+      } else if (spendError?.code === "PGRST202") {
         // Transitional: this code can ship before the 2026-10-01 migration creates
         // consume_free_quote. Until then, keep the old behaviour so free unlocks never break.
         // Remove this branch once the migration has run.
-        const { error: unlockError } = await supabase
+        const { data: row, error: unlockError } = await supabase
           .from("quotes")
           .update({ is_unlocked: true })
           .eq("id", quoteId)
-          .eq("user_id", viewer.user.id);
-        if (!unlockError) {
+          .eq("user_id", viewer.user.id)
+          .select("is_unlocked")
+          .maybeSingle();
+        if (!unlockError && row?.is_unlocked === true) {
           await supabase.rpc("increment_free_quotes_used", { user_id: viewer.user.id });
           unlocked = true;
         }
