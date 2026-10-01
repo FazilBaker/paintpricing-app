@@ -1,8 +1,27 @@
 import { getRequiredEnv } from "@/lib/env";
 
-const PAYPAL_API_BASE = process.env.NODE_ENV === "production"
-  ? "https://api-m.paypal.com"
-  : "https://api-m.sandbox.paypal.com";
+// Live or sandbox. This used to key on NODE_ENV alone, but Vercel builds preview deployments with
+// NODE_ENV=production too, so every preview talked to LIVE PayPal and could take real money.
+//
+// Order of precedence:
+//   PAYPAL_ENV=live|sandbox   explicit override, always wins
+//   VERCEL_ENV=preview|development  sandbox
+//   NODE_ENV!=production      sandbox (local dev)
+//   otherwise                 live, which keeps production on Vercel AND any non-Vercel host live.
+// Failing toward live on an unknown host is deliberate: failing toward sandbox in production would
+// silently break every real purchase, which is the worse of the two errors.
+function usePaypalSandbox(): boolean {
+  const explicit = process.env.PAYPAL_ENV;
+  if (explicit === "sandbox") return true;
+  if (explicit === "live") return false;
+  const vercelEnv = process.env.VERCEL_ENV;
+  if (vercelEnv === "preview" || vercelEnv === "development") return true;
+  return process.env.NODE_ENV !== "production";
+}
+
+const PAYPAL_API_BASE = usePaypalSandbox()
+  ? "https://api-m.sandbox.paypal.com"
+  : "https://api-m.paypal.com";
 
 let cachedToken: { token: string; expiresAt: number } | null = null;
 

@@ -198,3 +198,25 @@ export function lastCreditHtml(
     "See the plans",
   );
 }
+
+/**
+ * Tell the owner a chargeback was opened. Deliberately an alert, not an automatic downgrade:
+ * a dispute does not carry a trustworthy pointer to one of our accounts (any reference on it was
+ * set by the buyer's browser when the order was created), so revoking access automatically would
+ * let a buyer aim a chargeback at somebody else's account.
+ */
+export async function sendDisputeAlertEmail(to: string[], details: Record<string, unknown>) {
+  if (!resend || to.length === 0) return;
+  const rows = Object.entries(details)
+    .map(([k, v]) => `<tr><td style="padding:4px 12px 4px 0;color:#667085">${k}</td><td style="padding:4px 0"><code>${String(v ?? "")
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")}</code></td></tr>`)
+    .join("");
+  await resend.emails.send({
+    from: FROM,
+    to,
+    subject: "PayPal dispute opened on PaintPricing",
+    html: `<p>A PayPal dispute (chargeback) was opened. Access has <strong>not</strong> been changed automatically.</p>
+<p>Look it up in the PayPal Resolution Center, match it to the account, and downgrade by hand if it is genuine.</p>
+<table>${rows}</table>`,
+  });
+}

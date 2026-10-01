@@ -453,6 +453,13 @@ function ItemCard({
 
   const hasCalculator = item.type === "interior" || item.type === "exterior";
   const priceChanged = item.price !== item.suggestedPrice && item.suggestedPrice > 0;
+  // A line priced far below what the engine suggests is far more often a typo than a deliberate
+  // discount: a real quote went out with a $20 kitchen against a ~$340 suggestion. Warn, never
+  // block, because painters do sometimes discount on purpose.
+  const LOW_PRICE_RATIO = 0.5;
+  const priceTooLow =
+    item.suggestedPrice > 0 && item.price > 0 && item.price < item.suggestedPrice * LOW_PRICE_RATIO;
+  const belowPct = priceTooLow ? Math.round((1 - item.price / item.suggestedPrice) * 100) : 0;
 
   const typeBadgeColors =
     item.type === "interior"
@@ -497,7 +504,12 @@ function ItemCard({
                 {item.type}
               </span>
             </div>
-            {!expanded && item.suggestedPrice > 0 && priceChanged && (
+            {!expanded && priceTooLow && (
+              <p className="text-[11px] font-semibold truncate" style={{ color: "var(--danger, #B42318)" }}>
+                {belowPct}% below suggested {formatCurrency(item.suggestedPrice)}. Check before sending.
+              </p>
+            )}
+            {!expanded && !priceTooLow && item.suggestedPrice > 0 && priceChanged && (
               <p className="text-[11px] text-[var(--muted)] truncate">
                 Suggested {formatCurrency(item.suggestedPrice)}
               </p>
@@ -561,6 +573,16 @@ function ItemCard({
                   </button>
                 )}
               </div>
+            )}
+            {priceTooLow && (
+              <p
+                role="alert"
+                className="text-xs font-semibold rounded-md px-2 py-1.5"
+                style={{ color: "var(--danger, #B42318)", background: "var(--danger-soft, #FEF3F2)" }}
+              >
+                This line is {belowPct}% below the suggested {formatCurrency(item.suggestedPrice)}.
+                If that is not a deliberate discount, it is probably a typo.
+              </p>
             )}
           </div>
 

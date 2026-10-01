@@ -7,3 +7,7 @@ export function isAdmin(email: string | undefined | null): boolean {
   if (!email) return false;
   return ADMIN_EMAILS.includes(email.toLowerCase());
 }
+
+export function adminEmails(): string[] {
+  return [...ADMIN_EMAILS];
+}
