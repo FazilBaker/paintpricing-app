@@ -624,21 +624,6 @@ export async function unlockQuoteAction(formData: FormData) {
           // The credit is spent but the unlock failed. Rare, and recoverable by hand, so log loudly.
           console.error("[unlockQuote] credit spent but unlock failed", { quoteId, userId: viewer.user.id });
         }
-      } else if (spendError?.code === "PGRST202") {
-        // Transitional: this code can ship before the 2026-10-01 migration creates
-        // consume_free_quote. Until then, keep the old behaviour so free unlocks never break.
-        // Remove this branch once the migration has run.
-        const { data: row, error: unlockError } = await supabase
-          .from("quotes")
-          .update({ is_unlocked: true })
-          .eq("id", quoteId)
-          .eq("user_id", viewer.user.id)
-          .select("is_unlocked")
-          .maybeSingle();
-        if (!unlockError && row?.is_unlocked === true) {
-          await supabase.rpc("increment_free_quotes_used", { user_id: viewer.user.id });
-          unlocked = true;
-        }
       } else {
         // No credit was available after all (a parallel request took it). Send them to billing.
         redirect(`/billing?locked=${quoteId}`);
