@@ -8,8 +8,6 @@ import type { ExteriorTemplate, ExteriorTemplateKey, ProfileSettings, RoomTempla
  */
 
 export const FREE_QUOTES_LIMIT = 3;
-export const LIFETIME_DEAL_LIMIT = 50;
-export const LIFETIME_DEAL_PRICE = 249;
 
 export const DEFAULT_SETTINGS: ProfileSettings = {
   hourlyLaborRate: CATALOG.labor.defaultHourlyRate,
@@ -181,8 +179,6 @@ export const BILLING_COPY = {
   monthlyPrice: 29,
   yearlyPrice: 279,
   yearlySavings: 69,
-  lifetimePrice: LIFETIME_DEAL_PRICE,
-  lifetimeSeats: LIFETIME_DEAL_LIMIT,
 };
 
 /**

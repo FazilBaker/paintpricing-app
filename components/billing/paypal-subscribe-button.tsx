@@ -3,13 +3,10 @@
 import { useMemo, useState, useTransition } from "react";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 
-import type { BillingCycle } from "@/lib/types";
-
 type PayPalSubscribeButtonProps = {
-  cycle: BillingCycle;
+  cycle: "monthly" | "yearly";
   clientId: string;
   planId?: string;
-  amount?: string;
   userId: string;
 };
 
@@ -17,7 +14,6 @@ export function PayPalSubscribeButton({
   cycle,
   clientId,
   planId,
-  amount,
   userId,
 }: PayPalSubscribeButtonProps) {
   const [message, setMessage] = useState<string | null>(null);
@@ -39,10 +35,10 @@ export function PayPalSubscribeButton({
           style={{
             layout: "vertical",
             shape: "pill",
-            label: cycle === "lifetime" ? "pay" : "subscribe",
+            label: "subscribe",
           }}
           createSubscription={
-            cycle === "lifetime" || !planId
+            !planId
               ? undefined
               : (_, actions) =>
                   actions.subscription.create({
@@ -50,43 +46,8 @@ export function PayPalSubscribeButton({
                     custom_id: `${userId}:${cycle}`,
                   })
           }
-          createOrder={
-            cycle !== "lifetime" || !amount
-              ? undefined
-              : (_, actions) =>
-                  actions.order.create({
-                    intent: "CAPTURE",
-                    purchase_units: [
-                      {
-                        amount: {
-                          currency_code: "USD",
-                          value: amount,
-                        },
-                        custom_id: `${userId}:lifetime`,
-                        description: "PaintPricing lifetime launch deal",
-                      },
-                    ],
-                  })
-          }
           onApprove={async (data) => {
             startTransition(async () => {
-              if (cycle === "lifetime") {
-                const response = await fetch("/api/paypal/capture-order", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ orderID: data.orderID }),
-                });
-
-                if (response.ok) {
-                  window.location.href = "/dashboard";
-                  return;
-                }
-
-                const result = await response.json();
-                setMessage(result.error || "Lifetime payment failed. Please contact support.");
-                return;
-              }
-
               const response = await fetch("/api/paypal/activate-subscription", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

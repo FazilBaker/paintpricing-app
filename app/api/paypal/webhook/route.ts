@@ -51,8 +51,9 @@ const SUBSCRIPTION_CYCLES = new Set(["monthly", "yearly"]);
  *     made the attack work, and this never does that.
  *   - Disputes alert the owner and change nothing; see sendDisputeAlertEmail for why.
  *
- * One-time payment events (PAYMENT.SALE.COMPLETED) are intentionally NOT handled here because
- * lifetime captures are activated synchronously in /api/paypal/capture-order.
+ * One-time payment events (PAYMENT.SALE.COMPLETED) are intentionally NOT handled here: the
+ * lifetime deal that used them was retired in Oct 2026 and its checkout route removed. The
+ * lifetime guard below stays so the one existing lifetime profile is never overwritten.
  */
 export async function POST(request: Request) {
   if (!isPaypalServerConfigured()) {

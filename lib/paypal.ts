@@ -105,57 +105,6 @@ export async function verifyWebhookSignature(
   return data.verification_status === "SUCCESS";
 }
 
-export async function captureOrder(orderId: string): Promise<{
-  ok: boolean;
-  amount?: number;
-  payerId?: string;
-  error?: string;
-}> {
-  const token = await getAccessToken();
-
-  const response = await fetch(
-    `${PAYPAL_API_BASE}/v2/checkout/orders/${orderId}/capture`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    },
-  );
-
-  if (!response.ok) {
-    const text = await response.text();
-    return { ok: false, error: `Capture failed: ${response.status} ${text}` };
-  }
-
-  const data = (await response.json()) as {
-    status: string;
-    payer?: { payer_id?: string };
-    purchase_units?: Array<{
-      payments?: {
-        captures?: Array<{
-          amount?: { value?: string };
-        }>;
-      };
-    }>;
-  };
-
-  if (data.status !== "COMPLETED") {
-    return { ok: false, error: `Order status is ${data.status}, not COMPLETED` };
-  }
-
-  const capturedAmount = Number(
-    data.purchase_units?.[0]?.payments?.captures?.[0]?.amount?.value ?? "0",
-  );
-
-  return {
-    ok: true,
-    amount: capturedAmount,
-    payerId: data.payer?.payer_id,
-  };
-}
-
 export async function verifySubscription(subscriptionId: string): Promise<{
   ok: boolean;
   status?: string;
@@ -211,35 +160,4 @@ export function parseCustomId(customId: string): {
     return null;
   }
   return { userId: parts[0], cycle: parts[1] };
-}
-
-/**
- * Read an order WITHOUT capturing it, so its amount, currency and owner can be checked before
- * any money moves. The lifetime order is created in the browser, so every field on it is
- * attacker-controlled until PayPal reports it back to us here.
- */
-export async function getOrder(orderId: string): Promise<{
-  ok: boolean;
-  amount?: number;
-  currency?: string;
-  customId?: string;
-  error?: string;
-}> {
-  const token = await getAccessToken();
-  const response = await fetch(`${PAYPAL_API_BASE}/v2/checkout/orders/${encodeURIComponent(orderId)}`, {
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-  });
-  if (!response.ok) {
-    return { ok: false, error: `Order lookup failed: ${response.status}` };
-  }
-  const data = (await response.json()) as {
-    purchase_units?: Array<{ custom_id?: string; amount?: { value?: string; currency_code?: string } }>;
-  };
-  const unit = data.purchase_units?.[0];
-  return {
-    ok: true,
-    amount: Number(unit?.amount?.value ?? "0"),
-    currency: unit?.amount?.currency_code,
-    customId: unit?.custom_id,
-  };
 }

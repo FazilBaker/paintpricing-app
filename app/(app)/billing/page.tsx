@@ -1,18 +1,16 @@
 import { redirect } from "next/navigation";
 import { ArrowRight, Check, ShieldCheck } from "lucide-react";
 
-import { BILLING_COPY, LIFETIME_DEAL_LIMIT } from "@/lib/constants";
+import { BILLING_COPY } from "@/lib/constants";
 import { getViewer, hasConfiguredRates, hasPaidAccess, quotesRemaining } from "@/lib/auth";
 import { isPaypalConfigured } from "@/lib/env";
 import { formatCurrency } from "@/lib/utils";
-import { LtdCounter } from "@/components/billing/ltd-counter";
 import { PayPalSubscribeButton } from "@/components/billing/paypal-subscribe-button";
-import { createSupabaseAdminClient, createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const planFeatures = {
   monthly: ["Unlimited quotes", "Branded PDFs", "Shareable links"],
   yearly: ["Everything in Monthly", "2 months free", "Priority support"],
-  lifetime: ["Everything forever", "All future updates", "Founding member"],
 };
 
 export default async function BillingPage({
@@ -46,18 +44,6 @@ export default async function BillingPage({
   }
 
   const paypalReady = isPaypalConfigured();
-  // Use admin client — the seat counter must see ALL active lifetime profiles,
-  // not just the current user's row (RLS would restrict the regular client).
-  const admin = createSupabaseAdminClient();
-  const lifetimeSoldResult = admin
-    ? await admin
-        .from("profiles")
-        .select("id", { count: "exact", head: true })
-        .eq("billing_cycle", "lifetime")
-        .eq("billing_status", "active")
-    : { count: 0 };
-  const lifetimeSold = lifetimeSoldResult.count ?? 0;
-  const lifetimeRemaining = Math.max(LIFETIME_DEAL_LIMIT - lifetimeSold, 0);
   const remaining = quotesRemaining(viewer.profile);
   const isPaid = hasPaidAccess(viewer.profile);
 
@@ -111,7 +97,7 @@ export default async function BillingPage({
       )}
 
       {/* Plan cards */}
-      <div className="grid gap-5 sm:grid-cols-3 items-start pt-5">
+      <div className="grid gap-5 sm:grid-cols-2 items-start pt-5 max-w-[760px] mx-auto">
         {/* Monthly */}
         <div
           className="rounded-[var(--radius-2xl)] border border-[var(--line)] bg-[var(--surface)] p-7"
@@ -195,60 +181,6 @@ export default async function BillingPage({
             >
               Start yearly <ArrowRight className="h-4 w-4" />
             </button>
-          )}
-        </div>
-
-        {/* Lifetime — navy gradient.
-            NOTE: do NOT add overflow-hidden here — the "LIMITED · N LEFT" pill
-            below uses -top-3.5 to bleed above the card and gets clipped if hidden. */}
-        <div
-          className="rounded-[var(--radius-2xl)] p-7 relative"
-          style={{ background: "linear-gradient(180deg, var(--navy-800), var(--navy-900))", color: "white", boxShadow: "var(--shadow-lg)" }}
-        >
-          <div
-            className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3.5 py-1.5 rounded-full text-xs font-bold"
-            style={{ background: "var(--amber-500)", color: "#3B2300", letterSpacing: "0.08em" }}
-          >
-            LIMITED · {lifetimeRemaining} LEFT
-          </div>
-          <p className="text-xs font-semibold uppercase tracking-wider mb-3.5" style={{ color: "var(--amber-400)" }}>Lifetime</p>
-          <div className="flex items-baseline gap-1.5 mb-1">
-            <span className="font-mono text-[48px] font-bold" style={{ letterSpacing: "-0.03em" }}>
-              ${BILLING_COPY.lifetimePrice}
-            </span>
-            <span className="text-sm opacity-60">one-time</span>
-          </div>
-          <div className="mb-3">
-            <LtdCounter initialRemaining={lifetimeRemaining} total={LIFETIME_DEAL_LIMIT} />
-          </div>
-          <div className="space-y-2.5 my-6">
-            {planFeatures.lifetime.map((f) => (
-              <div key={f} className="flex items-center gap-2.5 text-sm">
-                <div className="w-[18px] h-[18px] rounded-[5px] flex items-center justify-center shrink-0" style={{ background: "rgba(245,166,35,0.25)", color: "var(--amber-400)" }}>
-                  <Check className="h-3 w-3" strokeWidth={2.5} />
-                </div>
-                {f}
-              </div>
-            ))}
-          </div>
-          {paypalReady && lifetimeRemaining > 0 ? (
-            <PayPalSubscribeButton
-              cycle="lifetime"
-              clientId={process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!}
-              amount={String(BILLING_COPY.lifetimePrice)}
-              userId={viewer.user!.id}
-            />
-          ) : lifetimeRemaining > 0 ? (
-            <button
-              className="w-full flex items-center justify-center gap-2 px-5 py-3.5 rounded-[var(--radius)] text-sm font-bold transition"
-              style={{ background: "var(--amber-500)", color: "#3B2300" }}
-            >
-              Claim lifetime <ArrowRight className="h-4 w-4" />
-            </button>
-          ) : (
-            <p className="rounded-[var(--radius)] px-4 py-3 text-sm font-semibold text-center" style={{ background: "rgba(255,255,255,0.1)" }}>
-              Sold out
-            </p>
           )}
         </div>
       </div>

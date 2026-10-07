@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { BILLING_COPY } from "@/lib/constants";
 
 import { deleteUserAction, reactivateUserAction, suspendUserAction } from "@/app/admin-actions";
 import { DeleteUserButton } from "./delete-user-button";
@@ -145,9 +146,6 @@ export default async function AdminPage() {
   const totalUsers = users.length;
   const configuredUsers = users.filter((u) => u.rates_configured_at).length;
   const activeSubscribers = users.filter((u) => u.billing_status === "active").length;
-  const lifetimeSold = users.filter(
-    (u) => u.billing_cycle === "lifetime" && u.billing_status === "active",
-  ).length;
   const totalQuotes = quotesRaw?.length ?? 0;
 
   // Revenue estimate
@@ -157,14 +155,13 @@ export default async function AdminPage() {
   const yearlyCount = users.filter(
     (u) => u.billing_cycle === "yearly" && u.billing_status === "active",
   ).length;
-  const ltdRevenue = lifetimeSold * 249;
-  const mrr = monthlyCount * 29 + Math.round((yearlyCount * 299) / 12);
+  const mrr = monthlyCount * BILLING_COPY.monthlyPrice + Math.round((yearlyCount * BILLING_COPY.yearlyPrice) / 12);
 
   const kpis = [
-    { label: "MRR", value: formatCurrency(mrr), sub: `+ ${formatCurrency(ltdRevenue)} LTD`, accent: "var(--amber-500)" },
+    { label: "MRR", value: formatCurrency(mrr), sub: "monthly + yearly", accent: "var(--amber-500)" },
     { label: "Active users", value: String(totalUsers), sub: `${configuredUsers} configured`, accent: "var(--navy-700)" },
     { label: "Quotes sent", value: String(totalQuotes), sub: "all time", accent: "var(--navy-500)" },
-    { label: "Paid plans", value: String(activeSubscribers), sub: `${monthlyCount} mo · ${yearlyCount} yr · ${lifetimeSold} ltd`, accent: "#94A3B8" },
+    { label: "Paid plans", value: String(activeSubscribers), sub: `${monthlyCount} mo · ${yearlyCount} yr`, accent: "#94A3B8" },
   ];
 
   return (

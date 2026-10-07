@@ -4,14 +4,12 @@ import {
   FileText,
   Paintbrush2,
   ShieldCheck,
-  Sparkles,
   TimerReset,
 } from "lucide-react";
 
 import {
   BILLING_COPY,
   FREE_QUOTES_LIMIT,
-  LIFETIME_DEAL_LIMIT,
 } from "@/lib/constants";
 import { formatCurrency } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -27,7 +25,7 @@ const features = [
 const steps = [
   "Create your account and set your standard rates once.",
   `Use your first ${FREE_QUOTES_LIMIT} quotes for free.`,
-  "Upgrade to monthly, yearly, or grab the launch lifetime deal.",
+  "Upgrade to a monthly or yearly plan when you are ready.",
 ];
 
 export function LandingPage() {
@@ -170,13 +168,13 @@ export function LandingPage() {
 
         <Card id="pricing" className="bg-[var(--brand)] text-white">
           <CardContent className="space-y-5">
-            <Badge className="bg-white/15 text-white">Launch pricing</Badge>
+            <Badge className="bg-white/15 text-white">Pricing</Badge>
             <h2 className="text-2xl font-bold sm:text-3xl">
               Start free, then choose the plan that fits.
             </h2>
             <p className="text-sm text-white/70">
               Every account gets {FREE_QUOTES_LIMIT} free quotes. After that,
-              choose monthly, yearly, or the first-{LIFETIME_DEAL_LIMIT} lifetime deal.
+              choose monthly or yearly.
             </p>
             <div className="grid gap-3">
               <div className="rounded-[var(--radius-lg)] border border-white/15 bg-white/8 p-4">
@@ -200,18 +198,6 @@ export function LandingPage() {
                 </p>
                 <p className="mt-1 text-sm text-white/70">
                   Save {formatCurrency(BILLING_COPY.yearlySavings)}.
-                </p>
-              </div>
-              <div className="rounded-[var(--radius-lg)] border border-[var(--accent)]/40 bg-white/12 p-4">
-                <div className="flex items-center gap-2 text-[var(--accent)]">
-                  <Sparkles className="h-4 w-4" />
-                  <p className="text-xs uppercase tracking-wider">Lifetime Deal</p>
-                </div>
-                <p className="mt-1 text-2xl font-bold font-mono">
-                  {formatCurrency(BILLING_COPY.lifetimePrice)}
-                </p>
-                <p className="mt-1 text-sm text-white/70">
-                  First {LIFETIME_DEAL_LIMIT} users only.
                 </p>
               </div>
             </div>
