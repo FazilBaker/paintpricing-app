@@ -115,7 +115,7 @@
         "totalPaintedSqFt": 586
       },
       "spec": [
-        "Frequently has a chair rail, picture rail or wainscoting. Raise the trim footage to include it, since panelled walls are much slower than flat ones.",
+        "Frequently has a chair rail, picture rail or wainscoting. Raise the trim footage to include it, since paneled walls are much slower than flat ones.",
         "Often shares an opening with the living room, so the two are usually quoted together."
       ]
     },
@@ -570,7 +570,7 @@
         "finish"
       ],
       "spec": [
-        "Panelled doors have many more cut lines than a flush door of the same area."
+        "Paneled doors have many more cut lines than a flush door of the same area."
       ]
     },
     "shutters": {
@@ -891,13 +891,13 @@
         "finish"
       ],
       "spec": [
-        "Panelled walls take far longer than flat walls of the same area. Every panel has inside corners that are cut in by brush.",
+        "Paneled walls take far longer than flat walls of the same area. Every panel has inside corners that are cut in by brush.",
         "Priced by area, but the production rate is closer to trim than to wall."
       ],
       "aliases": [],
       "engineReady": true,
       "source": "new",
-      "note": "Panelled walls take far longer than flat walls of the same area. Every panel has inside corners that are cut in by brush."
+      "note": "Paneled walls take far longer than flat walls of the same area. Every panel has inside corners that are cut in by brush."
     },
     "stair-spindles": {
       "basis": "unit",
@@ -1129,7 +1129,7 @@
       ],
       "spec": [
         "Measured by the foot. Face and top of the curb are both coated, which is why the area per foot is high for a linear item.",
-        "Fire lane red and handicap blue are regulated colours in most jurisdictions."
+        "Fire lane red and handicap blue are regulated colors in most jurisdictions."
       ],
       "aliases": [],
       "engineReady": true,

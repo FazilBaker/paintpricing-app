@@ -208,7 +208,7 @@
           "a": "Yes, and by more than the extra area alone. Anything above comfortable roller reach needs ladders or staging, which slows production."
         },
         {
-          "q": "How many coats do I need over a dark colour?",
+          "q": "How many coats do I need over a dark color?",
           "a": "Going light over dark usually needs a primer coat plus two finish coats. Tick the primer option so it is priced in."
         }
       ],
@@ -237,11 +237,11 @@
         },
         {
           "q": "How do I price wainscoting or a chair rail?",
-          "a": "Raise the trim linear footage to include it. Trim is priced by the foot, and panelled walls take considerably longer than flat ones."
+          "a": "Raise the trim linear footage to include it. Trim is priced by the foot, and paneled walls take considerably longer than flat ones."
         },
         {
-          "q": "Should the ceiling be a different colour?",
-          "a": "That is a finish choice, not a cost one. It is the same area either way, though a second colour adds a little cutting in."
+          "q": "Should the ceiling be a different color?",
+          "a": "That is a finish choice, not a cost one. It is the same area either way, though a second color adds a little cutting in."
         }
       ],
       "related": [
@@ -588,7 +588,7 @@
           "a": "Doors are priced per door, counting both faces and the edges, which is roughly 40 sq ft of painted surface each."
         },
         {
-          "q": "Does a panelled door cost more than a flat one?",
+          "q": "Does a paneled door cost more than a flat one?",
           "a": "Yes. Every panel edge is cut in by hand, so a six panel door takes noticeably longer than a flush door of the same size."
         },
         {
@@ -657,7 +657,7 @@
         },
         {
           "q": "Should crown be painted before or after the walls?",
-          "a": "Most painters cut the crown first and then the wall, so the wall colour makes the final clean line."
+          "a": "Most painters cut the crown first and then the wall, so the wall color makes the final clean line."
         }
       ],
       "related": [
@@ -858,7 +858,7 @@
       "surface": "curb-painting",
       "h1": "Curb Painting Calculator",
       "metaTitle": "Curb Painting Calculator | Cost Per Foot",
-      "metaDescription": "Estimate curb painting cost by the linear foot, covering face and top. Fire lane and accessible colours. Free, no signup.",
+      "metaDescription": "Estimate curb painting cost by the linear foot, covering face and top. Fire lane and accessible colors. Free, no signup.",
       "focusKeyword": "curb painting calculator",
       "intro": "Estimate curb painting by the linear foot. Both the face and the top get coated, which is why a curb carries more area per foot than a stripe.",
       "audience": "contractor",
@@ -868,7 +868,7 @@
           "a": "Priced by the linear foot, covering the face and the top of the curb, which is a wider band than a parking line."
         },
         {
-          "q": "What colour should a fire lane curb be?",
+          "q": "What color should a fire lane curb be?",
           "a": "Red is standard for fire lanes and blue for accessible spaces in most jurisdictions, but the local fire code governs."
         },
         {
@@ -886,9 +886,9 @@
       "surface": "wainscoting",
       "h1": "Wainscoting Painting Calculator",
       "metaTitle": "Wainscoting Painting Calculator | Cost Estimator",
-      "metaDescription": "Estimate the cost to paint wainscoting and panelled walls. Slower than flat walls. Free, no signup.",
+      "metaDescription": "Estimate the cost to paint wainscoting and paneled walls. Slower than flat walls. Free, no signup.",
       "focusKeyword": "wainscoting painting calculator",
-      "intro": "Estimate the cost to paint wainscoting. Priced by area, but at a trim production rate, because panelled walls are nothing like flat ones.",
+      "intro": "Estimate the cost to paint wainscoting. Priced by area, but at a trim production rate, because paneled walls are nothing like flat ones.",
       "audience": "mixed",
       "faqs": [
         {
@@ -897,7 +897,7 @@
         },
         {
           "q": "Why is panelling more expensive than a plain wall?",
-          "a": "Because production rate drives labor, not area. A panelled wall can take two or three times as long as flat drywall of the same size."
+          "a": "Because production rate drives labor, not area. A paneled wall can take two or three times as long as flat drywall of the same size."
         },
         {
           "q": "Should wainscoting be sprayed?",
@@ -910,6 +910,134 @@
         "baseboard-painting-calculator",
         "crown-molding-painting-calculator",
         "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "garage-door-painting-calculator": {
+      "mode": "exterior",
+      "surface": "garage-door",
+      "h1": "Garage Door Painting Calculator",
+      "metaTitle": "Garage Door Painting Calculator | Cost and Paint",
+      "metaDescription": "Estimate the cost and paint to repaint a garage door, single or double, with prep and two coats. Free, no signup.",
+      "focusKeyword": "garage door painting calculator",
+      "intro": "Estimate the cost to paint a garage door. The default is a standard double door; measure the width and height of yours and enter the area to match a single or an oversized door.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint a garage door?",
+          "a": "It depends mostly on the door area, the panel style and the prep. Enter your door size and the calculator prices labor, paint, prep and supplies from it."
+        },
+        {
+          "q": "How do I measure a garage door for paint?",
+          "a": "Multiply the width by the height for one face. Most people paint only the outside face; if you are painting both, double it."
+        },
+        {
+          "q": "Does a paneled door take longer than a flat one?",
+          "a": "Yes. Raised panels add many more edges and cut lines than a flush door of the same size, so expect more labor than the area alone suggests."
+        }
+      ],
+      "related": [
+        "front-door-painting-calculator",
+        "trim-painting-calculator",
+        "siding-painting-calculator",
+        "shutter-painting-calculator",
+        "exterior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "shutter-painting-calculator": {
+      "mode": "exterior",
+      "surface": "shutters",
+      "h1": "Shutter Painting Calculator",
+      "metaTitle": "Shutter Painting Calculator | Cost to Paint Shutters",
+      "metaDescription": "Estimate the cost and paint to repaint exterior shutters, on the house or taken down and sprayed. Free, no signup.",
+      "focusKeyword": "shutter painting calculator",
+      "intro": "Estimate the cost to paint exterior shutters. The default assumes eight shutters at about 15 square feet each; count yours and multiply by the size of one shutter to set the area.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint shutters?",
+          "a": "Shutters are usually priced per shutter, which comes down to their area, the number of louvers and whether they come off the house. Enter the total area and the calculator prices it."
+        },
+        {
+          "q": "How do I work out the area of my shutters?",
+          "a": "Measure one shutter, multiply width by height, and multiply by the number of shutters. Paint both faces only if you are painting the back too."
+        },
+        {
+          "q": "Is it faster to take shutters down to paint them?",
+          "a": "Often, yes. Removed shutters can be sprayed flat, which is quicker and neater than brushing louvers in place, though removal and rehanging take time of their own."
+        }
+      ],
+      "related": [
+        "front-door-painting-calculator",
+        "garage-door-painting-calculator",
+        "trim-painting-calculator",
+        "siding-painting-calculator",
+        "exterior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "front-door-painting-calculator": {
+      "mode": "exterior",
+      "surface": "doors",
+      "h1": "Front Door Painting Calculator",
+      "metaTitle": "Front Door Painting Calculator | Cost and Paint",
+      "metaDescription": "Estimate the cost and paint to repaint a front door or other exterior doors, with prep and two coats. Free, no signup.",
+      "focusKeyword": "front door painting calculator",
+      "intro": "Estimate the cost to paint a front door or other exterior doors. The default is one door painted on both faces, at about 21 square feet per face; add faces or doors to match your job.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint a front door?",
+          "a": "A front door is a small job, so prep, setup and drying time weigh heavily against the area. Enter your door area and the calculator prices labor, paint and prep."
+        },
+        {
+          "q": "How much paint does a front door need?",
+          "a": "Very little. A single door usually needs well under a gallon for two coats, which is why many painters buy a quart. The calculator shows the paint quantity for the area you enter."
+        },
+        {
+          "q": "Should I paint both sides of the door?",
+          "a": "Only if the inside face needs it. Many people paint just the exterior face in a new color; if so, enter one face rather than two."
+        }
+      ],
+      "related": [
+        "garage-door-painting-calculator",
+        "shutter-painting-calculator",
+        "interior-door-painting-calculator",
+        "trim-painting-calculator",
+        "exterior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "soffit-painting-calculator": {
+      "mode": "exterior",
+      "surface": "soffit",
+      "h1": "Soffit Painting Calculator",
+      "metaTitle": "Soffit Painting Calculator | Cost to Paint Soffits",
+      "metaDescription": "Estimate the cost and paint to repaint soffits, the overhead underside of the eaves, with prep and two coats. Free, no signup.",
+      "focusKeyword": "soffit painting calculator",
+      "intro": "Estimate the cost to paint soffits, the underside of the roof overhang. Measure the run of the eaves and the depth of the overhang, multiply them, and enter the area.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint soffits?",
+          "a": "More per square foot than siding, because the work is overhead and on a ladder. Enter your soffit area and the calculator applies the slower overhead production rate."
+        },
+        {
+          "q": "How do I measure soffit area?",
+          "a": "Measure the length of each eave run and the depth of the overhang, multiply them for each run, and add the runs together."
+        },
+        {
+          "q": "Is fascia included?",
+          "a": "No. Fascia is the board along the edge of the roof, and it is priced with trim. Use the trim calculator alongside this one."
+        }
+      ],
+      "related": [
+        "trim-painting-calculator",
+        "gutter-painting-calculator",
+        "siding-painting-calculator",
+        "stucco-painting-calculator",
+        "exterior-painting-calculator",
         "house-painting-calculator"
       ]
     }
