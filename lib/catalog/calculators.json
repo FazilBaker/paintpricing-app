@@ -1040,6 +1040,135 @@
         "exterior-painting-calculator",
         "house-painting-calculator"
       ]
+    },
+    "garage-painting-calculator": {
+      "mode": "interior",
+      "roomPreset": "garage",
+      "h1": "Garage Painting Calculator",
+      "metaTitle": "Garage Paint Calculator | Gallons and Cost to Paint",
+      "metaDescription": "Estimate the paint and cost to paint garage walls and ceiling. Starts at a two car garage you can resize. Free, no signup.",
+      "focusKeyword": "garage paint calculator",
+      "intro": "Estimate the paint and cost to paint the inside of a garage. It starts at a typical attached two car garage; change the length, width and height to match yours.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much paint do I need for a two car garage?",
+          "a": "It depends on the wall height, the ceiling and whether the drywall is bare. Enter your garage size and the calculator shows the gallons for walls and ceiling at the coats you choose."
+        },
+        {
+          "q": "Should I prime garage walls?",
+          "a": "Bare or patched drywall usually needs primer, because it absorbs the first coat unevenly. Tick the primer option to include it."
+        },
+        {
+          "q": "Is the garage door or floor included?",
+          "a": "No. The overhead door has its own calculator, and floors take a different coating system altogether."
+        }
+      ],
+      "related": [
+        "garage-door-painting-calculator",
+        "basement-painting-calculator",
+        "ceiling-painting-calculator",
+        "laundry-room-painting-calculator",
+        "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "basement-painting-calculator": {
+      "mode": "interior",
+      "roomPreset": "basement",
+      "h1": "Basement Painting Calculator",
+      "metaTitle": "Basement Painting Calculator | Paint and Cost",
+      "metaDescription": "Estimate the paint and cost to paint a basement room, walls and ceiling, with coats and primer. Free, no signup.",
+      "focusKeyword": "basement painting calculator",
+      "intro": "Estimate the paint and cost to paint a finished basement room. It starts at a typical rec room; change the size to match yours, and check for damp before you paint.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much does it cost to paint a basement?",
+          "a": "Mostly the wall and ceiling area, the condition of the surfaces and whether they are drywall or bare masonry. Enter your room size and the calculator prices paint, labor and prep."
+        },
+        {
+          "q": "Can I paint bare concrete basement walls?",
+          "a": "Yes, with a masonry primer and only once moisture is under control. Masonry absorbs more paint than drywall, so expect a higher paint quantity."
+        },
+        {
+          "q": "Does this cover an exposed basement ceiling?",
+          "a": "No. An open joist ceiling is usually sprayed and priced very differently. This calculator assumes a drywall ceiling."
+        }
+      ],
+      "related": [
+        "garage-painting-calculator",
+        "ceiling-painting-calculator",
+        "laundry-room-painting-calculator",
+        "home-office-painting-calculator",
+        "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "stairwell-painting-calculator": {
+      "mode": "interior",
+      "roomPreset": "stairwell",
+      "h1": "Stairwell Painting Calculator",
+      "metaTitle": "Stairwell Painting Calculator | Cost to Paint Stairs",
+      "metaDescription": "Estimate the paint and cost to paint a two story stairwell, where the wall height drives the price. Free, no signup.",
+      "focusKeyword": "stairwell painting calculator",
+      "intro": "Estimate the paint and cost to paint a stairwell. It starts at a typical two story stairwell; change the length, width and the tallest wall height to match yours, then add any staging time in the editable hours on the result.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "Why does a stairwell cost more to paint than a room?",
+          "a": "Height. Tall stairwell walls need staging or a stair ladder, and setting it up and moving it takes time. This calculator prices the painted area, so add that setup time in the editable hours box on the result."
+        },
+        {
+          "q": "How do I measure a stairwell for paint?",
+          "a": "Use the length and width of the stair opening and the height of the tallest wall. The calculator works out the wall and ceiling area from those."
+        },
+        {
+          "q": "Are the handrail and spindles included?",
+          "a": "No. They are priced by the foot and by the spindle. Use the handrail and spindle calculators alongside this one."
+        }
+      ],
+      "related": [
+        "handrail-painting-calculator",
+        "stair-spindle-painting-calculator",
+        "hallway-painting-calculator",
+        "ceiling-painting-calculator",
+        "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "ceiling-painting-calculator": {
+      "mode": "interior",
+      "roomPreset": "living-room",
+      "ceilingOnly": true,
+      "h1": "Ceiling Paint Calculator",
+      "metaTitle": "Ceiling Paint Calculator | Gallons and Cost by Sq Ft",
+      "metaDescription": "Work out how much paint a ceiling needs and what it costs to paint, from the square footage. Free, no signup.",
+      "focusKeyword": "ceiling paint calculator",
+      "intro": "Work out the paint and cost for a ceiling on its own. Enter the ceiling area, length times width of the room, and the calculator applies the slower overhead production rate.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much paint do I need for a ceiling?",
+          "a": "Multiply the room length by its width for the ceiling area, then allow for two coats. Enter the area and the calculator shows the gallons at the coats you choose."
+        },
+        {
+          "q": "Why does a ceiling take longer than a wall?",
+          "a": "Overhead rolling is slower and more tiring than wall work, so the calculator uses a slower ceiling production rate than it does for walls."
+        },
+        {
+          "q": "Do textured or popcorn ceilings need more paint?",
+          "a": "Yes. Texture holds more paint and a popcorn ceiling can need a sprayer. Add a primer coat or a third coat to allow for it."
+        }
+      ],
+      "related": [
+        "interior-painting-calculator",
+        "living-room-painting-calculator",
+        "bedroom-painting-calculator",
+        "basement-painting-calculator",
+        "house-painting-calculator",
+        "stairwell-painting-calculator"
+      ]
     }
   }
 }

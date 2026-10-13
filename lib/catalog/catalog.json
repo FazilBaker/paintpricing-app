@@ -19,7 +19,7 @@
     "heavyPrepMultiplier": 1.5,
     "conditionMultiplier": {
       "good": 0.5,
-      "fair": 1.0,
+      "fair": 1,
       "poor": 1.8
     }
   },
@@ -58,7 +58,7 @@
     },
     "costOfLivingMultiplier": {
       "high": 1.4,
-      "medium": 1.0,
+      "medium": 1,
       "low": 0.7
     },
     "minimumJobChargeNote": "Conventional interior minimum. Without a floor the calculator returns numbers like 118 dollars for 30 linear feet of crown molding, which no painter would accept as a standalone visit. Applies to the job total, not per item."
@@ -313,6 +313,85 @@
       "spec": [
         "A blank room. Enter your own dimensions, trim footage and openings."
       ]
+    },
+    "garage": {
+      "label": "Garage",
+      "aliases": [
+        "garage"
+      ],
+      "lengthFt": 22,
+      "widthFt": 22,
+      "heightFt": 9,
+      "trimLinearFt": 20,
+      "doors": 1,
+      "windows": 1,
+      "ceilingIncluded": true,
+      "note": "Attached two car garage with drywall walls. The overhead door is priced separately.",
+      "spec": [
+        "New or bare drywall in a garage drinks primer, so a primer coat is usually worth adding.",
+        "The overhead door is its own job; use the garage door calculator for it.",
+        "Floors take a different coating system and are not part of this estimate."
+      ],
+      "derived": {
+        "grossWallSqFt": 792,
+        "paintableWallSqFt": 757,
+        "ceilingSqFt": 484,
+        "openingDeductionSqFt": 35,
+        "totalPaintedSqFt": 1241
+      }
+    },
+    "basement": {
+      "label": "Basement",
+      "aliases": [
+        "basement"
+      ],
+      "lengthFt": 24,
+      "widthFt": 20,
+      "heightFt": 8,
+      "trimLinearFt": 60,
+      "doors": 2,
+      "windows": 2,
+      "ceilingIncluded": true,
+      "moistureFlag": true,
+      "note": "Finished basement room. Check for moisture before painting.",
+      "spec": [
+        "Damp walls make paint fail, so moisture is worth checking before any basement job.",
+        "Bare concrete or block walls need a masonry primer and take more paint than drywall.",
+        "An exposed joist ceiling is usually sprayed and is priced very differently from drywall."
+      ],
+      "derived": {
+        "grossWallSqFt": 704,
+        "paintableWallSqFt": 634,
+        "ceilingSqFt": 480,
+        "openingDeductionSqFt": 70,
+        "totalPaintedSqFt": 1114
+      }
+    },
+    "stairwell": {
+      "label": "Stairwell",
+      "aliases": [
+        "stairwell"
+      ],
+      "lengthFt": 12,
+      "widthFt": 4,
+      "heightFt": 16,
+      "trimLinearFt": 40,
+      "doors": 0,
+      "windows": 1,
+      "ceilingIncluded": true,
+      "heavyTrim": true,
+      "note": "Two story stairwell. Tall walls need staging or a stair ladder.",
+      "spec": [
+        "The height is the cost: tall stairwell walls need staging or a stair ladder, which is setup time on top of painting time.",
+        "Handrails and spindles are priced separately; use the handrail and spindle calculators."
+      ],
+      "derived": {
+        "grossWallSqFt": 512,
+        "paintableWallSqFt": 497,
+        "ceilingSqFt": 48,
+        "openingDeductionSqFt": 15,
+        "totalPaintedSqFt": 545
+      }
     }
   },
   "surfaces": {
@@ -776,7 +855,7 @@
       "tier": 1,
       "prep": {
         "profile": "sand-fill",
-        "hoursPer100": 1.0
+        "hoursPer100": 1
       },
       "system": [
         "primer",
@@ -813,7 +892,7 @@
       "tier": 1,
       "prep": {
         "profile": "caulk-fill-sand",
-        "hoursPer100": 1.0
+        "hoursPer100": 1
       },
       "system": [
         "primer",
@@ -884,7 +963,7 @@
       "tier": 1,
       "prep": {
         "profile": "fill-caulk-sand",
-        "hoursPer100": 2.0
+        "hoursPer100": 2
       },
       "system": [
         "primer",
@@ -952,7 +1031,7 @@
       "tier": 1,
       "prep": {
         "profile": "sand-fill",
-        "hoursPer100": 2.0
+        "hoursPer100": 2
       },
       "system": [
         "primer",
@@ -983,7 +1062,7 @@
       "tier": 1,
       "prep": {
         "profile": "scrape-glaze-sand",
-        "hoursPer100": 3.0
+        "hoursPer100": 3
       },
       "system": [
         "primer",
@@ -1187,7 +1266,7 @@
       "note": "Indicative daily rental. Regional rates vary widely, so treat these as placeholders until replaced with local quotes."
     },
     "accessMultiplier": {
-      "ground": 1.0,
+      "ground": 1,
       "ladder": 1.15,
       "scaffold": 1.35,
       "lift": 1.45,
