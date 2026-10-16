@@ -1169,6 +1169,70 @@
         "house-painting-calculator",
         "stairwell-painting-calculator"
       ]
+    },
+    "closet-painting-calculator": {
+      "mode": "interior",
+      "roomPreset": "closet",
+      "h1": "Closet Painting Calculator",
+      "metaTitle": "Closet Painting Calculator | Paint and Cost for a Closet",
+      "metaDescription": "Estimate the paint and cost to paint a walk-in or reach-in closet, walls, ceiling and trim. Free, no signup.",
+      "focusKeyword": "closet painting calculator",
+      "intro": "Estimate the paint and cost to paint a closet. It starts at a standard 5 by 7 foot walk-in; change the size for yours, or enter a reach-in by its width, depth and height.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How much paint do I need for a closet?",
+          "a": "Not much. Enter the size and the calculator works out the paint for walls, ceiling and trim at the coats you choose, rounded up to whole gallons. A small reach-in often needs less than a gallon."
+        },
+        {
+          "q": "Why does a closet cost so much for its size?",
+          "a": "Setup, cutting in around tight corners and cleanup take nearly as long as in a bigger room, and shelves and rods have to come out or be worked around. Add that time in the editable hours on the result."
+        },
+        {
+          "q": "Can I price a reach-in closet with this?",
+          "a": "Yes. Enter the width, the depth and the height. A reach-in has one open face, so leave the door count at one for the opening."
+        }
+      ],
+      "related": [
+        "bedroom-painting-calculator",
+        "hallway-painting-calculator",
+        "ceiling-painting-calculator",
+        "trim-painting-calculator",
+        "interior-painting-calculator",
+        "house-painting-calculator"
+      ]
+    },
+    "porch-painting-calculator": {
+      "mode": "exterior",
+      "surface": "deck-porch",
+      "h1": "Porch Painting Calculator",
+      "metaTitle": "Porch Painting Calculator | Cost to Paint a Porch",
+      "metaDescription": "Estimate the cost to paint a porch floor, then add the ceiling, railing and balusters as extra lines. Free, no signup.",
+      "focusKeyword": "porch painting calculator",
+      "intro": "Estimate the cost to paint a porch. It starts with the floor area; add the ceiling, the railing and the balusters as extra surfaces, because each one is priced differently.",
+      "audience": "mixed",
+      "faqs": [
+        {
+          "q": "How do I add the porch ceiling and railings?",
+          "a": "Use Add Surface. Enter the ceiling area as a Soffit line, since both are overhead exterior boards. Add the top rail as Handrail by the foot and the balusters as Stair spindles by the count. Those two rates come from interior work, where a smooth sanded finish is expected, so they lean high for plain square balusters."
+        },
+        {
+          "q": "Why is a porch priced by component?",
+          "a": "The floor takes a tough floor enamel and wears fastest, the ceiling is overhead work, and railings and balusters are slow brushwork with a lot of surface for their size. One price per square foot would hide all three."
+        },
+        {
+          "q": "Are columns and steps included?",
+          "a": "Not as their own line. Add steps to the floor area, and add the time for columns in the editable hours on the result."
+        }
+      ],
+      "related": [
+        "deck-painting-calculator",
+        "soffit-painting-calculator",
+        "handrail-painting-calculator",
+        "stair-spindle-painting-calculator",
+        "front-door-painting-calculator",
+        "exterior-painting-calculator"
+      ]
     }
   }
 }

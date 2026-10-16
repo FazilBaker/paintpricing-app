@@ -392,6 +392,33 @@
         "openingDeductionSqFt": 15,
         "totalPaintedSqFt": 545
       }
+    },
+    "closet": {
+      "label": "Walk-in closet",
+      "aliases": [
+        "closet",
+        "walk-in closet"
+      ],
+      "lengthFt": 7,
+      "widthFt": 5,
+      "heightFt": 8,
+      "trimLinearFt": 21,
+      "doors": 1,
+      "windows": 0,
+      "ceilingIncluded": true,
+      "note": "Standard walk-in closet. Shelving and rods come out or are cut around, which is slow for the area.",
+      "spec": [
+        "Small rooms cost more per square foot, because setup, cutting in and cleanup barely shrink with the area.",
+        "Taking out shelves and rods, or cutting around them, is the real time in a closet; add it in the editable hours.",
+        "For a reach-in closet, enter its width, depth and height; the calculator works the same way."
+      ],
+      "derived": {
+        "grossWallSqFt": 192,
+        "paintableWallSqFt": 172,
+        "ceilingSqFt": 35,
+        "openingDeductionSqFt": 20,
+        "totalPaintedSqFt": 207
+      }
     }
   },
   "surfaces": {
