@@ -111,7 +111,7 @@ if (existsSync(TOOLS_SOURCE)) {
 
 const KNOWN_COMPUTE = [
   "markupMargin", "laborBurden", "breakEven", "overheadRecovery", "minimumJob",
-  "productionRate", "crewDay", "jobProfitability", "discountImpact", "fullStack",
+  "productionRate", "crewDay", "jobProfitability", "discountImpact", "fullStack", "primerQuantity",
 ];
 
 for (const [slug, t] of Object.entries(tools.tools)) {

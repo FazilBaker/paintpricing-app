@@ -756,6 +756,94 @@
           "Burden from your payroll and comp rates, overhead from your annual accounts divided by revenue, and margin from what you need the business to earn."
         ]
       ]
+    },
+    "primer-calculator": {
+      "compute": "primerQuantity",
+      "h1": "Primer Calculator",
+      "metaTitle": "Primer Calculator: How Much Primer Do I Need?",
+      "metaDescription": "Work out how much primer you need, in gallons and quarts, from the area, the number of coats and the coverage on the can. Free, no signup.",
+      "focusKeyword": "primer calculator",
+      "intro": "Enter the area you are priming, the number of primer coats and the coverage printed on the can or data sheet. The default of 350 sq ft per gallon sits inside the published ranges for common primers; use the low end of the range for rough or porous surfaces.",
+      "audience": "mixed",
+      "inputs": [
+        {
+          "key": "area",
+          "label": "Area to prime",
+          "suffix": "sq ft",
+          "default": 400,
+          "step": 10,
+          "min": 0
+        },
+        {
+          "key": "coats",
+          "label": "Primer coats",
+          "default": 1,
+          "step": 1,
+          "min": 1,
+          "max": 3
+        },
+        {
+          "key": "coverage",
+          "label": "Coverage per gallon",
+          "suffix": "sq ft",
+          "default": 350,
+          "step": 10,
+          "min": 100,
+          "max": 600
+        }
+      ],
+      "outputs": [
+        {
+          "key": "gallons",
+          "label": "Primer needed (gallons)",
+          "format": "decimal",
+          "primary": true
+        },
+        {
+          "key": "buyGallons",
+          "label": "Gallons to buy",
+          "format": "number"
+        },
+        {
+          "key": "buyQuarts",
+          "label": "Or quarts, for a small job",
+          "format": "number"
+        },
+        {
+          "key": "primedArea",
+          "label": "Total area primed, all coats (sq ft)",
+          "format": "number"
+        }
+      ],
+      "faqs": [
+        [
+          "How much does a gallon of primer cover?",
+          "Each product prints a range on the can and data sheet. KILZ 2 All-Purpose lists 300 to 400 sq ft per gallon, and Zinsser Bulls Eye 1-2-3 lists about 350 on porous surfaces and 450 on non porous ones. Rough and porous surfaces land at the low end."
+        ],
+        [
+          "Do I need one coat of primer or two?",
+          "One coat is usual over sound, previously painted walls. New drywall, bare wood, stains and big color changes can call for a second coat or a stain blocking primer, so check the directions for the product you are using."
+        ],
+        [
+          "Why work out primer separately from paint?",
+          "Primer is bought separately and its coverage is printed on its own can, so it is worth working out on its own rather than as one more coat of finish paint."
+        ],
+        [
+          "How do I measure the area to prime?",
+          "Multiply the room perimeter by the wall height, then take off about 20 sq ft for each door and 15 sq ft for each window. Add the ceiling, length times width, if you are priming it too."
+        ],
+        [
+          "Can I spot prime instead of priming everything?",
+          "Often, over walls in good condition. Enter only the area of the patches and stains you are priming, and buy by the quart."
+        ]
+      ],
+      "related": [
+        "interior-painting-calculator",
+        "ceiling-painting-calculator",
+        "bedroom-painting-calculator",
+        "garage-painting-calculator",
+        "basement-painting-calculator"
+      ]
     }
   }
 }
